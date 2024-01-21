@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95dcee429c164c4f8dbd41c83435bfd, type: 3}
+  m_Name: TooltipViewSettings
+  m_EditorClassIdentifier: 
+  targetDistance: 54
+  arrowMargin:
+    m_Left: 1
+    m_Right: 1
+    m_Top: 1
+    m_Bottom: 1
+  arrowEdgeMargin: 22
+  tooltipFadeInTime: 0.15
+  tooltipFadeOutTime: 0.25
+  disabledColor: {r: 0, g: 0, b: 0, a: 1}
+  interactableColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  hoveredColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
