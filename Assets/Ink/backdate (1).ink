@@ -1,32 +1,32 @@
 -> grave
 
 === grave 
->>> BACKGROUND (gravestone.png)
->>> TITLE (Paris Cemetery, May 5th 1968, 8:30pm)
+>>> BACKGROUND (path=gravestone)
+>>> TITLE (text=Paris Cemetery, May 5th 1968, 8:30pm)
 
 LIST Flowers = (WeddingRing), (BunchFlowers), HeldFlowers, HeldWeddingRing, (Cigarette)
 ~ items(Flowers)
 [ Wedding Ring reads: "E.R 1965" ]
->>> ITEMS: BunchFlowers
+>>> ITEMS (BunchFlowers)
 - (opts)
-* [ INTERACT WeddingRing ]
+* [ INTERACT (WeddingRing) ]
     ~ swap(WeddingRing, HeldWeddingRing) 
-* [ INTERACT BunchFlowers ]
+* [ INTERACT (BunchFlowers) ]
     ~ swap(BunchFlowers, HeldFlowers) 
 * ->  next("cafe_man.png", WornWeddingRing) ->  cafe 
 -  -> opts 
 
 === cafe
->>> TITLE: Cafe de Opera, May 5th 1968, 5:30pm
+>>> TITLE (text=Cafe de Opera, May 5th 1968, 5:30pm)
 [ A man in a dark suit sits across the table, smoking  ]
 
 LIST CafeItems = (WeddingRingOnTable), WornWeddingRing, FullCoffee, (EmptyCoffee)
 ~ items(CafeItems)
 - (opts)
-*   [ INTERACT EmptyCoffee ]
+*   [ INTERACT (EmptyCoffee) ]
     ~ swap(EmptyCoffee, FullCoffee) 
     
-*   [ INTERACT WeddingRingOnTable ]
+*   [ INTERACT (WeddingRingOnTable) ]
     MAN:    On the grave? Whatever you say.
     ~ swap(WeddingRingOnTable, WornWeddingRing) 
     
@@ -36,19 +36,19 @@ LIST CafeItems = (WeddingRingOnTable), WornWeddingRing, FullCoffee, (EmptyCoffee
 
 
 === waiter
->>> TITLE:  Cafe de Opera, May 5th 1968, 5:18pm
+>>> TITLE  (text=Cafe de Opera, May 5th 1968, 5:18pm)
 [ A waiter, holding a tray. There is a tattoo visible on his hand: a curved serpent. ] 
 LIST WaitersTray = (FiveFrancNote), (CoffeeOnTray), (EmptyVial), FullVial
 ~ items(WaitersTray) 
 - (opts) 
-*   [ INTERACT EmptyVial ON CoffeeOnTray ] 
+*   [ INTERACT (EmptyVial ON CoffeeOnTray) ] 
     ~ swap(EmptyVial, FullVial) 
     
 *   -> next("cafe.png", FiveFrancNote) ->  cafe_earlier 
 -   -> opts 
 
 === cafe_earlier
->>> TITLE: Cafe de Opera, May 5th 1968, 5:07pm
+>>> TITLE (text=Cafe de Opera, May 5th 1968, 5:07pm)
 [ the other seat is empty ] 
 LIST CafeEarlierItems =  (PocketBook) , OpenPocketBook, CondolenceCard
 ~ items(CafeEarlierItems + FiveFrancNote)

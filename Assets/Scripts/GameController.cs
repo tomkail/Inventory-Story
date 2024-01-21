@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ink.Runtime;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,8 @@ public class GameController : MonoSingleton<GameController> {
     public InkListChangeHandler currentAnswerSet = new InkListChangeHandler("currentAnswerSet");
     
     public RectTransform itemContainer;
+    public Image background;
+    public TextMeshProUGUI titleText;
     public ItemView itemViewPrefab;
     public List<ItemView> itemViews = new List<ItemView>();
     public LevelRequiredItemsSlotGroup slotGroup;
@@ -60,10 +63,12 @@ public class GameController : MonoSingleton<GameController> {
 
     void LoadBackground(BackgroundInstruction backgroundInstruction) {
         Debug.Log(backgroundInstruction.assetPath);
+        background.sprite = Resources.Load<Sprite>(backgroundInstruction.assetPath);
     }
 
     void SetTitle(TitleInstruction titleInstruction) {
         Debug.Log(titleInstruction.text);
+        titleText.text = titleInstruction.text;
     }
 
 
