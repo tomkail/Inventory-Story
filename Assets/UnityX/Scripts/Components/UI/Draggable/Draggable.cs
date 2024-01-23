@@ -12,7 +12,7 @@ public delegate void OnStartDraggingEvent();
 /// </summary>
 public delegate void OnStopDraggingEvent();
 
-public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHandler {
+public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerClickHandler {
 	public RectTransform rectTransform => (RectTransform)transform;
 	public PointerEventData lastPointerEventData;
 
@@ -126,6 +126,7 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	}
 	
 	void StopDragging (bool revert = false) {
+		if (!dragging) return;
 		dragging = false;
 		dragVelocity = Vector2.zero;
 		dragOffset = Vector2.zero;

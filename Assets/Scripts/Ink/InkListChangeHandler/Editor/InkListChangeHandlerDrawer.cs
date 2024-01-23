@@ -19,7 +19,7 @@ public class InkListChangeHandlerDrawer : PropertyDrawer {
 		
 		EditorGUI.BeginProperty (position, label, property);
 		var y = position.y;
-		property.isExpanded = EditorGUI.Foldout(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), property.isExpanded, property.displayName, true);
+		property.isExpanded = EditorGUI.Foldout(new Rect(position.x, y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight), property.isExpanded, property.displayName, true);
 		EditorGUI.PropertyField(new Rect(position.x+EditorGUIUtility.labelWidth, y, position.width-EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight), property.FindPropertyRelative("_variableName"), GUIContent.none);
 		if(property.isExpanded) {
 			EditorGUI.indentLevel++;

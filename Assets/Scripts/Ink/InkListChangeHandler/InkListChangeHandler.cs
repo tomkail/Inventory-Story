@@ -3,29 +3,32 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class InkListChangeHandler {
-    [UnityEngine.SerializeField]
+    [SerializeField]
     string _variableName;
     public string variableName => _variableName;
-    [UnityEngine.SerializeField]
+    [SerializeField]
     bool observing;
 
     InkList _inkList;
     public InkList inkList => _inkList;
 
-    List<InkListItem> prevListItems = new List<InkListItem>();
-    [UnityEngine.SerializeField]
-    List<InkListItem> _currentListItems = new List<InkListItem>();
+    List<InkListItem> prevListItems = new();
+    [SerializeField]
+    List<InkListItem> _currentListItems = new();
     public IReadOnlyList<InkListItem> currentListItems => _currentListItems;
-    List<InkListItem> itemsAdded = new List<InkListItem>();
-    List<InkListItem> itemsRemoved = new List<InkListItem>();
-
+    
     public delegate void OnChangeDelegate(IReadOnlyList<InkListItem> currentListItems, IReadOnlyList<InkListItem> itemsAdded, IReadOnlyList<InkListItem> itemsRemoved);
     public OnChangeDelegate OnChange;
     
     public InkListChangeHandler (string variableName) {
         this._variableName = variableName;
+    }
+
+    public void Reset() {
+        prevListItems.Clear();
+        _currentListItems.Clear();
     }
 
     public void RefreshValue (Story story, bool silently) {
@@ -66,7 +69,7 @@ public class InkListChangeHandler {
 		foreach(var listItem in inkList)
 			_currentListItems.Add(listItem.Key);
         
-        if(IEnumerableX.GetChanges(prevListItems, _currentListItems, out itemsRemoved, out itemsAdded)) {
+        if(IEnumerableX.GetChanges(prevListItems, _currentListItems, out var itemsRemoved, out var itemsAdded)) {
             if (!silently && OnChange != null) 
                 OnChange(_currentListItems, itemsAdded, itemsRemoved);
         }

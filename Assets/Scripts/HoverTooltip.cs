@@ -9,12 +9,10 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
     public string tooltipText;
     
     public void OnPointerEnter(PointerEventData eventData) {
-        Debug.Log("Tooltip Exit");
         TryCreateTooltipIfNotShowing();
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-        Debug.Log("Tooltip Enter");
         HideTooltip();
     }
 
@@ -25,8 +23,7 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     void Update() {
         if(tooltip != null) {
-            var screenRect = camera.WorldToScreenRect(new Bounds(rectTransform.position, rectTransform.localScale));
-            var tooltipPositionParams = TooltipViewManager.Instance.GetPositionParamsFromScreenRect(screenRect, TooltipParams.TooltipPositionParams.ArrowDirection.Top);
+            var tooltipPositionParams = TooltipViewManager.Instance.GetPositionParamsFromScreenRect(rectTransform.GetScreenRect(), TooltipViewManager.GetPreferredArrowDirection(rectTransform.GetScreenRect()));
             tooltip.tooltipParams.positionParams = tooltipPositionParams;
             tooltip.RefreshPosition();
         }
@@ -35,8 +32,7 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void TryCreateTooltipIfNotShowing() {
         if(tooltip != null) return;
         if(string.IsNullOrWhiteSpace(tooltipText)) return;
-        var screenRect = camera.WorldToScreenRect(new Bounds(rectTransform.position, rectTransform.localScale));
-        var tooltipPositionParams = TooltipViewManager.Instance.GetPositionParamsFromScreenRect(screenRect, TooltipParams.TooltipPositionParams.ArrowDirection.Top);
+        var tooltipPositionParams = TooltipViewManager.Instance.GetPositionParamsFromScreenRect(rectTransform.GetScreenRect(), TooltipViewManager.GetPreferredArrowDirection(rectTransform.GetScreenRect()));
         if(tooltip == null) {
             var tooltipContent = TooltipViewManager.Instance.CreateTooltipLabelContent(new TooltipLine(tooltipText, TooltipLine.TooltipLineType.Normal));
             tooltip = TooltipViewManager.Instance.CreateAndShow(new TooltipParams(this, tooltipPositionParams, tooltipContent.layout, null));
@@ -44,7 +40,7 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
 
     public void HideTooltip() {
-        TooltipViewManager.Instance.Hide(tooltip);
+        if(TooltipViewManager.Instance != null) TooltipViewManager.Instance.Hide(tooltip);
         tooltip = null;
     }
 }

@@ -7,6 +7,16 @@ using UnityEngine;
 public class LevelRequiredItemsSlotGroup : MonoBehaviour {
     public SLayout layout => GetComponent<SLayout>();
     public DraggableGroup draggableGroup => GetComponent<DraggableGroup>();
+    public IEnumerable<ItemView> slottedItems {
+        get {
+            foreach (var slot in slots) {
+                if (slot.slot.slottedDraggable == null) continue;
+                var itemView = slot.slot.slottedDraggable.GetComponent<ItemView>();
+                if (itemView != null) yield return itemView;
+            }
+        }
+    }
+
     public LevelRequiredItemsSlot slotPrefab;
     public List<LevelRequiredItemsSlot> slots = new List<LevelRequiredItemsSlot>();
 
@@ -26,7 +36,7 @@ public class LevelRequiredItemsSlotGroup : MonoBehaviour {
         layout.centerX = layout.parentRect.width / 2;
     }
 
-    void Clear() {
+    public void Clear() {
         for (var index = slots.Count - 1; index >= 0; index--) {
             var slot = slots[index];
             draggableGroup.slots.Remove(slot.slot);

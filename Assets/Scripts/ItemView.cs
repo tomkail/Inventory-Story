@@ -1,7 +1,5 @@
-using System;
 using Ink.Runtime;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,17 +29,20 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void Init(InkListItem inkListItem) {
         this.inkListItem = inkListItem;
         gameObject.name = $"Item: {this.inkListItem.itemName}";
-        text.text = inkListItem.itemName;
+        text.text = GameController.Instance.GetItemName(inkListItem);
         tooltip.tooltipText = description = GameController.Instance.GetItemTooltip(inkListItem);
         UpdateSelectionState();
     }
 
     void OnClicked(Draggable arg1, PointerEventData arg2) {
-        tooltip.HideTooltip();
-        GameController.Instance.InteractWithItem(inkListItem);
+        if (GameController.Instance.CanInteractWithItem(inkListItem)) {
+            GameController.Instance.InteractWithItem(inkListItem);
+            tooltip.HideTooltip();
+        }
     }
     
     void OnStartDragging() {
+        transform.SetAsLastSibling();
         tooltip.enabled = false;
         UpdateSelectionState();
     }
@@ -49,16 +50,16 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void OnStopDragging() {
         tooltip.enabled = true;
         UpdateSelectionState();
+        GameController.Instance.OnCompleteDrag(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        Debug.Log("OnPointerEnter");
+        transform.SetAsLastSibling();
         hovered = true;
         UpdateSelectionState();
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-        Debug.Log("OnPointerExit");
         hovered = false;
         UpdateSelectionState();
     }
@@ -67,9 +68,7 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (draggable.dragging) selectionState = SelectionState.Dragging;
         else if(hovered) selectionState = SelectionState.Hovered;
         else selectionState = SelectionState.Normal;
-        background.Animate(Styling.FastAnimationTime, () => {
-            Layout();
-        });
+        background.Animate(Styling.FastAnimationTime, Layout);
         void Layout() {
             if(selectionState == SelectionState.Dragging) {
                 background.fillColor = new Color(0.25f,0.25f,0.25f,1);
@@ -85,5 +84,4 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
     }
-
 }

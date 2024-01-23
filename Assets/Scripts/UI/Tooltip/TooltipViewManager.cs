@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 // Manages tooltips, including some helper functions
 public class TooltipViewManager : MonoSingleton<TooltipViewManager> {
     [SerializeField]
-    Prototype tooltipPrototype = null;
+    Prototype tooltipPrototype;
     [SerializeField]
-    Prototype tooltipLabelContentPrototype = null;
+    Prototype tooltipLabelContentPrototype;
     [SerializeField, Disable]
     List<TooltipView> _currentTooltips = new List<TooltipView>();
     public IEnumerable<TooltipView> currentTooltips => _currentTooltips;
@@ -70,6 +68,22 @@ public class TooltipViewManager : MonoSingleton<TooltipViewManager> {
         tooltipLabelContent.Init(lines);
         return tooltipLabelContent;
     }
+    
+    
+    // Returns a direction for the tooltip that best utilises empty screen space.
+    // This function could be improved by choosing the direction that enables the screen rect to best fit on screen. 
+    // For example, if the screen rect is as wide as the screen, it should return top or bottom because no left/right direction will prevent the menu from obscuring the rect
+    public static TooltipParams.TooltipPositionParams.ArrowDirection GetPreferredArrowDirection (Rect screenRect) {
+        var screenSize = new Vector2(Screen.width, Screen.height);
+        var centerDelta = screenSize * 0.5f - screenRect.center;
+        // if(Mathf.Abs(centerDelta.x) > Mathf.Abs(centerDelta.y)) {
+        //     if(centerDelta.x > 0) return TooltipParams.TooltipPositionParams.ArrowDirection.Left;
+        //     else return TooltipParams.TooltipPositionParams.ArrowDirection.Right;
+        // } else {
+            if(centerDelta.y > 0) return TooltipParams.TooltipPositionParams.ArrowDirection.Bottom;
+            else return TooltipParams.TooltipPositionParams.ArrowDirection.Top;
+        // }
+    }
 
     public TooltipParams.TooltipPositionParams GetPositionParamsFromScreenPoint (Vector2 screenPoint, TooltipParams.TooltipPositionParams.ArrowDirection arrowDirection, float extraDistance = 0) {
         return GetPositionParamsFromScreenRect(new Rect(screenPoint.x, screenPoint.y, 0, 0), arrowDirection, extraDistance);
@@ -84,7 +98,7 @@ public class TooltipViewManager : MonoSingleton<TooltipViewManager> {
         positionParams.arrowDirection = arrowDirection;
 
         var canvas = container.GetComponentInParent<Canvas>().rootCanvas;
-        var screenPoints = new Vector2[] {
+        var screenPoints = new[] {
             new Vector2(screenRect.x, screenRect.y),
             new Vector2(screenRect.x+screenRect.width, screenRect.y),
             new Vector2(screenRect.x+screenRect.width, screenRect.y+screenRect.height),
@@ -120,10 +134,10 @@ public class TooltipViewManager : MonoSingleton<TooltipViewManager> {
         target.GetWorldCorners(corners3D);
         if(canvas == targetCanvas) {
             for(int i = 0; i < corners3D.Length; i++)
-                corners2D[i] = (Vector2)container.InverseTransformPoint(corners3D[i]);
+                corners2D[i] = container.InverseTransformPoint(corners3D[i]);
         } else {
             for(int i = 0; i < corners3D.Length; i++)
-                corners2D[i] =  (Vector2)ScreenPointToLocalPointInRectangle(canvas, container, (Vector2)RectTransformUtility.WorldToScreenPoint(targetCanvas.worldCamera, corners3D[i]));
+                corners2D[i] =  (Vector2)ScreenPointToLocalPointInRectangle(canvas, container, RectTransformUtility.WorldToScreenPoint(targetCanvas.worldCamera, corners3D[i]));
         }
         tooltipCanvasSpaceRect = CreateEncapsulating(corners2D);
         

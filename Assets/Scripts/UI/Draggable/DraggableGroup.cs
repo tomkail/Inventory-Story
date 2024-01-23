@@ -124,6 +124,11 @@ public class DraggableGroup : MonoBehaviour
         SlotInternal(draggable, slot);
     }
 
+    public void Unslot(DraggableSlot slot) {
+        if(slot.slottedDraggable == null) return;
+        UnslotInternal(slot.slottedDraggable, slot);
+    }
+
     void SlotInternal (Draggable draggable, DraggableSlot slot) {
         var currentSlot = FindSlotContainingDraggable(draggable);
         if(currentSlot == slot) return;

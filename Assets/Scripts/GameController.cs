@@ -1,20 +1,24 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ink.Runtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class GameController : MonoSingleton<GameController> {
     public TextAsset storyJson;
     public Story story => StoryController.Instance.story;
     
-    public InkListChangeHandler currentLevelItems = new InkListChangeHandler("currentItems");
-    public InkListChangeHandler currentAnswerSet = new InkListChangeHandler("currentAnswerSet");
+    InkListChangeHandler levelItems;
+    InkListChangeHandler currentItems;
+    InkListChangeHandler currentAnswerSet;
     
     public RectTransform itemContainer;
     public Image background;
     public TextMeshProUGUI titleText;
+    public TextMeshProUGUI voText;
     public ItemView itemViewPrefab;
     public List<ItemView> itemViews = new List<ItemView>();
     public LevelRequiredItemsSlotGroup slotGroup;
@@ -27,29 +31,54 @@ public class GameController : MonoSingleton<GameController> {
         //     
         // });
         
-        slotGroup.draggableGroup.OnSlottedDraggable += (draggable, slot) => {
-            // TryCompleteLevel();
-            var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
-            if (choice != null) {
-                StoryController.Instance.MakeChoice(choice.index);
-            }
-        };
-        slotGroup.draggableGroup.OnUnslottedDraggable += (draggable, slot) => {
-            var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
-            if (choice != null) {
-                StoryController.Instance.MakeChoice(choice.index);
-            }
-        };
+        // slotGroup.draggableGroup.OnSlottedDraggable += (draggable, slot) => {
+        //     // TryCompleteLevel();
+        //     var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
+        //     if (choice != null) {
+        //         StoryController.Instance.MakeChoice(choice.index);
+        //     }
+        // };
+        // slotGroup.draggableGroup.OnUnslottedDraggable += (draggable, slot) => {
+        //     var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
+        //     if (choice != null) {
+        //         StoryController.Instance.MakeChoice(choice.index);
+        //     }
+        // };
         
-        currentLevelItems.AddVariableObserver(story);
-        currentLevelItems.OnChange += OnChangeCurrentLevelItems;
-        currentLevelItems.RefreshValue(story, false);
         
+        levelItems = new InkListChangeHandler("levelItems");
+        levelItems.AddVariableObserver(story);
+        levelItems.OnChange += OnChangeLevelItems;
+        levelItems.RefreshValue(story, false);
+        
+        // currentItems = new InkListChangeHandler("currentItems");
+        // currentItems.AddVariableObserver(story);
+        // currentItems.OnChange += OnChangeCurrentItems;
+        // currentItems.RefreshValue(story, false);
+        
+        currentAnswerSet = new InkListChangeHandler("levelSolutionItems");
         currentAnswerSet.AddVariableObserver(story);
         currentAnswerSet.OnChange += OnChangeCurrentLevelAnswerSet;
         currentAnswerSet.RefreshValue(story, false);
         
         StoryController.Instance.Begin();
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Backspace)) Restart();
+    }
+
+    void Restart() {
+        Clear();
+        Start();
+    }
+
+    void Clear() {
+        StoryController.Instance.OnParsedInstructions -= OnParsedStoryInstructions;
+        StoryController.Instance.EndStory();
+        foreach(var itemView in itemViews) Destroy(itemView.gameObject);
+        itemViews.Clear();
+        slotGroup.Clear();
     }
 
     void OnParsedStoryInstructions() {
@@ -58,7 +87,14 @@ public class GameController : MonoSingleton<GameController> {
 
     void PerformContent(ScriptContent content) {
         if (content is BackgroundInstruction parsedInstruction) LoadBackground(parsedInstruction);
-        if (content is TitleInstruction titleInstruction) SetTitle(titleInstruction);
+        else if (content is TitleInstruction titleInstruction) SetTitle(titleInstruction);
+        else if (content is SceneInstruction sceneInstruction) SetScene(sceneInstruction);
+        else if (content is DialogueInstruction dialogueInstruction) HandleDialogue(dialogueInstruction);
+    }
+
+    void HandleDialogue(DialogueInstruction dialogueInstruction) {
+        Debug.Log(dialogueInstruction.speaker + ": " + dialogueInstruction.text);
+        voText.text = dialogueInstruction.text;
     }
 
     void LoadBackground(BackgroundInstruction backgroundInstruction) {
@@ -71,8 +107,21 @@ public class GameController : MonoSingleton<GameController> {
         titleText.text = titleInstruction.text;
     }
 
+    void SetScene(SceneInstruction sceneInstruction) {
+        Debug.Log(sceneInstruction.text);
 
-    void OnChangeCurrentLevelItems(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
+        story.variablesState[levelItems.variableName] = new InkList();
+        story.variablesState[currentItems.variableName] = new InkList();
+        story.variablesState[currentAnswerSet.variableName] = new InkList();
+        // levelItems.RefreshValue(story, false);
+        // currentItems.Reset();
+        // currentItems.RefreshValue(story, false);
+        // currentAnswerSet.Reset();
+        // currentAnswerSet.RefreshValue(story, false);
+    }
+
+
+    void OnChangeLevelItems(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
         foreach(var item in itemsremoved) {
             Debug.Log("Removed item: " + item);
             DestroyItemView(item);
@@ -91,7 +140,7 @@ public class GameController : MonoSingleton<GameController> {
         var item = Instantiate(itemViewPrefab, itemContainer);
         itemViews.Add(item);
         item.Init(inkListItem);
-        item.layout.position = new Vector2(Random.Range(0, item.layout.parentRect.width), Random.Range(0, item.layout.parentRect.height));
+        item.layout.position = new Vector2(Random.Range(0, item.layout.parentRect.width-item.layout.width), Random.Range(0, item.layout.parentRect.height-item.layout.height));
         item.draggable.SetPositionImmediate(item.layout.rectTransform.anchoredPosition);
         slotGroup.draggableGroup.draggables.Add(item.draggable);
     }
@@ -103,19 +152,42 @@ public class GameController : MonoSingleton<GameController> {
             Destroy(view.gameObject);
         });
     }
+    
+    
+
+    public void OnCompleteDrag(ItemView item) {
+        if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
+            foreach (var wrongItemList in wrongItems) {
+                var wrongItem = itemViews.FirstOrDefault(x => x.inkListItem.Equals(wrongItemList));
+                if(wrongItem == null) continue;
+                wrongItem.draggable.SetDragTargetPosition(wrongItem.layout.rectTransform.anchoredPosition + Vector2.up * 300, false);
+                var slot = slotGroup.draggableGroup.slots.FirstOrDefault(x => x.slottedDraggable == wrongItem.draggable);
+                slotGroup.draggableGroup.Unslot(slot);
+            }
+        } else {
+            var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains("SOLVED"));
+            if(choice != null) StoryController.Instance.MakeChoice(choice.index);
+        }
+    }
+
+    public bool CanInteractWithItem(InkListItem inkListItem) {
+        return story.currentChoices.FirstOrDefault(x => x.text.Contains(inkListItem.itemName)) != null;
+    }
 
     public void InteractWithItem(InkListItem inkListItem) {
         var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(inkListItem.itemName));
-        StoryController.Instance.MakeChoice(choice.index);
-        // story.RunInkFunction<List<InkListItem>>("interact", InkListItemToInkList(inkListItem));
+        if(choice != null) StoryController.Instance.MakeChoice(choice.index);
     }
     
     public void CombineItems(InkListItem inkListItemA, InkListItem inkListItemB) {
         story.RunInkFunction<List<InkListItem>>("interact", InkListItemToInkList(inkListItemA), InkListItemToInkList(inkListItemB));
     }
 
+    public string GetItemName(InkListItem inkListItem) {
+        return story.RunInkFunction<string>("getItemName", InkListItemToInkList(inkListItem));
+    }
     public string GetItemTooltip(InkListItem inkListItem) {
-        return story.RunInkFunction<string>("describe", InkListItemToInkList(inkListItem));
+        return story.RunInkFunction<string>("getItemTooltip", InkListItemToInkList(inkListItem));
     }
     
     public InkList InkListItemToInkList(InkListItem inkListItem) {
