@@ -18,9 +18,9 @@ MonoBehaviour:
     build: 0
     buildType: 
     platform: 
-    buildTarget: iOS
+    buildTarget: WebGL
     isDevelopment: 1
-    gitBranch: new-message-creator
-    gitCommitSHA: ac352f
-    buildDateTimeString: 2024-01-17 17:26:54Z
+    gitBranch: master
+    gitCommitSHA: f7b346
+    buildDateTimeString: 2024-01-23 23:13:01Z
     inkCompileDateTimeString: 19/05/2021 07:33:49

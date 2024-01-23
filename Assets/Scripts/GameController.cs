@@ -108,11 +108,9 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     void SetScene(SceneInstruction sceneInstruction) {
-        Debug.Log(sceneInstruction.text);
-
-        story.variablesState[levelItems.variableName] = new InkList();
-        story.variablesState[currentItems.variableName] = new InkList();
-        story.variablesState[currentAnswerSet.variableName] = new InkList();
+        // story.variablesState[levelItems.variableName] = new InkList();
+        // story.variablesState[currentItems.variableName] = new InkList();
+        // story.variablesState[currentAnswerSet.variableName] = new InkList();
         // levelItems.RefreshValue(story, false);
         // currentItems.Reset();
         // currentItems.RefreshValue(story, false);

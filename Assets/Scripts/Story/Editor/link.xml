@@ -1,0 +1,14 @@
+<linker>
+  <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="AudioInstruction" preserve="all" />
+    <type fullname="BackgroundInstruction" preserve="all" />
+    <type fullname="ButtonChoiceInstruction" preserve="all" />
+    <type fullname="DebugLogInstruction" preserve="all" />
+    <type fullname="DialogueInstruction" preserve="all" />
+    <type fullname="RunFunctionInstruction" preserve="all" />
+    <type fullname="RunFunctionInstructionChoice" preserve="all" />
+    <type fullname="SaveInstruction" preserve="all" />
+    <type fullname="SceneInstruction" preserve="all" />
+    <type fullname="TitleInstruction" preserve="all" />
+  </assembly>
+</linker>

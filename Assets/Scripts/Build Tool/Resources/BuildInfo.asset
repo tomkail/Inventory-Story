@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffedb79f2207a4adf9437315a76d54c5, type: 3}
+  m_Name: BuildInfo
+  m_EditorClassIdentifier: 
+  version:
+    major: 0
+    minor: 0
+    build: 0
+  buildTarget: WebGL
+  buildPlatform: 
+  builderComputerName: H9W14RGQN7
+  builderUsername: tom
+  gitBranch: master
+  gitCommitSHA: f7b346
+  buildDateTimeString: 23/01/2024 23:13:02
+  miscInfo: 'Caching: True
+
+    CompressionFormat: Brotli
+
+    Decompression Fallback:
+    False
+
+    Exceptions: FullWithStacktrace
+
+    Code Optimisation: speed'
