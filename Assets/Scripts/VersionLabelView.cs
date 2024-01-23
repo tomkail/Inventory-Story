@@ -5,6 +5,6 @@ using TMPro;
 public class VersionLabelView : MonoBehaviour {
     TMP_Text text => GetComponent<TMP_Text>();
     void OnEnable () {
-        text.text = UnityX.Versioning.CurrentVersionSO.Instance.version.ToString();
+        text.text = BuildInfo.Instance.ToString();
     }
 }
