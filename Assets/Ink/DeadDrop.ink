@@ -1,25 +1,18 @@
-
 VAR levelItems = ()
 VAR levelSolutionItems = () 
 VAR currentItems = () 
-
-CONST DEBUG = false 
-
+CONST DEBUG = true 
 VAR next = -> pinboard
-
-
-
 -> pinboard 
-
-
 === function getItemName(item)
     {item: 
-    - ManilaEnvelope:   {pinboard.envelope:torn} manila envelope
+    -   ManilaEnvelope:           manila envelope
     -   BunchOfFlowers:             lilies 
     -   AnotherBunchOfFlowers:      tulips
+    -   CardboardBox:   {not back_alleyway:empty} cardboard box
+    -   WhiteApron: {not hotel_bathroom:stained} white apron
     - else:         {item} 
     }
-
 === function getItemTooltip(item) 
     {item: 
     -   WhiteFabricScrap:   Torn, and slightly stained.
@@ -33,14 +26,71 @@ VAR next = -> pinboard
     -   ManInAirportPhoto:  "Puerto Rico, 26th April 68"
     -   MetalCylinderPhoto: "Device, taken 3rd April 68 by COBRA"
     -   GravestonePhoto:    "2nd May 68"
-    
+    -   PianoWire:      {in_the_kitchens:
+                            It's coiled and clean.
+                        - else:
+                            It's blood-soaked.
+                        }
+    - CardboardBox:     "Claude. Rat poison - DO NOT OPEN."
+    - DupontMetroPass:  Metro Pass: C. DUPONT
+    - PhotoOfErnst:     "Ernst Richards. 33.y.o."
+    - PhotoOfCylindricalDevice:  "LOCATE"
+    - CasinoChips:      KING OF DIAMONDS nightclub
+    - AceSpadesReversed:        The back of this card is slightly different from the others.
+    - ValetReceipt:         Parking receipt for a Blue Chevy, registered to Ernst Richards
     }
     ~ return
-
-
+    
+=== function itemGeneratesItems(item) 
+    {item: 
+    - ManilaEnvelope: ~ return (CarOutsideUNPhoto, ManInAirportPhoto, GravestonePhoto, MetalCylinderPhoto)
+    - KeyFob: 
+        // { kingdiamondsclub:
+        //    ~ return ( CarKey, BrassKey, SealedMetalCylinder)
+        // - else:
+            ~ return ( BrassKey, SealedMetalCylinder)   
+        // }
+    - Wallet: ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, PlayingCard)
+    - Scarf: ~ return PianoWire
+    - Bin: ~ return (FoodPeelings, EmptyGlassVial)
+    - WhiteApron: ~ return (TenThousandFrancs, CoffeeOrderSlip)
+    - UnconciousWaiter: ~ return (WhiteApron, WaiterNameBadge)
+    - BlackKitBag: ~ return (PianoWire, TenThousandFrancs, BlackVelvetBag, FlickKnife, SmallGun, Cigarettes, DupontMetroPass, CardboardBox)
+    - BlackVelvetBag: ~ return (GlassVialOfPowder, ChloroformBottle)
+    - CardboardBox: 
+        ~ return (GlassVialOfPowder, TenThousandFrancs, PhotoOfErnst, PhotoOfCylindricalDevice, CasinoChips)
+    - HandCards: ~ return (AceHearts, ThreeClubs, SevenHearts, AceSpades, PlayingCard)
+    - AceHeartsReversed:    ~ return AceHearts 
+    - ThreeClubsReversed:   ~ return ThreeClubs
+    - SevenHeartsReversed:  ~ return SevenHearts
+    - AceSpadesReversed:    ~ return AceSpades
+    - AceHearts:            ~ return AceHeartsReversed
+    - ThreeClubs:           ~ return ThreeClubsReversed
+    - SevenHearts:          ~ return SevenHeartsReversed
+    - AceSpades:            ~ return AceSpadesReversed
+    - PlayingCard:          ~ return PlayingCardReversed
+    - PlayingCardReversed:  ~ return PlayingCard
+    - MetalLockBox:         ~ return PileOfChips
+    - PileOfChips:          ~ return EvenMoreChips 
+    - EvenMoreChips:          ~ return (EvenEvenMoreChips , ValetReceipt)
+    }
+=== use(item, withDestruction, -> done) 
+    -> _use(item, (), withDestruction, done) 
+    
+=== _use(item, withItem, withDestruction, -> done)     
+    ~ temp toGenerate = itemGeneratesItems(item)
+    +   { levelItems !? toGenerate} { levelItems ? item } { levelItems ? withItem || not withItem }
+        [ {item} {withItem: - {withItem} } ]
+        ~ addItems(toGenerate) 
+        { withDestruction:
+            ~ removeItem(item) 
+        }
+        [ now {levelItems} ]
+        -> done 
+=== use_with(withItem, onItem, withDestruction, -> done) 
+    -> _use(onItem, withItem, withDestruction, done) 
 === pinboard
 /*
-
 Photographs on pinboard in background 
 Manila envelope - "ER surveillance"
  Car outside UN building - labelled ER arrives 19th April 
@@ -49,23 +99,13 @@ Manila envelope - "ER surveillance"
  A metal cylinder - labelled whereabouts of device unknown
  
 */
-
 LIST PinboardItems =  (ManilaEnvelope), CarOutsideUNPhoto, ManInAirportPhoto, GravestonePhoto, MetalCylinderPhoto 
-
 -> scene("Pinboard", "10th May 1968", PinboardItems, (GravestonePhoto), -> graveyard) -> 
-
-
 VO:     Something's not right.
-
 - (opts)
 <- offer(levelItems, -> opts) 
-*   (envelope) [ {ManilaEnvelope} ]
-    VO:     The envelope tears open.
-    ~ addItems((CarOutsideUNPhoto, ManInAirportPhoto, GravestonePhoto, MetalCylinderPhoto))
+-> use(ManilaEnvelope, true, -> opts )
     
--   ->  opts
-
-
 === graveyard
 /*
 Gravestone - Ernst Richards
@@ -74,22 +114,14 @@ Gravestone - Ernst Richards
  [ Wedding ring - inscribed "Annabel and Ernst October 1962"  ]
  */
 LIST GraveyardItems =  (WeddingRing), (BunchOfFlowers), (AnotherBunchOfFlowers)
-
 VO:     I don't know how I know. It's just a feeling.
-
 -> scene("Graveyard new Rue Clemins", "29th April 1968", GraveyardItems, (WeddingRing), -> mortuary) -> 
-
 - (opts)
 -> offer(levelItems, -> opts) 
-
-
 === mortuary 
     /*
-
 Mortuary tray 
-
 ID Card:  Victim unknown. Evidence he was drugged. Suspected attempted theft. Killer was disturbed and escaped down tunnel.
-
 Wedding ring 
 Key ring
  key 
@@ -104,30 +136,17 @@ Wallet
  */
  
 LIST MortuaryTrayItems =  (IDCard), (KeyFob), YaleKey, BrassKey, SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, PlayingCard
-
 VO:     But something is definitely very wrong.
-
 -> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing, (PlayingCard, SealedMetalCylinder), -> metro_platform) -> 
-
 - (opts)
-<-  offer(levelItems, -> opts) 
+<- offer(levelItems, -> opts) 
 -> keys_wallet(-> opts)
-
 == keys_wallet(-> goto)
-+   {require(SealedMetalCylinder)} [{ KeyFob} ]
-    ~ addItems((YaleKey, BrassKey, SealedMetalCylinder))
-    
-+  {require(PlayingCard)} [{ Wallet} ]
-    ~ addItems((BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, PlayingCard))
-
--    -> goto
-
+    <- use(KeyFob,  false , goto)
+    -> use(Wallet, false , goto)
 === metro_platform
     /*
-
-
 Body on Metro platform 
-
 Jacket 
  wallet 
   cards & playing card 
@@ -139,48 +158,41 @@ Jacket
     
     */
 LIST MetroPlatformItems =  (Jacket), (WhiteFabricScrap), (Scarf), PianoWire
-
-
 -> scene("Metro Platform, Montpellier Station", "23rd April 1968", MetroPlatformItems , (PianoWire, WhiteFabricScrap), -> in_the_kitchens) -> 
-
 VO:     I'm not sure exactly when it started. 
-
 - (opts)
-<-  offer(levelItems, -> opts) 
-<- keys_wallet(-> opts)
-*   [ {Scarf} ] 
-    ~ addItems(PianoWire)
--   -> opts 
-
-
-
+    <-  offer(levelItems, -> opts) 
+    <- keys_wallet(-> opts)
+    -> use(Scarf, false, -> opts)
 === in_the_kitchens
-
-VO:     Certainly it was before Ernst died. 
-
-    -> END 
-
-
 /*
-
-
-
  
 Kitchens of Hotel. A waiter heads towards the door. 
  Order slip: Coffee, table 15. 
+ Name badge - Carl 
  White Apron 
-  [ Roll of piano wire ]
   [ Ten thousand franc note ]
- [ Glass vial of powder ]
  Coffee cup 
  Tray 
- 
- 
+ Bin  
+  Food peelings 
+  [ Empty glass vial ]
+*/
+LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, TenThousandFrancs
+-> scene("Kitchens of the Hotel de Opera", "23rd April 1968", KitchenItems, (EmptyGlassVial, TenThousandFrancs),  -> hotel_bathroom) -> 
+VO:     Certainly it was before Ernst died. 
+- (opts)
+    <- offer(levelItems, -> opts) 
+    <- use(Bin, false, -> opts) 
+    -> use(WhiteApron, false, -> opts) 
+=== hotel_bathroom
+/*
  
 Black bag - bathroom of hotel 
-
+Unconcious waiter 
+  Apron
+  Name badge: "Carl"
 Bag
- Apron 
  Piano wire 
  10,000 franc note 
  Black velvet bag
@@ -191,41 +203,91 @@ Bag
  Cigarettes 
  Metro Pass in name of C. Dupont 
 [ Cardboard box labelled: "Claude. Rat poison - DO NOT OPEN.", empty ]
-
-
-
+*/
+LIST HotelBathroomItems = (UnconciousWaiter), CardboardBox, (BlackKitBag) , BlackVelvetBag, GlassVialOfPowder, ChloroformBottle, FlickKnife, SmallGun, Cigarettes, DupontMetroPass
+-> scene("Lobby Bathroom, Hotel de Opera", "23rd April 1968", HotelBathroomItems, (CardboardBox),  -> back_alleyway) -> 
+- (opts) 
+    <- offer(levelItems, -> opts) 
+    <- use(UnconciousWaiter, false, -> opts) 
+    <- use(BlackKitBag, false, -> opts )
+    -> use(BlackVelvetBag, false, -> opts )
+=== back_alleyway
+ /*
 Back alleyway. Cardboard box by door marked "KITCHENS" 
-
 Box labelled: "Claude. Rat poison - DO NOT OPEN."
  Glass vial 
  Ten thousand franc note 
  Photograph of the dead guy with name: "Ernst Richards" 
  Photograph of a sealed metal cylinder device
  [ Two black casino chips from the KING OF DIAMONDS nightclub ]
+ */
  
+LIST HotelAlleywayItems = (BrokenLock), PhotoOfErnst, PhotoOfCylindricalDevice, CasinoChips
+-> scene("Alleyway Behind Hotel de Opera", "23rd April 1968", HotelAlleywayItems + CardboardBox + BlackKitBag, (CasinoChips), -> back_of_kingdiamondsclub) ->
+- (opts) 
+    <- use(BlackKitBag, false, -> opts)
+    <- use_with(FlickKnife, CardboardBox, false, -> opts) 
+    -> offer(levelItems, -> opts) 
   
   
+  
+   
+  
+=== back_of_kingdiamondsclub  
+   
+ /* 
+Metal Security Box 
+ Pile of KING OF DIAMONDS chips 
+    More chips 
+        More chips 
+        [ Valet parking receipt - Blue Chevy for Ernst Richards ]
+ KingKey
+*/
+LIST KingDiamondsBoxItems = (KingKey), (MetalLockBox), PileOfChips, EvenMoreChips, EvenEvenMoreChips
+-> scene("Backroom, King of Diamonds Club", "12th April 1968", KingDiamondsBoxItems, (ValetReceipt), -> kingdiamondsclub)  -> 
+- (opts)  
+    
+    <- use(PileOfChips, true, -> opts)
+    <- use(EvenMoreChips, true, -> opts)
+    <- use_with(KingKey, MetalLockBox, false, -> opts)
+    -> offer(levelItems, -> opts) 
+    
+  
+=== kingdiamondsclub  
+   
+ /* 
 Poker Table 
-
 Pile of KING OF DIAMONDS chips 
-
 Hand of cards
   Ace of Hearts 
   Three Clubs 
   [ Ace of Spades [ the back of this card is very slightly different ] ]
-  Three Diamonds 
+  King Diamonds 
   Seven Hearts 
 Valet parking receipt - Blue Chevy for Ernst Richards
-
 */
-
-
-
-
-
-
+LIST KingDiamondsClubItems = CarKey, (HandCards), AceHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), AceHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed
+-> scene("The Table, King of Diamonds Club", "12th April 1968", KingDiamondsClubItems, (AceSpadesReversed), -> final)  -> 
+- (opts) 
+    <- use(HandCards, true, -> opts)
+    <- use(AceHeartsReversed, true, -> opts) 
+    <- use(AceHearts, true, -> opts) 
+    
+    <- use(ThreeClubsReversed, true, -> opts) 
+    <- use(ThreeClubs, true, -> opts) 
+    
+    <- use(SevenHeartsReversed, true, -> opts) 
+    <- use(SevenHearts, true, -> opts) 
+    
+    <- use(AceSpadesReversed, true, -> opts) 
+    <- use(AceSpades, true, -> opts) 
+    
+    -> offer(levelItems, -> opts) 
+ 
+=== final 
+    -> END
 === scene(title, date, items, success, -> toNext)
-    >>> Scene ({title})
+    >>> Scene ({title}) 
     [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelSolutionItems = success
@@ -235,20 +297,23 @@ Valet parking receipt - Blue Chevy for Ernst Richards
     
 === function addItems(items) 
     ~ levelItems += items
-
+    
+=== function removeItem(items)
+    ~ levelItems -= items
 === function require(item) 
     ~ return levelItems !? item
-
 === offer(items, -> backto)
     {not DEBUG: 
         -> ingame
     }
+    [ {LIST_COUNT(currentItems)} / {LIST_COUNT(levelSolutionItems)} ]
+- (opts)    
     ~ temp item = pop(items) 
     { item: 
         <- slot(item, backto) 
     }
     {items: 
-        -> offer(items, backto)
+        -> opts
     }
     -> DONE
 = ingame 
@@ -265,17 +330,9 @@ Valet parking receipt - Blue Chevy for Ernst Richards
             -> next
         }
     -   -> backto 
-
 === function got(item) 
     ~ return levelItems ? item
-
 === function pop(ref _list) 
     ~ temp el = LIST_MIN(_list) 
     ~ _list -= el
     ~ return el 
-
-
-
- 
-
-
