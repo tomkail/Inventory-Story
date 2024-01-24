@@ -85,6 +85,7 @@ public class GameController : MonoSingleton<GameController> {
         */
         
         StoryController.Instance.Begin();
+        sceneController.slotGroup.Init((int)story.variablesState["levelSolutionItemCount"]);
     }
     
     void Restart() {
