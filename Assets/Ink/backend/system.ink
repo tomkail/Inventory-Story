@@ -45,7 +45,7 @@ VAR levelSolutionBasic = ()
 
 
 === scene(title, date, items, interactables, basicSuccessCase, -> altSuccessFn, -> toNext, VOLine)
-    >>> Scene {title} 
+    >>> Scene ({title})
     [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelInteractables = interactables
@@ -89,6 +89,7 @@ VAR levelSolutionBasic = ()
     -> DONE
 = ingame 
     +   [ SOLVED ] 
+        >>> SAVE
         -> nextScene
 = slot(item, canSlot) 
     +   { currentItems  ? item } 
@@ -98,6 +99,7 @@ VAR levelSolutionBasic = ()
         [  SLOT {getItemName(item)} - {getItemTooltip(item)}]
         ~ currentItems += item 
         { checkForSolution():
+            >>> SAVE
             -> nextScene
         }
     -   ->->

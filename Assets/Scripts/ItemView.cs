@@ -50,7 +50,7 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void OnStopDragging() {
         tooltip.enabled = true;
         UpdateSelectionState();
-        GameController.Instance.OnCompleteDrag(this);
+        GameController.Instance.sceneController.OnCompleteDrag(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

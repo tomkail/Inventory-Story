@@ -596,7 +596,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 441.50018, y: 0}
+  m_AnchoredPosition: {x: 748.0001, y: -131.17004}
   m_SizeDelta: {x: 392, y: 230}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &622550494
@@ -1625,6 +1625,7 @@ GameObject:
   - component: {fileID: 1335641560}
   - component: {fileID: 1335641559}
   - component: {fileID: 1335641561}
+  - component: {fileID: 1335641562}
   m_Layer: 0
   m_Name: Game Controller
   m_TagString: Untagged
@@ -1645,13 +1646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyJson: {fileID: 4900000, guid: 09173d02776bc4900860e73e622b17a4, type: 3}
-  itemContainer: {fileID: 1540746216}
-  background: {fileID: 1356155271}
-  titleText: {fileID: 1826017603}
-  voText: {fileID: 1731730130}
-  itemViewPrefab: {fileID: 9046512949398434011, guid: ccfbc364370a84e4ea48165eced53c40, type: 3}
-  itemViews: []
-  slotGroup: {fileID: 984361939}
+  sceneController: {fileID: 1335641562}
 --- !u!4 &1335641560
 Transform:
   m_ObjectHideFlags: 0
@@ -1679,6 +1674,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713f7abae6713d84b82f91afd618d9a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1335641562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335641558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f530131172c342f6ae3b5cb6e6b27dea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemContainer: {fileID: 1540746216}
+  background: {fileID: 1356155271}
+  titleText: {fileID: 1826017603}
+  voText: {fileID: 1731730130}
+  itemViewPrefab: {fileID: 9046512949398434011, guid: ccfbc364370a84e4ea48165eced53c40, type: 3}
+  itemViews: []
+  slotGroup: {fileID: 984361939}
 --- !u!1 &1356155269
 GameObject:
   m_ObjectHideFlags: 0

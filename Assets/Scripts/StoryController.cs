@@ -17,8 +17,6 @@ public class StoryController : MonoSingleton<StoryController> {
 		if(hasStory) DebugX.LogError("InitStory called but hasStory is true! This should never occur."); 
 		
 		story = new Story(storyJSONAsset.text);
-		BindExternalFunctions();
-		if(OnCreateStory != null) OnCreateStory(story);
 		
 		if(storyStateJSON != null) {
 			try {
@@ -32,6 +30,8 @@ public class StoryController : MonoSingleton<StoryController> {
 				story.ResetState();
 			}
 		}
+		BindExternalFunctions();
+		if(OnCreateStory != null) OnCreateStory(story);
 	}
 	
 	public void Begin () {
@@ -83,6 +83,7 @@ public class StoryController : MonoSingleton<StoryController> {
 				ScriptContent parsedContent = null;
 				if(ScriptContent.TryParse(text, story.currentTags, out parsedContent)) {
 					contents.Add(parsedContent);
+					if(parsedContent is SaveInstruction) SaveLoadManager.Save();
 				}
 			}
 			
@@ -107,7 +108,8 @@ public class StoryController : MonoSingleton<StoryController> {
 	
 	void BindExternalFunctions () {
 		story.onError += OnStoryError;
-		story.BindExternalFunction ("Testing", () => false);
+		story.variablesState["DEBUG"] = false;
+		// story.BindExternalFunction ("Testing", () => false);
 	}
 	
 	// Event triggered when the story has an error.
