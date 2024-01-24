@@ -34,10 +34,10 @@ Gravestone - Ernst Richards
  Flowers
  [ Wedding ring - inscribed "Annabel and Ernst October 1962"  ]
  */
-LIST GraveyardItems =  WeddingRing, (BunchOfFlowers), (AnotherBunchOfFlowers)
+LIST GraveyardItems =  WeddingRing, (BunchOfFlowers), (AnotherBunchOfFlowers), MoreFlowers, EvenMoreFlowers
 
 
--> scene("Graveyard new Rue Clemins", "29th April 1968", GraveyardItems, (BunchOfFlowers), (WeddingRing), -> mortuary, "I know I loved him. I would have loved him all my life, if I could have.") 
+-> scene("Graveyard new Rue Clemins", "29th April 1968", GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers), (WeddingRing), -> mortuary, "I know I loved him. I would have loved him all my life, if I could have.") 
 
 === mortuary 
     /*
@@ -61,7 +61,7 @@ Wallet
  
 LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, DupontMetroPass, KingDiamondsCard
 
--> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing,  Wallet, (DupontMetroPass), -> metro_platform, "Something is out of place.") 
+-> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing,  Wallet, (DupontMetroPass), -> metro_platform, "But something is out of place.") 
 
 
 
@@ -105,10 +105,10 @@ Kitchens of Hotel. A waiter heads towards the door.
   [ Empty glass vial ]
 */
 
-LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial
+LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, ( CoffeeOnTray ), CoffeeSpoon
 
 
--> scene("Kitchens of the Hotel de la Tour", "23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial, PianoWire),  -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
+-> scene("Kitchens of the Hotel de la Tour", "23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial),  -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
 
 
 === hotel_bathroom
