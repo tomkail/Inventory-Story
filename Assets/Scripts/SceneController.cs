@@ -46,8 +46,8 @@ public class SceneController : MonoBehaviour {
         SaveLoadManager.Save();
         // Clear();
         // GameController.Instance.story.variablesState[GameController.Instance.levelItems.variableName] = new InkList();
-        GameController.Instance.levelItems.Reset();
-        GameController.Instance.levelItems.RefreshValue(GameController.Instance.story, false);
+        // GameController.Instance.levelItems.Reset();
+        // GameController.Instance.levelItems.RefreshValue(GameController.Instance.story, false);
     }
 
 
