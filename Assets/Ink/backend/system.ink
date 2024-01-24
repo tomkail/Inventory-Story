@@ -1,9 +1,10 @@
 
 VAR levelItems = ()
-VAR levelSolutionItems = () 
+VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
-
+VAR levelCheckerFunction = -> FALSE_
+VAR levelSolutionBasic = ()
 
 === use(item) 
     { levelItems !? item:
@@ -43,14 +44,16 @@ VAR levelInteractables = ()
     ~ return levelItems !? item
 
 
-=== scene(title, date, items, interactables, success, -> toNext, VOLine)
+=== scene(title, date, items, interactables, basicSuccessCase, -> altSuccessFn, -> toNext, VOLine)
     >>> Scene {title} 
     [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelInteractables = interactables
-    ~ levelSolutionItems = success
+    ~ levelCheckerFunction = altSuccessFn
+    ~ levelSolutionBasic = basicSuccessCase
+    ~ levelSolutionItemCount = LIST_COUNT(basicSuccessCase) // returns an int
     ~ currentItems = () 
-    ~ next = toNext
+    ~ nextScene = toNext
     VO: {VOLine}
     -> play 
     
@@ -73,8 +76,8 @@ VAR levelInteractables = ()
     {not DEBUG: 
         -> ingame
     }
-    ~ temp canSlot = LIST_COUNT(levelSolutionItems) - LIST_COUNT(currentItems)
-    [ {LIST_COUNT(currentItems)} / {LIST_COUNT(levelSolutionItems)} ]
+    ~ temp canSlot = levelSolutionItemCount - LIST_COUNT(currentItems)
+    [ {LIST_COUNT(currentItems)} / {levelSolutionItemCount} ]
 - (opts)    
     ~ temp item = pop(items) 
     { item: 
@@ -86,7 +89,7 @@ VAR levelInteractables = ()
     -> DONE
 = ingame 
     +   [ SOLVED ] 
-        -> next 
+        -> nextScene
 = slot(item, canSlot) 
     +   { currentItems  ? item } 
         [  UNSLOT {getItemName(item)} ]
@@ -94,10 +97,20 @@ VAR levelInteractables = ()
     +   { currentItems  !? item } { canSlot }
         [  SLOT {getItemName(item)} - {getItemTooltip(item)}]
         ~ currentItems += item 
-        { currentItems == levelSolutionItems:
-            -> next
+        { checkForSolution():
+            -> nextScene
         }
     -   ->->
+    
+=== function checkForSolution() 
+    {
+    - currentItems == levelSolutionBasic: 
+        ~ return true 
+    - else: 
+        ~ return levelCheckerFunction(currentItems) 
+    }
+    
+    
 
 === function got(item) 
     ~ return levelItems ? item

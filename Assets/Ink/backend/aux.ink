@@ -6,3 +6,10 @@
 
 === final 
     -> END
+    
+
+=== function FALSE_(x) 
+    ~ return false   
+    
+=== function FALSE 
+    ~ return false 

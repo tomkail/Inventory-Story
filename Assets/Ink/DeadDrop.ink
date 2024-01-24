@@ -6,7 +6,7 @@ INCLUDE backend/aux.ink
 
 CONST DEBUG = true 
 
-VAR next = -> pinboard
+VAR nextScene = -> pinboard
 
 -> pinboard 
 

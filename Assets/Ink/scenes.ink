@@ -13,19 +13,18 @@ Manila envelope - "ER surveillance"
 
 LIST PinboardItems =  (ManilaEnvelope), ManEnteringCarOutsideUNPhoto, ManInAirportPhoto, MetalCylinderPhoto  
 
--> scene("Pinboard", "10th May 1968", PinboardItems, ManilaEnvelope, (MetalCylinderPhoto), -> timeline_board, "Something's not right.") 
-
+-> scene("Pinboard", "10th May 1968", PinboardItems, ManilaEnvelope, MetalCylinderPhoto, -> FALSE_, -> timeline_board, "Something's not right.") 
 
 
 === timeline_board
 /*
-
+    Photos on a timeline (fairly empty) 
 */
 
 
 LIST TimelineItems = (Timeline), Inception, DeviceStolenFromResearchLab, ErnstRichardsDies
 
--> scene("Hopburg-Steiner Device Timeline", "10th May 1968", TimelineItems, Timeline, (ErnstRichardsDies), -> graveyard, "It's hard to be sure. There's a lot we don't know.")
+-> scene("Hopburg-Steiner Device Timeline", "10th May 1968", TimelineItems, Timeline, (ErnstRichardsDies), -> FALSE_, -> graveyard, "It's hard to be sure. There's a lot we don't know.")
 
 === graveyard
 /*
@@ -37,7 +36,7 @@ Gravestone - Ernst Richards
 LIST GraveyardItems =  WeddingRing, (BunchOfFlowers), (AnotherBunchOfFlowers), MoreFlowers, EvenMoreFlowers
 
 
--> scene("Graveyard new Rue Clemins", "29th April 1968", GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers), (WeddingRing), -> mortuary, "I know I loved him. I would have loved him all my life, if I could have.") 
+-> scene("Graveyard new Rue Clemins", "29th April 1968", GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers), (WeddingRing), -> FALSE_, -> mortuary, "I know I loved him. I would have loved him all my life, if I could have.") 
 
 === mortuary 
     /*
@@ -61,8 +60,14 @@ Wallet
  
 LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, DupontMetroPass, KingDiamondsCard
 
--> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing,  Wallet, (DupontMetroPass), -> metro_platform, "But something is out of place.") 
+-> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing,  Wallet, (DupontMetroPass), -> next, ->  metro_platform, "But something is out of place.") 
 
+= next  // 1 item 
+    { currentItems:
+    - DupontMetroPass:  -> metro_platform 
+    - SealedMetalCylinder: -> apartment 
+    - KingDiamondsCard:     -> back_of_kingdiamondsclub
+    }
 
 
 
@@ -85,7 +90,7 @@ Jacket
 LIST MetroPlatformItems =  (Jacket), (WhiteFabricScrap), (Scarf), PianoWire
 
 
--> scene("Metro Platform, Champ de Mars", "4:14pm, 23rd April 1968", MetroPlatformItems , (Jacket, Wallet, Scarf), (PianoWire, WhiteFabricScrap, DupontMetroPass), -> in_the_kitchens, "Something belongs... elsewhere. In other hands.")
+-> scene("Metro Platform, Champ de Mars", "4:14pm, 23rd April 1968", MetroPlatformItems , (Jacket, Wallet, Scarf), (PianoWire, WhiteFabricScrap, DupontMetroPass), -> FALSE_, -> in_the_kitchens, "Something belongs... elsewhere. In other hands.")
 
 
 
@@ -108,7 +113,7 @@ Kitchens of Hotel. A waiter heads towards the door.
 LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, ( CoffeeOnTray ), CoffeeSpoon
 
 
--> scene("Kitchens of the Hotel de la Tour", "23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial),  -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
+-> scene("Kitchens of the Hotel de la Tour", "23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial), -> FALSE_, -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
 
 
 === hotel_bathroom
@@ -134,7 +139,8 @@ Bag
 
 LIST HotelBathroomItems = (UnconciousWaiter), CardboardBox, (BlackKitBag) , BlackVelvetBag, GlassVialOfPowder, ChloroformBottle, FlickKnife, SmallGun, Cigarettes
 
--> scene("Lobby Bathroom, Hotel de la Tour", "23rd April 1968", HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackVelvetBag) , (CardboardBox),  -> back_alleyway, "I think that's why Ernst died. Someone... gave him... something.") 
+-> scene("Lobby Bathroom, Hotel de la Tour", "23rd April 1968", HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackVelvetBag) , (CardboardBox), -> FALSE_, -> back_alleyway, "I think that's why Ernst died. Someone... gave him... something.") 
+
 
 
 === back_alleyway
@@ -153,7 +159,7 @@ LIST HotelAlleywayItems = (BrokenLock), PhotoOfErnst, PhotoOfCylindricalDevice, 
 
 
 
--> scene("Alleyway Behind Hotel de Opera", "23rd April 1968", HotelAlleywayItems + CardboardBox + BlackKitBag, (CardboardBox, BlackKitBag),  (CasinoChips), -> back_of_kingdiamondsclub, "I want to know where it came from.") 
+-> scene("Alleyway Behind Hotel de Opera", "23rd April 1968", HotelAlleywayItems + CardboardBox + BlackKitBag, (CardboardBox, BlackKitBag),  (CasinoChips),-> FALSE_,  -> back_of_kingdiamondsclub, "I want to know where it came from.") 
 
   
    
@@ -173,7 +179,7 @@ Metal Security Box
 
 LIST KingDiamondsBoxItems = (KingKey), (MetalLockBox), PileOfChips, EvenMoreChips, EvenEvenMoreChips
 
--> scene("Backroom, King of Diamonds Club", "12th April 1968", KingDiamondsBoxItems, (MetalLockBox, PileOfChips, EvenMoreChips), (ValetReceipt), -> kingdiamondsclub, "Because of something buried...")  
+-> scene("Backroom, King of Diamonds Club", "12th April 1968", KingDiamondsBoxItems, (MetalLockBox, PileOfChips, EvenMoreChips), (ValetReceipt),-> FALSE_,  -> kingdiamondsclub, "Because of something buried...")  
 
     
     
@@ -201,14 +207,14 @@ LIST KingDiamondsClubItems = CarKey, (HandCards), AceHearts, ThreeClubs, SevenHe
 
 VAR useables = (HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades)
   
--> scene("The Table, King of Diamonds Club", "12th April 1968", KingDiamondsClubItems, useables, (AceSpadesReversed), -> apartment, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.")
+-> scene("The Table, King of Diamonds Club", "12th April 1968", KingDiamondsClubItems, useables, (AceSpadesReversed), -> FALSE_, -> apartment, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.")
 
 
 === apartment
     
     LIST ApartmentItems = (CarKey), (WallSafe), TwoThousandFrancs, NoteFromQuentin
     
-    -> scene("Apartment, Rue de Chavelier", "12th April 1968", ApartmentItems, WallSafe, (NoteFromQuentin), -> final, "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+    -> scene("Apartment, Rue de Chavelier", "12th April 1968", ApartmentItems, WallSafe, (NoteFromQuentin), -> FALSE_, -> final, "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
     
 
     

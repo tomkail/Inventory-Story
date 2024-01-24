@@ -55,11 +55,17 @@ public class GameController : MonoSingleton<GameController> {
         // currentItems.AddVariableObserver(story);
         // currentItems.OnChange += OnChangeCurrentItems;
         // currentItems.RefreshValue(story, false);
-        
+
+        story.ObserveVariable("levelSolutionItemCount", (varName, newValue) => {
+            OnChangeCurrentLevelAnswerSet((int) newValue);
+        });
+
+        /*
         currentAnswerSet = new InkListChangeHandler("levelSolutionItems");
         currentAnswerSet.AddVariableObserver(story);
         currentAnswerSet.OnChange += OnChangeCurrentLevelAnswerSet;
         currentAnswerSet.RefreshValue(story, false);
+        */
         
         StoryController.Instance.Begin();
     }
@@ -130,8 +136,8 @@ public class GameController : MonoSingleton<GameController> {
         }
     }
     
-    void OnChangeCurrentLevelAnswerSet(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
-        slotGroup.Init(currentAnswerSet.inkList);
+    void OnChangeCurrentLevelAnswerSet(int newSlotCount) {// IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
+        slotGroup.Init(newSlotCount);
     }
 
     void CreateItemView(InkListItem inkListItem) {
@@ -154,6 +160,7 @@ public class GameController : MonoSingleton<GameController> {
     
 
     public void OnCompleteDrag(ItemView item) {
+        /* 
         if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
             foreach (var wrongItemList in wrongItems) {
                 var wrongItem = itemViews.FirstOrDefault(x => x.inkListItem.Equals(wrongItemList));
@@ -163,6 +170,9 @@ public class GameController : MonoSingleton<GameController> {
                 slotGroup.draggableGroup.Unslot(slot);
             }
         } else {
+        */
+
+        if (story.RunInkFunction<bool>("checkForSolution")) { 
             var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains("SOLVED"));
             if(choice != null) StoryController.Instance.MakeChoice(choice.index);
         }
