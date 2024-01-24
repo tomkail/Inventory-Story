@@ -167,7 +167,7 @@ Wallet
  
 LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, PlayingCard
 
-VO:     But something is definitely very wrong.
+VO:     Something here doesn't belong here. 
 
 -> scene("Mortuary, 4th Quartier", "24th April 1968", MortuaryTrayItems + WeddingRing, (PlayingCard, SealedMetalCylinder), -> metro_platform) -> 
 
@@ -199,7 +199,7 @@ LIST MetroPlatformItems =  (Jacket), (WhiteFabricScrap), (Scarf), PianoWire
 
 -> scene("Metro Platform, Montpellier Station", "23rd April 1968", MetroPlatformItems , (PianoWire, WhiteFabricScrap), -> in_the_kitchens) -> 
 
-VO:     I'm not sure exactly when it started. 
+VO:     Something here belongs... elsewhere. In other hands.
 
 - (opts)
     <-  offer(levelItems, -> opts) 
@@ -230,7 +230,7 @@ LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), Fo
 
 -> scene("Kitchens of the Hotel de Opera", "23rd April 1968", KitchenItems, (EmptyGlassVial, TenThousandFrancs),  -> hotel_bathroom) -> 
 
-VO:     Certainly it was before Ernst died. 
+VO:     Bad hands. That do bad things.
 
 
 - (opts)
@@ -264,6 +264,9 @@ Bag
 LIST HotelBathroomItems = (UnconciousWaiter), CardboardBox, (BlackKitBag) , BlackVelvetBag, GlassVialOfPowder, ChloroformBottle, FlickKnife, SmallGun, Cigarettes, DupontMetroPass
 
 -> scene("Lobby Bathroom, Hotel de Opera", "23rd April 1968", HotelBathroomItems, (CardboardBox),  -> back_alleyway) -> 
+
+VO:     I think Ernst died because of it. 
+
 - (opts) 
     <- offer(levelItems, -> opts) 
     <- use(UnconciousWaiter, false, -> opts) 
@@ -286,6 +289,8 @@ Box labelled: "Claude. Rat poison - DO NOT OPEN."
 LIST HotelAlleywayItems = (BrokenLock), PhotoOfErnst, PhotoOfCylindricalDevice, CasinoChips
 
 -> scene("Alleyway Behind Hotel de Opera", "23rd April 1968", HotelAlleywayItems + CardboardBox + BlackKitBag, (CasinoChips), -> back_of_kingdiamondsclub) ->
+
+VO:     Because of something that came from... somewhere. 
 
 - (opts) 
     <- use(BlackKitBag, false, -> opts)
@@ -312,6 +317,8 @@ Metal Security Box
 LIST KingDiamondsBoxItems = (KingKey), (MetalLockBox), PileOfChips, EvenMoreChips, EvenEvenMoreChips
 
 -> scene("Backroom, King of Diamonds Club", "12th April 1968", KingDiamondsBoxItems, (ValetReceipt), -> kingdiamondsclub)  -> 
+
+VO:     Because of something buried...
 
 - (opts)  
     
@@ -342,6 +349,8 @@ Valet parking receipt - Blue Chevy for Ernst Richards
 LIST KingDiamondsClubItems = CarKey, (HandCards), AceHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), AceHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed
 
 -> scene("The Table, King of Diamonds Club", "12th April 1968", KingDiamondsClubItems, (AceSpadesReversed), -> final)  -> 
+
+VO:     Because someone tried to change things. To turn them to their own advantage.
 
 - (opts) 
     <- use(HandCards, true, -> opts)
