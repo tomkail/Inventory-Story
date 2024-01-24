@@ -20,9 +20,9 @@ public class LevelRequiredItemsSlotGroup : MonoBehaviour {
     public LevelRequiredItemsSlot slotPrefab;
     public List<LevelRequiredItemsSlot> slots = new List<LevelRequiredItemsSlot>();
 
-    public void Init(InkList inkList) {
+    public void Init(int newSlotCount) {
         Clear();
-        foreach(var item in inkList.Keys) {
+        for (var i = 0; i < newSlotCount ; i ++) {
             var slot = Instantiate(slotPrefab, transform);
             slots.Add(slot);
             draggableGroup.slots.Add(slot.slot);
