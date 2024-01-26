@@ -12,32 +12,16 @@ Manila envelope - "ER surveillance"
  
 */
 
-LIST PinboardItems =  (ManilaEnvelope), ManEnteringCarOutsideUNPhoto, ManInAirportPhoto, MetalCylinderPhoto  
+LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , ManEnteringCarOutsideUNPhoto, ErnstRichardsDies
 
 -> scene("Pinboard", "10th May 1968, 4:32pm", PinboardItems, ManilaEnvelope, -> pinboard_exit,  "Something's not right.")
 
 === function pinboard_exit(x)
     { x: 
-    - ():   ~ return 1 
-    - MetalCylinderPhoto:   ~ return -> timeline_board 
-    - ManEnteringCarOutsideUNPhoto:  ~ return   -> quentin_passes_note
-    - else: ~ return -> NOPE
-    }
-    
-
-=== timeline_board
-/*
-    Photos on a timeline (fairly empty) 
-*/
-
-LIST TimelineItems = (Timeline), Inception, DeviceStolenFromResearchLab, ErnstRichardsDies
-
--> scene("Hopburg-Steiner Device Timeline", "10th May 1969, 2:14pm", TimelineItems, Timeline, -> timeline_fn,  "It's hard to be sure. There's a lot we don't know.") 
-
-=== function timeline_fn(x) 
-    { x: 
     -   ():                 ~ return 1 
     -   ErnstRichardsDies:  ~ return -> graveyard 
+    -   ManEnteringCarOutsideUNPhoto:  ~ return   -> quentin_passes_note
+    -   DeviceStolenFromResearchLab:    ~ return -> device_stolen
     -   else:               ~ return -> NOPE 
     }
 
@@ -408,10 +392,29 @@ TODO: a solve
  
  
  
+ /*
+    Stolen Device 
+ */
+ === device_stolen
+    LIST SmashedResearchLabItems = (ResearchCabinet) 
+    -> scene ("Research Lab, Area 51", "April 1962, 3:14pm", SmashedResearchLabItems, (), -> device_stolen_fn, "Someone took something too precious to be allowed as stolen.") 
+=== function device_stolen_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+TODO: A solve 
+    -   else:   ~ return -> NOPE 
+    }
+    
+    
+    
  
+ 
+ /*
+    TEMPLATE
+ */
 === template 
     LIST TemplateItems = (NoItem) 
-    -> scene ("TemplateLocation", "TemplateData, TemplateTime", TemplateItems, (), -> template_fn, "Remark") 
+    -> scene ("TemplateLocation", "TemplateDate, TemplateTime", TemplateItems, (), -> template_fn, "Remark") 
 === function template_fn(x) 
     { x: 
     -   (): ~ return 1 

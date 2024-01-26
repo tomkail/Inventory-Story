@@ -31,10 +31,10 @@
     -   OtherBusinessCard:  "Bolera Taxis." 
     -   OtherOtherBusinessCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
     -   WeddingRing:        "Annie and Ernie -- 3 Oct 1962"
-    -   ManilaEnvelope:     "ER surveillance"  
+    -   ManilaEnvelope:     "Hopburg-Steiner Device Timeline"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
-    -   ManInAirportPhoto:  "Unknown subject. Puerto Rico, 26th April 68"
-    -   MetalCylinderPhoto: "The Hopburg-Steiner Device"
+  
+    -   MetalCylinderPhoto: "Device created. March 1961. Nevada."
     -   PianoWire:      {in_the_kitchens:
                             It's coiled and clean.
                         - else:
@@ -55,8 +55,8 @@
                 The back of this card is slightly different from the others.
             }
     - ValetReceipt:         Parking receipt for a Blue Chevy, registered to Ernst Richards
-    - Timeline: Timeline of the Hopburg-Steiner Device
-    - Inception: "Device created. March 1961. Dakota."
+    
+    
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
     - ErnstRichardsDies:  "Paris. May 1968. Device found by chance on unknown dead man."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Q."
@@ -93,7 +93,7 @@
         }
     - ManilaEnvelope: 
         ~ asReplacement = true
-        ~ return (ManEnteringCarOutsideUNPhoto, ManInAirportPhoto,  MetalCylinderPhoto)
+        ~ return (ManEnteringCarOutsideUNPhoto,  MetalCylinderPhoto , DeviceStolenFromResearchLab ,  ErnstRichardsDies)
     - BunchOfFlowers:   ~ return EvenMoreFlowers
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
@@ -145,8 +145,7 @@
         ~ return replaceAs(asReplacement, EvenEvenMoreChips)
     - Jacket:               
         ~ return (Wallet)
-    - Timeline: 
-        ~ return replaceAs(asReplacement,  (Inception, DeviceStolenFromResearchLab, ErnstRichardsDies ) )
+
     - WallSafe: 
         ~ return (SealedMetalCylinder , AceSpades)
     // - Stranger:    ~ return (DupontMetroPass)
