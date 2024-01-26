@@ -12,6 +12,8 @@
 
 === function getItemTooltip(item) 
     {item: 
+    -   DeskPlate:  "Ernst Richards, Clerk"
+    -   WeddingPhoto:   "Annabel & Ernst 3/10/62"
     -   GlassVialOfPowder:  "COCAINE"
     -   PlayingCard:        King of Diamonds. 
     -   WhiteFabricScrap:   Torn, and slightly stained.
@@ -47,6 +49,7 @@
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
     - ErnstRichardsDies:  "Paris. May 1968. Device found by chance on unknown dead man."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Dead drop by the Champs du Mars. April 23rd, 4:30pm."
+    
     }
     ~ return
     
@@ -56,6 +59,7 @@
             ~ return FlickKnife   
         } 
     -   MetalLockBox:   ~ return KingKey
+    -   WallSafe:       ~ return WeddingPhoto
     }
     ~ return () 
     
@@ -122,8 +126,14 @@
     - Timeline: 
         ~ asReplacement = true
         ~ return (Inception, DeviceStolenFromResearchLab, ErnstRichardsDies )
+    - KeyHook: 
+        ~ return CarKey
     - WallSafe: 
         ~ return (SealedMetalCylinder, TwoThousandFrancs, NoteFromQuentin)
+    - UNBin: 
+        ~ return NoteFromQuentin
+    - Envelope: 
+        ~ return SealedMetalCylinder
     - else: ERROR: {item} has no generator list 
     
     }
