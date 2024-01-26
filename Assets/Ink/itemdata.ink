@@ -6,7 +6,7 @@
     -   AnotherBunchOfFlowers:      white lilies
     -   MoreFlowers:                yellow lilies
     -   BlackLeatherFolder:   black leather folder
-    -   WhiteApron: {not hotel_bathroom:stained} white apron
+    -   WhiteApron: {( HotelKitchens, HotelBathroom) ? currentSceneID  :stained} white apron
     -   ERNameBadge:    security badge
 //    -   KoDStamp:   stamp
     -   else:         {item} 
@@ -35,10 +35,11 @@
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
     -   MetalCylinderPhoto: "Device created. March 1961. Nevada."
-    -   PianoWire:      {in_the_kitchens:
-                            It's coiled and clean.
-                        - else:
+    -   PianoWire:      {currentSceneID == MetroPlatform:
                             It's blood-soaked.
+                        - else:
+                            It's coiled and clean.
+                            
                         }
     - BlackLeatherFolder:   "KoD"
     - CoffeeOrderSlip:  "Coffee, table 15."
@@ -51,7 +52,7 @@
     
     - CasinoChips:      KING OF DIAMONDS nightclub
     - AceSpadesReversed:       
-            { kingdiamondsclub:
+            { currentSceneID == CardTableAtClub:
                 The back of this card is slightly different from the others.
             }
     - ValetReceipt:         Parking receipt for a Blue Chevy, registered to Ernst Richards
@@ -86,7 +87,7 @@
     - BlueChevy: ~ return TinCanString
     - BlackCar: ~ return QuentinsAide    
     - QuentinsAide: 
-        { quentin_gives_aide_money:
+        { currentSceneID == QGivesNoteToAide:
             ~ return ( LoyalAssurance ) 
         - else: 
             ~ return (  DeadDropNoteFromQuentin, TwoThousandFrancs )  
@@ -98,7 +99,7 @@
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
     - Wallet: 
-        { not metro_platform: 
+        { currentSceneID == MetroPlatform: 
             ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MetroTicket )
         - else: 
             ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)

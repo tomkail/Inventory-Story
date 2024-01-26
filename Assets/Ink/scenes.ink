@@ -1,5 +1,28 @@
 LIST NoItemList = NoItem 
 
+LIST Scenes = 
+Pinboard, 
+Graveyard, 
+Mortuary, 
+MetroPlatform, 
+HotelKitchens,
+HotelBathroom,
+BackAlleyway,
+BackOfClub, 
+CardTableAtClub, 
+Apartment, 
+NoteInCar,
+QGivesNoteToAide, 
+QGivesItemToErnst, 
+QGetsDevice,
+DriveAfterWedding,
+Wedding,
+StolenDevice, 
+__Template
+
+
+
+
 === pinboard
 /*
 
@@ -14,16 +37,16 @@ Manila envelope - "ER surveillance"
 
 LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , ManEnteringCarOutsideUNPhoto, ErnstRichardsDies
 
--> scene("Pinboard", "10th May 1968, 4:32pm", PinboardItems, ManilaEnvelope, -> pinboard_exit,  "Something's not right.")
+-> scene( PinboardItems, ManilaEnvelope,  "Something's not right.")
 
 === function pinboard_exit(x)
     { x: 
     -   ():                 ~ return 1 
-    -   ErnstRichardsDies:  ~ return -> graveyard 
-    -   ManEnteringCarOutsideUNPhoto:  ~ return   -> quentin_passes_note
-    -   DeviceStolenFromResearchLab:    ~ return -> device_stolen
-    -   else:               ~ return -> NOPE 
+    -   ErnstRichardsDies:  ~ return Graveyard 
+    -   ManEnteringCarOutsideUNPhoto:  ~ return   NoteInCar
+    -   DeviceStolenFromResearchLab:    ~ return StolenDevice
     }
+    ~ return () 
 
 === graveyard
 /*
@@ -35,15 +58,15 @@ Gravestone - Ernst Richards
 LIST GraveyardItems =  WeddingRing, (BunchOfFlowers), (AnotherBunchOfFlowers), MoreFlowers, EvenMoreFlowers
 
 
--> scene("Graveyard new Rue Clemins", "29th April 1968, 11:07am", GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers), -> graveyard_fn,  "I know I loved him. I would have loved him all my life, if I could have.") 
+-> scene( GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers),  "I know I loved him. I would have loved him all my life, if I could have.") 
 
 === function graveyard_fn(x) 
     { x: 
     -   ():                 ~ return 1 
-    -   MoreFlowers:        ~ return -> wedding 
-    -   WeddingRing:        ~ return -> mortuary
-    -   else:               ~ return -> NOPE 
+    -   MoreFlowers:        ~ return Wedding 
+    -   WeddingRing:        ~ return Mortuary
     }
+    ~ return () 
 
 
 === mortuary 
@@ -68,16 +91,16 @@ Wallet
  
 LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, MetroTicket, KingDiamondsCard
 
--> scene("Mortuary, 4th Quartier", "24th April 1968, 2:38pm", MortuaryTrayItems + WeddingRing,  Wallet, -> mortuary_fn, "But something is out of place.") 
+-> scene( MortuaryTrayItems + WeddingRing,  Wallet, "But something is out of place.") 
 
 === function mortuary_fn(x) 
     { x:
     - ():                   ~ return 1 
-    - MetroTicket:          ~ return -> metro_platform 
-    - SealedMetalCylinder:  ~ return -> apartment 
-    - KingDiamondsCard:     ~ return  -> back_of_kingdiamondsclub
-    - else:                 ~ return -> NOPE 
+    - MetroTicket:          ~ return MetroPlatform
+    - SealedMetalCylinder:  ~ return Apartment
+    - KingDiamondsCard:     ~ return  BackOfClub
     }
+    ~ return () 
 
 
 
@@ -100,14 +123,14 @@ Jacket
 LIST MetroPlatformItems =  (Jacket), (WhiteFabricScrap), (Scarf), PianoWire
 
 
--> scene("Metro Platform, Champ de Mars", "23rd April 1968, 11:25pm", MetroPlatformItems , (Jacket, Wallet, Scarf), -> metro_platform_fn, "Something belongs... elsewhere. In other hands.") 
+-> scene( MetroPlatformItems , (Jacket, Wallet, Scarf),  "Something belongs... elsewhere. In other hands.") 
 
 === function metro_platform_fn(x) 
     {x: 
     -   ():     ~ return 2 
-    -   (PianoWire, WhiteFabricScrap):  ~ return -> in_the_kitchens
-    -   else:   ~ return -> NOPE 
+    -   (PianoWire, WhiteFabricScrap):  ~ return HotelKitchens
     }
+    ~ return () 
 
 === in_the_kitchens
 /*
@@ -128,17 +151,17 @@ Kitchens of Hotel. A waiter heads towards the door.
 LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, ( CoffeeOnTray ), CoffeeSpoon
 
 
--> scene("Kitchens of the Hotel de la Tour", "23rd April 1968, 10:35pm", KitchenItems, (Bin, WhiteApron) , -> kitchen_fn,  "In bad hands, things go badly. It's that simple.") 
+-> scene( KitchenItems, (Bin, WhiteApron) ,  "In bad hands, things go badly. It's that simple.") 
 
 === function kitchen_fn(x)  // 2 items 
     { x: 
     -   (): ~ return 2 
-    -   (WaiterNameBadge, WhiteApron):      ~ return -> hotel_bathroom
-    -   (WaiterNameBadge, EmptyGlassVial): ~ return -> hotel_bathroom
-    -   (CoffeeOnTray, EmptyGlassVial):     ~ return -> hotel_bathroom
-    -   (CoffeeSpoon, EmptyGlassVial):      ~ return -> hotel_bathroom
-    -   else:   ~ return -> NOPE 
+    -   (WaiterNameBadge, WhiteApron):      ~ return HotelBathroom
+    -   (WaiterNameBadge, EmptyGlassVial): ~ return HotelBathroom
+    -   (CoffeeOnTray, EmptyGlassVial):     ~ return HotelBathroom
+    -   (CoffeeSpoon, EmptyGlassVial):      ~ return HotelBathroom
     } 
+    ~ return () 
     
     
 TODO: coffee back to ernst drinking coffee ?
@@ -166,16 +189,16 @@ Bag
 
 LIST HotelBathroomItems = (UnconciousWaiter), BlackLeatherFolder, (BlackKitBag) ,  GlassVialOfPowder, FlickKnife, Cosh, SmallGun, Cigarettes, DupontMetroPass
 
--> scene("Lobby Bathroom, Hotel de la Tour", "23rd April 1968, 10:28pm", HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackLeatherFolder) , -> bathroom_fn,  "I think that's why Ernst died. Someone... gave him... something.") 
+-> scene( HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackLeatherFolder) ,   "I think that's why Ernst died. Someone... gave him... something.") 
 
 === function bathroom_fn (x)
     { x: 
     - ():   ~ return 1
-    - UnconciousWaiter:         ~ return -> back_alleyway
-    -   CasinoChips:            ~ return -> back_of_kingdiamondsclub
-    -   PhotoOfErnst:           ~ return -> kingdiamondsclub
-    - else:                     ~ return -> NOPE 
+    - UnconciousWaiter:         ~ return BackAlleyway
+    -   CasinoChips:            ~ return  BackOfClub
+    -   PhotoOfErnst:           ~ return CardTableAtClub
     }
+    ~ return () 
     
   
 
@@ -193,15 +216,15 @@ LIST HotelAlleywayItems = (DoorLock), PhotoOfErnst,  CasinoChips, BrokenDoorLock
 
 
 
--> scene("Alleyway Behind l'Hotel de l'Opera", "23rd April 1968, 10:25pm", HotelAlleywayItems + BlackLeatherFolder + BlackKitBag, (BlackLeatherFolder, BlackKitBag, DoorLock, Waiter),  -> alleyway_fn,   "My husband wasn't perfect. Just another poor unfortunate who got in the way.") 
+-> scene( HotelAlleywayItems + BlackLeatherFolder + BlackKitBag, (BlackLeatherFolder, BlackKitBag, DoorLock, Waiter),   "My husband wasn't perfect. Just another poor unfortunate who got in the way.") 
 
 === function alleyway_fn(x) 
     { x: 
     -   (): ~ return 1 
-    -   CasinoChips:            ~ return -> back_of_kingdiamondsclub
-    -   PhotoOfErnst:           ~ return -> kingdiamondsclub
-    -   else:                   ~ return -> NOPE 
+    -   CasinoChips:            ~ return BackOfClub
+    -   PhotoOfErnst:           ~ return CardTableAtClub
     }
+    ~ return ()
 
 
 
@@ -237,14 +260,14 @@ Metal Security Box
 
 LIST KingDiamondsBoxItems = (KingKey), (MetalLockBox), PileOfChips, EvenMoreChips, EvenEvenMoreChips
 
--> scene("Backroom, King of Diamonds Club", "23rd April 1968, 9:18pm", KingDiamondsBoxItems + AceSpades, (MetalLockBox, PileOfChips, EvenMoreChips, AceSpades), -> back_club_fn,   "Because of something buried...")  
+-> scene( KingDiamondsBoxItems + AceSpades, (MetalLockBox, PileOfChips, EvenMoreChips, AceSpades),  "Because of something buried...")  
 
 === function back_club_fn(x) 
     {x: 
     -   ():     ~ return 1 
-    -   (ValetReceipt, AceSpades):   ~ return -> kingdiamondsclub 
-    -   else:   ~ return -> NOPE  
+    -   (ValetReceipt, AceSpades):   ~ return CardTableAtClub 
     }
+    ~ return () 
     
     
   
@@ -270,21 +293,21 @@ LIST KingDiamondsClubItems =  (HandCards), AceHearts, ThreeClubs, SevenHearts, A
 
 VAR cards = (HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades)
   
--> scene("The Table, King of Diamonds Club", "23rd April 1968, 6:25pm", KingDiamondsClubItems, cards + Croupier, -> king_diamond_club_fn,  "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
+-> scene(KingDiamondsClubItems, cards + Croupier, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
 
 === function king_diamond_club_fn(x) 
     {x: 
     -   ():     ~ return 1 
-    -   AceSpadesReversed:  ~ return -> apartment 
-    -   else:   ~ return -> NOPE 
+    -   AceSpadesReversed:  ~ return Apartment 
     }
+    ~ return () 
 
 
 === apartment
 
 LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey
 
--> scene("Apartment, Rue de Chavelier", "23rd April 1968, 4:23pm", ApartmentItems + WeddingRing, (WallSafe, KeyHook),  -> apartment_fn, "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+-> scene( ApartmentItems + WeddingRing, (WallSafe, KeyHook),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
 
 === function apartment_fn(x) 
     
@@ -292,18 +315,17 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     - ():   ~ return 2 
     TODO: some way to use the ( AceSpades ): 
     - ( DeadDropNoteFromQuentin, TwoThousandFrancs ): 
-        ~ return -> quentin_passes_note 
+        ~ return NoteInCar 
     - ( DeadDropNoteFromQuentin, SealedMetalCylinder ): 
-        ~ return -> quentin_passes_note     
+        ~ return NoteInCar     
     - ( WeddingPhoto,  CarKey ) : 
-        ~ return -> wedding_drive_away
+        ~ return DriveAfterWedding
     - ( WeddingRing,  CarKey ) : 
-        ~ return -> wedding_drive_away    
+        ~ return DriveAfterWedding  
     - ( WeddingPhoto,  WeddingRing) : 
-        ~ return -> wedding 
-    - else: 
-        ~ return -> NOPE 
+        ~ return Wedding 
     }
+    ~ return () 
     
     
     
@@ -312,15 +334,15 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 
     LIST OutsideUNBuilding = (BlackCar), QuentinsAide, (ERNameBadge), TwoThousandFrancs
     
-    -> scene("Outside the UN Building", "23rd April 1968, 3:15pm", OutsideUNBuilding, (BlackCar, QuentinsAide) , -> quentin_note_fn , "Not every opportunity is worth taking, however well paid." ) 
+    -> scene( OutsideUNBuilding, (BlackCar, QuentinsAide) ,  "Not every opportunity is worth taking, however well paid." ) 
     
 === function quentin_note_fn(x) 
     { x: 
     -   ():     ~ return 1 
-    -   DeadDropNoteFromQuentin: ~ return -> item_from_quentin 
-    -   TwoThousandFrancs: ~ return -> quentin_gives_aide_money
-    -   else:   ~ return -> NOPE 
+    -   DeadDropNoteFromQuentin: ~ return QGivesItemToErnst 
+    -   TwoThousandFrancs: ~ return QGivesNoteToAide
     }
+    ~ return () 
 
 
 
@@ -329,13 +351,13 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 === quentin_gives_aide_money 
   
     LIST QuentinGivesAideMoneyItems = (LockedDrawer) , (RumpledShirt) , KeyOnChain , MapOfParisMetro, LoyalAssurance
-    -> scene ("Dirty Office above Champs de Mars", "23rd April 1968, 2:29pm", QuentinGivesAideMoneyItems +  QuentinsAide, (LockedDrawer, RumpledShirt, QuentinsAide), -> gives_aide_money_fn, "Things often happen by circuitous routes.") 
+    -> scene ( QuentinGivesAideMoneyItems +  QuentinsAide, (LockedDrawer, RumpledShirt, QuentinsAide), "Things often happen by circuitous routes.") 
 === function gives_aide_money_fn(x) 
     { x: 
     -   (): ~ return 1 
-    -   LoyalAssurance:    ~ return -> item_from_quentin    
-    -   else:   ~ return -> NOPE 
+    -   LoyalAssurance:    ~ return QGivesItemToErnst  
     }
+    ~ return () 
     
     
 
@@ -343,50 +365,50 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     
 === item_from_quentin  
     LIST UNDeskJobItems =  (USFlag), (DeskPlate), (UNBin), Envelope, NoteFromQuentin
-    -> scene("The UN Building", "7th August 1967", UNDeskJobItems + ERNameBadge + WeddingPhoto, (UNBin, DeskPlate, Envelope), -> item_question_fn,  "But it's hard to tell friends from enemies, sometimes.")   
+    -> scene(UNDeskJobItems + ERNameBadge + WeddingPhoto, (UNBin, DeskPlate, Envelope),  "But it's hard to tell friends from enemies, sometimes.")   
 === function item_question_fn(x)  
     {x: 
     -   ():     ~ return 1 
-    -   WeddingPhoto:   ~ return -> wedding 
-    -   SealedMetalCylinder:    ~ return -> quentin_receives_metal_cylinder
-    -  else:    ~ return -> NOPE 
+    -   WeddingPhoto:   ~ return Wedding
+    -   SealedMetalCylinder:    ~ return QGetsDevice
     }
+    ~ return () 
  
  
  
  
  === quentin_receives_metal_cylinder 
     LIST QuentinReceivesCylinderItems = (NoItem) 
-    -> scene ("TemplateLocation", "TemplateData, TemplateTime", QuentinReceivesCylinderItems, (), -> q_receives_cylinder_fn, "Remark") 
+    -> scene ( QuentinReceivesCylinderItems, (), "Remark") 
 === function q_receives_cylinder_fn(x) 
     { x: 
     -   (): ~ return 1 
 TODO: A solve 
-    -   else:   ~ return -> NOPE 
     }
+      ~ return ()   
  
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString
-   -> scene("Leaving the Chapel St Jean" ,"3rd Oct 1962, 10:35pm", WeddingCarItems + Dress + WeddingRing, (BlueChevy), -> wedding_car_fn, "I had never been so happy as the day we got married." ) 
+   -> scene( WeddingCarItems + Dress + WeddingRing, (BlueChevy), "I had never been so happy as the day we got married." ) 
    
  === function wedding_car_fn(x) 
      {x: 
     -   ():     ~ return 1 
-    -  (WeddingRing, Dress):  ~ return -> wedding 
-    -  else:    ~ return -> NOPE 
+    -  (WeddingRing, Dress):  ~ return Wedding
     }
+    ~ return () 
  
 === wedding  
     LIST WeddingItems = (Dress)
-    -> scene("The Chapel St Jean, Montpellier", "3rd Oct 1962, 1:18pm",  WeddingItems + MoreFlowers + WeddingRing,  (), -> wedding_fn,  "I thought we'd be together forever." )  
+    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  (),  "I thought we'd be together forever." )  
     
 === function wedding_fn(x) 
     {x: 
     -   ():     ~ return 1 
 TODO: a solve    
-    -  else:    ~ return -> NOPE 
     }
+    ~ return () 
  
  
  
@@ -397,14 +419,14 @@ TODO: a solve
  */
  === device_stolen
     LIST SmashedResearchLabItems = (ResearchCabinet) 
-    -> scene ("Research Lab, Area 51", "April 1962, 3:14pm", SmashedResearchLabItems, (), -> device_stolen_fn, "Someone took something too precious to be allowed as stolen.") 
+    -> scene ( SmashedResearchLabItems, (), "Someone took something too precious to be allowed as stolen.") 
 === function device_stolen_fn(x) 
     { x: 
     -   (): ~ return 1 
 TODO: A solve 
-    -   else:   ~ return -> NOPE 
+
     }
-    
+~ return ()     
     
     
  
@@ -413,11 +435,12 @@ TODO: A solve
     TEMPLATE
  */
 === template 
-    LIST TemplateItems = (NoItem) 
-    -> scene ("TemplateLocation", "TemplateDate, TemplateTime", TemplateItems, (), -> template_fn, "Remark") 
+    LIST TemplateItems = (TemplateItem) 
+    VAR TemplateInteractables = (TemplateItem)
+    -> scene ( TemplateItems, TemplateInteractables, "Remark") 
 === function template_fn(x) 
     { x: 
     -   (): ~ return 1 
 TODO: A solve 
-    -   else:   ~ return -> NOPE 
     }
+    ~ return () 

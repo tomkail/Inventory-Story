@@ -44,13 +44,15 @@ VAR levelSolutionBasic = ()
     ~ return levelItems !? item
 
 
-=== scene(title, date, items, interactables, -> SuccessFn, VOLine)
-    >>> Scene ({title})
+=== scene(items, interactables, VOLine)
+    ~ temp title = "{getSceneData(currentSceneID, Title)}"
+    ~ temp date = "{getSceneData(currentSceneID, Time)}"
+    >>> Scene (title={title}) (date={date})
     [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelInteractables = interactables
-    ~ levelSuccessFunction = SuccessFn
-    ~ levelSolutionItemCount = SuccessFn(()) // returns an int
+    ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
+    ~ levelSolutionItemCount = levelSuccessFunction(()) // returns an int
     ~ currentItems = () 
     VO: {VOLine}
     -> play 
@@ -88,8 +90,8 @@ VAR levelSolutionBasic = ()
 = ingame 
     +   (solved) [ SOLVED ] 
         >>> SAVE
-        ~ temp nextSceneToHit = levelSuccessFunction(currentItems)
-        -> nextSceneToHit
+        -> proceedTo(levelSuccessFunction(currentItems))
+    
 = slot(item, canSlot) 
     +   { currentItems  ? item } 
         [  UNSLOT {getItemName(item)} ]
@@ -105,8 +107,7 @@ VAR levelSolutionBasic = ()
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
-        ~ temp fail = -> NOPE 
-        ~ return  ( levelSuccessFunction(currentItems) != fail )
+        ~ return levelSuccessFunction(currentItems) 
     - else: 
         ~ return false 
     }
@@ -117,4 +118,8 @@ VAR levelSolutionBasic = ()
 === function got(item) 
     ~ return levelItems ? item
 
-
+=== proceedTo(nextSceneIDToHit)
+    ~ previousSceneID = currentSceneID
+    ~ currentSceneID = nextSceneIDToHit
+    ~ temp nextSceneToHit = getSceneData(currentSceneID, Knot)
+    -> nextSceneToHit
