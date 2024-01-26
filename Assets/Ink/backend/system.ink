@@ -47,8 +47,8 @@ VAR levelSolutionBasic = ()
 === scene(items, interactables, VOLine)
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
+    [ {currentSceneID}  ] 
     >>> Scene (title={title}) (date={date})
-    [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)

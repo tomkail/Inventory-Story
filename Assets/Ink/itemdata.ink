@@ -14,6 +14,12 @@
 
 === function getItemTooltip(item) 
     {item: 
+    -   QuentinsAide: 
+        { currentSceneID:
+        -   NoteInCar:  "Ernst Richards?"
+        -   QGivesNoteToAide: "You can trust me, sir."
+        -   QGivesItemToErnst: "Ernst Richards?"
+        }
     -   WaiterHandsUp:  "Whatever you say, Monsieur!" 
     -   Waiter:     "What are you looking at, huh?"
     -   UnconciousWaiter:   "Uhhhh...."
@@ -71,7 +77,7 @@
 === function itemRequiresItem(item) 
     { item: 
     -   LockedDrawer:   ~ return KeyOnChain
-    -   QuentinsAide: ~ return (ERNameBadge, TwoThousandFrancs, DeadDropNoteFromQuentin)
+    -   QuentinsAide: ~ return (ERNameBadge, TwoThousandFrancs, DeadDropNoteFromQuentin, DeskPlate)
     -   MetalLockBox:   ~ return KingKey
     -   Waiter:         ~ return (SmallGun, FlickKnife)
     -   WallSafe:       ~ return WeddingPhoto
@@ -87,10 +93,14 @@
     - BlueChevy: ~ return TinCanString
     - BlackCar: ~ return QuentinsAide    
     - QuentinsAide: 
-        { currentSceneID == QGivesNoteToAide:
+        ~ asReplacement = true 
+        { currentSceneID:
+        - QGivesNoteToAide:
             ~ return ( LoyalAssurance ) 
-        - else: 
+        - NoteInCar: 
             ~ return (  DeadDropNoteFromQuentin, TwoThousandFrancs )  
+        - QGivesItemToErnst: 
+            ~ return Envelope 
         }
     - ManilaEnvelope: 
         ~ asReplacement = true
@@ -153,15 +163,11 @@
     - KeyHook: 
         ~ return CarKey
     
-    - UNBin: 
-        ~ return NoteFromQuentin
-    - DeskPlate: 
-        ~ return Envelope 
     - Envelope: 
-        ~ return SealedMetalCylinder
-    - else: ERROR: {item} has no generator list 
-    
+        ~ return ( NoteFromQuentin, SealedMetalCylinder)
     }
+    ERROR: {item} has no generator list 
+    
     
 === function replaceAs(ref asReplacement, item) 
     ~ asReplacement = true

@@ -88,15 +88,15 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - QGivesItemToErnst: 
     { prop: 
-    -   Title:The UN Building,  
+    -   Title:The UN Building  
     -   Time:   7th August 1967, 11:45pm
     -   Knot:   ~ return -> item_from_quentin  
     -   ExitKnot: ~ return -> item_question_fn
     }
 - QGetsDevice: 
     { prop: 
-    - Title: TemplateLocation, TemplateData, TemplateTime
-    - Time: 
+    - Title: TODO
+    - Time:     TODO
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }

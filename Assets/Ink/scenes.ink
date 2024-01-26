@@ -338,9 +338,9 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     
 === function quentin_note_fn(x) 
     { x: 
-    -   ():     ~ return 1 
-    -   DeadDropNoteFromQuentin: ~ return QGivesItemToErnst 
-    -   TwoThousandFrancs: ~ return QGivesNoteToAide
+    -   ():     ~ return 2
+    -   (TwoThousandFrancs, DeadDropNoteFromQuentin):
+            ~ return QGivesNoteToAide
     }
     ~ return () 
 
@@ -364,13 +364,13 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 
     
 === item_from_quentin  
-    LIST UNDeskJobItems =  (USFlag), (DeskPlate), (UNBin), Envelope, NoteFromQuentin
-    -> scene(UNDeskJobItems + ERNameBadge + WeddingPhoto, (UNBin, DeskPlate, Envelope),  "But it's hard to tell friends from enemies, sometimes.")   
+    LIST UNDeskJobItems =  (USFlag), (DeskPlate), Envelope, NoteFromQuentin 
+    -> scene(UNDeskJobItems +  WeddingPhoto + QuentinsAide, ( QuentinsAide, Envelope),  "But it's hard to tell friends from enemies, sometimes.")   
 === function item_question_fn(x)  
     {x: 
-    -   ():     ~ return 1 
-    -   WeddingPhoto:   ~ return Wedding
-    -   SealedMetalCylinder:    ~ return QGetsDevice
+    -   ():     ~ return 2
+    -   (SealedMetalCylinder, NoteFromQuentin):  
+                ~ return QGetsDevice
     }
     ~ return () 
  
@@ -386,6 +386,8 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 TODO: A solve 
     }
       ~ return ()   
+ 
+ 
  
  
 === wedding_drive_away 
