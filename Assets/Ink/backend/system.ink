@@ -107,7 +107,7 @@ VAR levelSolutionBasic = ()
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
-        ~ return levelSuccessFunction(currentItems) 
+        ~ return BOOL( levelSuccessFunction(currentItems) )
     - else: 
         ~ return false 
     }

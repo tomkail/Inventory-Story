@@ -25,3 +25,5 @@
     ~ return false 
 
    
+=== function BOOL(x) 
+    ~ return not not x
