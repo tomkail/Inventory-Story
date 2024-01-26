@@ -12,6 +12,8 @@
 
 === function getItemTooltip(item) 
     {item: 
+    -   DeskPlate:  "Ernst Richards, Clerk"
+    -   WeddingPhoto:   "Annabel & Ernst 3/10/62"
     -   GlassVialOfPowder:  "COCAINE"
     -   PlayingCard:        King of Diamonds. 
     -   WhiteFabricScrap:   Torn, and slightly stained.
@@ -58,6 +60,7 @@
         } 
     -   MetalLockBox:   ~ return KingKey
     -   Waiter: ~ return MetalSoapBottle
+    -   WallSafe:       ~ return WeddingPhoto
     }
     ~ return () 
     
@@ -116,6 +119,13 @@
         ~ return (SealedMetalCylinder, TwoThousandFrancs, NoteFromQuentin)
     - Stranger: 
         ~ return (DupontMetroPass)
+    - KeyHook: 
+        ~ return CarKey
+    
+    - UNBin: 
+        ~ return NoteFromQuentin
+    - Envelope: 
+        ~ return SealedMetalCylinder
     - else: ERROR: {item} has no generator list 
     
     }

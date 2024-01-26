@@ -248,14 +248,33 @@ VAR useables = (HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, Thr
 
 
 === apartment
-    
-    LIST ApartmentItems = (CarKey), (WallSafe), TwoThousandFrancs, NoteFromQuentin
-    
-    -> scene("Apartment, Rue de Chavelier", "12th April 1968", ApartmentItems, WallSafe, (NoteFromQuentin), -> FALSE_, -> final, "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
-    
 
+LIST ApartmentItems = (WallSafe), TwoThousandFrancs, NoteFromQuentin, (WeddingPhoto), (KeyHook)
+
+-> scene("Apartment, Rue de Chavelier", "12th April 1968", ApartmentItems  + WeddingRing, (WallSafe, KeyHook), (NoteFromQuentin, SealedMetalCylinder), -> altApartment, -> whereto, "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+= whereto
+    {
+    - currentItems ? NoteFromQuentin: 
+        -> meet_quentin 
+    - currentItems ? WeddingRing: 
+        -> wedding 
+    }
+    
+=== function altApartment(x)  // 2 
+    {x: 
+    - (WeddingPhoto, WeddingRing):  ~ return true 
+    -    (NoteFromQuentin, TwoThousandFrancs): ~ return true 
+    }
     
     
     
-    
+=== meet_quentin  
+    LIST UNDeskJobItems =  (USFlag), (DeskPlate), (UNBin), (Envelope)
+    -> scene("The UN Building", "7th August 1967", UNDeskJobItems, UNBin, (), -> FALSE_, -> final, "But it's hard to tell friends from enemies, sometimes.")  
+ 
+ 
+ 
+=== wedding  
+    LIST WeddingItems = (Dress)
+    -> scene("The Chapel St Jean, Montpellier", "3rd Oct 1962", WeddingItems + MoreFlowers + WeddingRing, (), (), -> FALSE_, -> final, "I thought we'd be together forever." ) 
  
