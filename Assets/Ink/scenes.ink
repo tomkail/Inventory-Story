@@ -113,8 +113,18 @@ Kitchens of Hotel. A waiter heads towards the door.
 LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, ( CoffeeOnTray ), CoffeeSpoon
 
 
--> scene("Kitchens of the Hotel de la Tour", "23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial), -> FALSE_, -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
+-> scene("Kitchens of the Hotel de la Tour", "3:38pm, 23rd April 1968", KitchenItems, (Bin, WhiteApron) , (EmptyGlassVial, CoffeeSpoon), -> kitchenAlt, -> hotel_bathroom, "In bad hands, things go badly. It's that simple.") 
 
+=== function kitchenAlt(x)  // 2 items 
+    { x: 
+    -   (WaiterNameBadge, EmptyGlassVial): 
+    -   (CoffeeOnTray, EmptyGlassVial):
+    -   (CoffeeSpoon, EmptyGlassVial):
+    -   else:   ~ return false 
+    } 
+    ~ return true 
+    
+TODO: coffee back to ernst drinking coffee ?
 
 === hotel_bathroom
 
@@ -137,11 +147,31 @@ Bag
 [ Cardboard box labelled: "Claude. Rat poison - DO NOT OPEN.", empty ]
 */
 
-LIST HotelBathroomItems = (UnconciousWaiter), CardboardBox, (BlackKitBag) , BlackVelvetBag, GlassVialOfPowder, ChloroformBottle, FlickKnife, SmallGun, Cigarettes
+LIST HotelBathroomItems = (UnconciousWaiter), CardboardBox, (BlackKitBag) , BlackVelvetBag, GlassVialOfPowder, ChloroformBottle, FlickKnife, Cosh, SmallGun, Cigarettes
 
--> scene("Lobby Bathroom, Hotel de la Tour", "23rd April 1968", HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackVelvetBag) , (CardboardBox), -> FALSE_, -> back_alleyway, "I think that's why Ernst died. Someone... gave him... something.") 
+-> scene("Lobby Bathroom, Hotel de la Tour", "2:18pm, 23rd April 1968", HotelBathroomItems , (UnconciousWaiter, BlackKitBag, BlackVelvetBag) , (CardboardBox), -> bathroomAlt, -> from_bathroom, "I think that's why Ernst died. Someone... gave him... something.") 
 
+=== from_bathroom 
+    { currentItems: 
+    - CardboardBox:                 -> back_alleyway
+    - DupontMetroPass:              -> metro_dupont
+    - UnconciousWaiter:             -> knockout_waiter
+    }
+    
+=== function bathroomAlt(x) 
+    {x: 
+    - UnconciousWaiter:     ~ return not knockout_waiter 
+    - CardboardBox:         ~ return true 
+    - else:                 ~ return false 
+    }
+    ~ return true 
+    
+    
+=== knockout_waiter
 
+LIST HotelBathroomAttackItems = (Waiter),  (MetalSoapBottle)
+
+-> scene("Lobby Bathroom, Hotel de la Tour", "2:07pm, 23rd April 1968", HotelBathroomAttackItems + BlackKitBag , (BlackKitBag, Waiter) , (CardboardBox), -> bathroomAlt, -> from_bathroom, "Just another poor unfortunate who got in the way.") 
 
 === back_alleyway
  /*
@@ -162,7 +192,14 @@ LIST HotelAlleywayItems = (BrokenLock), PhotoOfErnst, PhotoOfCylindricalDevice, 
 -> scene("Alleyway Behind Hotel de Opera", "23rd April 1968", HotelAlleywayItems + CardboardBox + BlackKitBag, (CardboardBox, BlackKitBag),  (CasinoChips),-> FALSE_,  -> back_of_kingdiamondsclub, "I want to know where it came from.") 
 
   
-   
+=== metro_dupont 
+// pickpocket pass 
+
+LIST MetroDupontItems = (DupontInstructions), (Stranger)
+
+-> scene("Montpellier Metro station", "23rd April 1968", MetroDupontItems + BlackKitBag, (Stranger), () , -> FALSE_, -> back_of_kingdiamondsclub, "I want to know who got hurt along the way.")
+
+
   
 === back_of_kingdiamondsclub  
 

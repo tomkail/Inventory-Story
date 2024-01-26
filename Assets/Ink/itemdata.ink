@@ -47,6 +47,7 @@
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
     - ErnstRichardsDies:  "Paris. May 1968. Device found by chance on unknown dead man."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Dead drop by the Champs du Mars. April 23rd, 4:30pm."
+    - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
     }
     ~ return
     
@@ -56,6 +57,7 @@
             ~ return FlickKnife   
         } 
     -   MetalLockBox:   ~ return KingKey
+    -   Waiter: ~ return MetalSoapBottle
     }
     ~ return () 
     
@@ -78,52 +80,46 @@
     - CoffeeOnTray:     ~ return CoffeeSpoon
     - CardboardBox: 
         ~ return (GlassVialOfPowder, PhotoOfErnst, PhotoOfCylindricalDevice, CasinoChips)
-    
+    - Waiter: 
+        ~ return replaceAs(asReplacement, UnconciousWaiter)
     - HandCards: ~ return (AceHearts, ThreeClubs, SevenHearts, AceSpades, PlayingCard)
     - AceHeartsReversed:   
-        ~ asReplacement = true
-        ~ return AceHearts 
+        ~ return replaceAs(asReplacement, AceHearts)
     - ThreeClubsReversed:   
-        ~ asReplacement = true
-        ~ return ThreeClubs
+        ~ return replaceAs(asReplacement, ThreeClubs)
     - SevenHeartsReversed:  
-        ~ asReplacement = true
-        ~ return SevenHearts
+        ~ return replaceAs(asReplacement,  SevenHearts )
     - AceSpadesReversed:    
-        ~ asReplacement = true
-        ~ return AceSpades
+        ~ return replaceAs(asReplacement,  AceSpades )
     - AceHearts:            
-        ~ asReplacement = true
-        ~ return AceHeartsReversed
+        ~ return replaceAs(asReplacement,  AceHeartsReversed )
     - ThreeClubs:           
-        ~ asReplacement = true
-        ~ return ThreeClubsReversed
+        ~ return replaceAs(asReplacement,  ThreeClubsReversed )
     - SevenHearts:          
-        ~ asReplacement = true
-        ~ return SevenHeartsReversed
+        ~ return replaceAs(asReplacement,  SevenHeartsReversed )
     - AceSpades:            
-        ~ asReplacement = true
-        ~ return AceSpadesReversed
+        ~ return replaceAs(asReplacement,  AceSpadesReversed )
     - PlayingCard:          
-        ~ asReplacement = true
-        ~ return PlayingCardReversed
+        ~ return replaceAs(asReplacement,  PlayingCardReversed )
     - PlayingCardReversed:  
-        ~ asReplacement = true
-        ~ return PlayingCard
+        ~ return replaceAs(asReplacement,  PlayingCard )
     - MetalLockBox:         ~ return PileOfChips
     - PileOfChips:          
-        ~ asReplacement = true
-        ~ return EvenMoreChips 
+        ~ return replaceAs(asReplacement, EvenMoreChips  )
     - EvenMoreChips:          
-        ~ asReplacement = true
-        ~ return (EvenEvenMoreChips , ValetReceipt)
+        ~ return replaceAs(asReplacement,  (EvenEvenMoreChips , ValetReceipt) )
     - Jacket:               
         ~ return (Wallet)
     - Timeline: 
-        ~ asReplacement = true
-        ~ return (Inception, DeviceStolenFromResearchLab, ErnstRichardsDies )
+        ~ return replaceAs(asReplacement,  (Inception, DeviceStolenFromResearchLab, ErnstRichardsDies ) )
     - WallSafe: 
         ~ return (SealedMetalCylinder, TwoThousandFrancs, NoteFromQuentin)
+    - Stranger: 
+        ~ return (DupontMetroPass)
     - else: ERROR: {item} has no generator list 
     
     }
+    
+=== function replaceAs(ref asReplacement, item) 
+    ~ asReplacement = true
+    ~ return item 
