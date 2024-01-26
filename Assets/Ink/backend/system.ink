@@ -3,7 +3,7 @@ VAR levelItems = ()
 VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
-VAR levelCheckerFunction = -> FALSE_
+VAR levelSuccessFunction = -> FALSE_
 VAR levelSolutionBasic = ()
 
 === use(item) 
@@ -44,16 +44,14 @@ VAR levelSolutionBasic = ()
     ~ return levelItems !? item
 
 
-=== scene(title, date, items, interactables, basicSuccessCase, -> altSuccessFn, -> toNext, VOLine)
+=== scene(title, date, items, interactables, -> SuccessFn, VOLine)
     >>> Scene ({title})
     [ {title} / { date } ]
     ~ levelItems = items 
     ~ levelInteractables = interactables
-    ~ levelCheckerFunction = altSuccessFn
-    ~ levelSolutionBasic = basicSuccessCase
-    ~ levelSolutionItemCount = LIST_COUNT(basicSuccessCase) // returns an int
+    ~ levelSuccessFunction = SuccessFn
+    ~ levelSolutionItemCount = SuccessFn(()) // returns an int
     ~ currentItems = () 
-    ~ nextScene = toNext
     VO: {VOLine}
     -> play 
     
@@ -88,9 +86,10 @@ VAR levelSolutionBasic = ()
     }
     -> DONE
 = ingame 
-    +   [ SOLVED ] 
+    +   (solved) [ SOLVED ] 
         >>> SAVE
-        -> nextScene
+        ~ temp nextSceneToHit = levelSuccessFunction(currentItems)
+        -> nextSceneToHit
 = slot(item, canSlot) 
     +   { currentItems  ? item } 
         [  UNSLOT {getItemName(item)} ]
@@ -99,18 +98,19 @@ VAR levelSolutionBasic = ()
         [  SLOT {getItemName(item)} - {getItemTooltip(item)}]
         ~ currentItems += item 
         { checkForSolution():
-            >>> SAVE
-            -> nextScene
+            ->-> solved
         }
     -   ->->
     
 === function checkForSolution() 
-    {
-    - currentItems == levelSolutionBasic: 
-        ~ return true 
+    // don't bother unless the count is right, covers the 0-slotted case
+    { LIST_COUNT(currentItems) == levelSolutionItemCount: 
+        ~ temp fail = -> NOPE 
+        ~ return  ( levelSuccessFunction(currentItems) != fail )
     - else: 
-        ~ return levelCheckerFunction(currentItems) 
+        ~ return false 
     }
+    
     
     
 

@@ -4,7 +4,7 @@
     ~ _list -= el
     ~ return el 
 
-=== final 
+=== NOPE 
     -> END
     
 
@@ -13,3 +13,15 @@
     
 === function FALSE 
     ~ return false 
+
+
+=== function seen_more_recently_than(-> link, -> marker)
+	{ TURNS_SINCE(link) >= 0: 
+        { TURNS_SINCE(marker) == -1: 
+            ~ return true 
+        } 
+        ~ return TURNS_SINCE(link) < TURNS_SINCE(marker) 
+    }
+    ~ return false 
+
+   
