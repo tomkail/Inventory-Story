@@ -97,23 +97,29 @@ public class SceneController : MonoBehaviour {
             }
         } else {
         */
-        
+
+        // Set the ink state for "slotted items"
         var inkList = new InkList();
         var slottedItemLists = slotGroup.slottedItems.Select(itemView => InkList.FromString(itemView.inkListItem.fullName, StoryController.Instance.story)).ToList();
         foreach (var slottedItem in slottedItemLists)
             inkList = inkList.Union(slottedItem);
         GameController.Instance.story.variablesState["currentItems"] = inkList;
-        
-        if (GameController.Instance.story.RunInkFunction<bool>("checkForSolution")) {
-            var choice = GameController.Instance.story.currentChoices.FirstOrDefault(x => x.text.Contains("SOLVED"));
-            StoryController.Instance.MakeChoice(choice.index);
-        } else {
-            foreach (var itemList in (InkList) GameController.Instance.story.variablesState["currentItems"]) {
-                var itemView = itemViews.FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
-                if(itemView == null) continue;
-                itemView.draggable.SetDragTargetPosition(itemView.layout.rectTransform.anchoredPosition + MathX.DegreesToVector2(Random.Range(-45,45)) * 300, false);
-                var slot = slotGroup.draggableGroup.slots.FirstOrDefault(x => x.slottedDraggable == itemView.draggable);
-                slotGroup.draggableGroup.Unslot(slot);
+
+        // have we got all slots filled?
+        if (inkList.Count == slotGroup.slots.Count) {
+
+            // Check - have we solved the level?
+            if (GameController.Instance.story.RunInkFunction<bool>("checkForSolution")) {
+                var choice = GameController.Instance.story.currentChoices.FirstOrDefault(x => x.text.Contains("SOLVED"));
+                StoryController.Instance.MakeChoice(choice.index);
+            } else {
+                foreach (var itemList in (InkList)GameController.Instance.story.variablesState["currentItems"]) {
+                    var itemView = itemViews.FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
+                    if (itemView == null) continue;
+                    itemView.draggable.SetDragTargetPosition(itemView.layout.rectTransform.anchoredPosition + MathX.DegreesToVector2(Random.Range(-45, 45)) * 300, false);
+                    var slot = slotGroup.draggableGroup.slots.FirstOrDefault(x => x.slottedDraggable == itemView.draggable);
+                    slotGroup.draggableGroup.Unslot(slot);
+                }
             }
         }
     }
