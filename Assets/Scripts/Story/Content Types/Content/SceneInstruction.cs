@@ -13,10 +13,12 @@ public class SceneInstruction : ScriptContent {
 		var instruction = new SceneInstruction();
 		instruction.ParseDefaultArguments(arguments);
         
-		arguments.TryGetValue("sceneName", ref instruction.text);
-		
-		return instruction;
+		arguments.TryGetValue("title", ref instruction.title);
+        arguments.TryGetValue("date", ref instruction.date);
+
+        return instruction;
 	}
 
-	public string text;
+	public string title;
+	public string date;
 }

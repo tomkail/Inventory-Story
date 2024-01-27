@@ -9,6 +9,7 @@ public class SceneController : MonoBehaviour {
     public RectTransform itemContainer;
     public Image background;
     public TextMeshProUGUI titleText;
+    public TextMeshProUGUI dateText;
     public TextMeshProUGUI voText;
     public ItemView itemViewPrefab;
     public List<ItemView> itemViews = new List<ItemView>();
@@ -22,7 +23,7 @@ public class SceneController : MonoBehaviour {
     
     public void PerformContent(ScriptContent content) {
         if (content is BackgroundInstruction parsedInstruction) LoadBackground(parsedInstruction);
-        else if (content is TitleInstruction titleInstruction) SetTitle(titleInstruction);
+        // else if (content is TitleInstruction titleInstruction) SetTitle(titleInstruction);
         else if (content is SceneInstruction sceneInstruction) SetScene(sceneInstruction);
         else if (content is DialogueInstruction dialogueInstruction) HandleDialogue(dialogueInstruction);
     }
@@ -36,14 +37,17 @@ public class SceneController : MonoBehaviour {
         Debug.Log(backgroundInstruction.assetPath);
         background.sprite = Resources.Load<Sprite>(backgroundInstruction.assetPath);
     }
-
+    /*
     void SetTitle(TitleInstruction titleInstruction) {
         Debug.Log(titleInstruction.text);
         titleText.text = titleInstruction.text;
     }
+    */
 
     void SetScene(SceneInstruction sceneInstruction) {
         SaveLoadManager.Save();
+        titleText.text = sceneInstruction.title;
+        dateText.text = sceneInstruction.date;
         // Clear();
         // GameController.Instance.story.variablesState[GameController.Instance.levelItems.variableName] = new InkList();
         // GameController.Instance.levelItems.Reset();
