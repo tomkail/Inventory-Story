@@ -11,7 +11,9 @@ VAR DEBUG = true
 VAR previousSceneID = ()
 VAR currentSceneID = ()
 
--> proceedTo(Pinboard)
+VAR TopSceneID = Pinboard
+
+
 
 
 
