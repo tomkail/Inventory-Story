@@ -4,6 +4,11 @@
     ~ _list -= el
     ~ return el 
 
+=== function pop_top(ref _list) 
+    ~ temp el = LIST_MAX(_list) 
+    ~ _list -= el
+    ~ return el     
+
 === NOPE 
     -> END
     

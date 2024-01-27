@@ -25,7 +25,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - MetroPlatform: 
     { prop: 
-    -   Title:Metro Platform, Champ de Mars 
+    -   Title:  Metro Platform, Champ de Mars 
     -   Time:   23rd April 1968, 11:25pm
     -   Knot:   ~ return -> metro_platform 
     -   ExitKnot: ~ return -> metro_platform_fn
@@ -67,7 +67,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - Apartment: 
     { prop: 
-    -   Title:  Apartment, Rue de Chavelier
+    -   Title:  Apartment, Montpellier
     -   Time:   23rd April 1968, 4:23pm
     -   Knot:   ~ return -> apartment 
     -   ExitKnot: ~ return -> apartment_fn 
@@ -81,7 +81,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - QGivesNoteToAide:
     { prop: 
-    -   Title:Dirty Office above Champs de Mars 
+    -   Title:  Dirty Office above Champs de Mars 
     -   Time:   23rd April 1968, 2:29pm
     -   Knot:   ~ return -> quentin_gives_aide_money 
     -   ExitKnot: ~ return -> gives_aide_money_fn 

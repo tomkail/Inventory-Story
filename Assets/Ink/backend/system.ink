@@ -60,6 +60,14 @@ VAR levelSuccessFunction = -> FALSE_
     -> play 
     
 === play
+    [{previousSceneID}]
+    {previousSceneID && LoopCount > 1:
+        +   [BACK] 
+            ~ currentSceneID = ()
+            ~ temp nextScene = pop_top(previousSceneID)
+            -> proceedTo(nextScene)
+            
+    }
     -> act(levelInteractables) -> play
 
 = act(interactables)
@@ -125,7 +133,17 @@ VAR levelSuccessFunction = -> FALSE_
     ~ return levelItems ? item
 
 === proceedTo(nextSceneIDToHit)
-    ~ previousSceneID = currentSceneID
+    ~ previousSceneID += currentSceneID
     ~ currentSceneID = nextSceneIDToHit
     ~ temp nextSceneToHit = getSceneData(currentSceneID, Knot)
     -> nextSceneToHit
+
+
+=== function before(sc)
+    ~ return currentSceneID > sc
+=== function after(sc)
+    ~ return currentSceneID < sc
+=== function isOrBefore(sc)
+    ~ return currentSceneID >= sc
+=== function isOrAfter(sc)
+    ~ return currentSceneID <= sc

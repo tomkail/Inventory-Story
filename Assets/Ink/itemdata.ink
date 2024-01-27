@@ -5,8 +5,10 @@
     -   BunchOfFlowers:             black lilies 
     -   AnotherBunchOfFlowers:      white lilies
     -   MoreFlowers:                yellow lilies
+    -   EvenMoreFlowers:            white roses
     -   BlackLeatherFolder:   black leather folder
-    -   WhiteApron: {( HotelKitchens, HotelBathroom) ? currentSceneID  :stained} white apron
+    -   WhiteApron: {after(BackAlleyway):stained} white apron
+    -   MetroTicket:        { isOrAfter( MetroPlatform ): bloodstained} metro ticket
     -   ERNameBadge:    security badge
 //    -   KoDStamp:   stamp
     -   else:         {item} 
@@ -14,7 +16,9 @@
 
 === function getItemTooltip(item) 
     {item: 
-    -   DeviceOperatedPhoto:    "Operation of device observed from earthquake monitoring station, Jan 61"
+    -   MetroTicket:    "CHAMP DE MARS to MONTPELLIER" 
+    -   Gravestone:     "Ernst Richards. Died: 23rd April 1968"
+    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Jan 61"
     -   QuentinsAide: 
         { currentSceneID:
         -   NoteInCar:  "Ernst Richards?"
@@ -38,7 +42,7 @@
     -   OtherBusinessCard:  "Bolera Taxis." 
     -   OtherOtherBusinessCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
     -   WeddingRing:        "Annie and Ernie -- 3 Oct 1962"
-    -   ManilaEnvelope:     "Hopburg-Steiner Device Timeline"  
+    -   ManilaEnvelope:     "Timeline of the Hopburg-Steiner Device"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
     -   MetalCylinderPhoto: "Device created. March 1958. Nevada."
@@ -67,7 +71,7 @@
     
     
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
-    - ErnstRichardsDies:  "Paris. May 1968. Device shell found on unknown dead man."
+    - ErnstRichardsDies:  "Paris. May 1968. Device shell found on theft victim's corpse."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Q."
     - DeadDropNoteFromQuentin: "Handover at the Champs du Mars. Midnight tonight. Q."
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
@@ -97,7 +101,7 @@
      - LooseBrick: ~ return SmallPackage
      - Toolbox: ~ return (Screwdriver, Pliers, Wrench)
     - SealedMetalCylinder: 
-        { currentSceneID < DeviceRemovedFromCylinder: 
+        { after( DeviceRemovedFromCylinder ) : 
             ~ return Nothing 
         - else: 
             ~ return Device
@@ -112,6 +116,7 @@
         { currentSceneID:
         - QGivesNoteToAide:
             ~ return ( LoyalAssurance ) 
+            
         - NoteInCar: 
             ~ return (  DeadDropNoteFromQuentin, TwoThousandFrancs )  
         - QGivesItemToErnst: 
@@ -124,10 +129,12 @@
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
     - Wallet: 
-        { currentSceneID == MetroPlatform: 
-            ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MetroTicket )
-        - else: 
+        { before(MetroPlatform): 
             ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)
+            
+        - else: 
+            ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MetroTicket )
+            
         }
     // - DupontInstructions:   ~ return KoDStamp
     - Scarf: ~ return PianoWire
@@ -171,7 +178,7 @@
         ~ return replaceAs(asReplacement, EvenEvenMoreChips)
     - Jacket:               
         ~ return (Wallet)
-
+    - Gravestone: ~ return ((BunchOfFlowers, AnotherBunchOfFlowers))
     - WallSafe: 
         ~ return (SealedMetalCylinder , AceSpades)
     // - Stranger:    ~ return (DupontMetroPass)

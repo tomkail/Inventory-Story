@@ -68,10 +68,10 @@ Gravestone - Ernst Richards
  Flowers
  [ Wedding ring - inscribed "Annabel and Ernst October 1962"  ]
  */
-LIST GraveyardItems =  WeddingRing, (BunchOfFlowers), (AnotherBunchOfFlowers), MoreFlowers, EvenMoreFlowers
+LIST GraveyardItems =  (Gravestone), WeddingRing, BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers
+VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers)
 
-
--> scene( GraveyardItems, (BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers),  "I know I loved him. I would have loved him all my life, if I could have.") 
+-> scene( GraveyardItems, GraveyardInteractables,  "I know I loved him. I would have loved him all my life, if I could have.") 
 
 === function graveyard_fn(x) 
     { x: 
@@ -109,9 +109,10 @@ LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), Business
 === function mortuary_fn(x) 
     { x:
     - ():                   ~ return 1 
-    - MetroTicket:          ~ return MetroPlatform
-    - SealedMetalCylinder:  ~ return Apartment
-    - KingDiamondsCard:     ~ return  BackOfClub
+    - MetroTicket:          ~ return    MetroPlatform
+    - SealedMetalCylinder:  ~ return    MetroPlatform
+    - WeddingRing:          ~ return    Wedding
+    - KingDiamondsCard:     ~ return    BackOfClub
     }
     ~ return () 
 
@@ -426,6 +427,7 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     }
     ~ return () 
  
+ 
 === wedding  
     LIST WeddingItems = (Dress)
     -> scene(  WeddingItems + MoreFlowers + WeddingRing,  (),  "I thought we'd be together forever." )  
@@ -447,10 +449,12 @@ TODO: a solve
     -> scene ( DeviceOperatedItems + SealedMetalCylinder, DeviceOperatedInteractables, "Everything has to start somewhere.") 
 === function device_operated_fn(x) 
     { x: 
-    -   (): ~ return 1
+    -   ():     ~ return 1
     -   Warp:   ~ return Pinboard
     }
     ~ return () 
+    
+    
  
  /*
     TEMPLATE
