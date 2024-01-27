@@ -61,7 +61,7 @@ VAR levelSuccessFunction = -> FALSE_
     
 === play
     [{previousSceneID}]
-    {previousSceneID && LoopCount > 1:
+    {previousSceneID : // && LoopCount > 1:
         +   [BACK] 
             ~ currentSceneID = ()
             ~ temp nextScene = pop_top(previousSceneID)

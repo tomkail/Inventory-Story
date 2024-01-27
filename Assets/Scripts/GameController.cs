@@ -38,6 +38,7 @@ public class GameController : MonoSingleton<GameController> {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Backspace)) Restart();
+        if (Input.GetKeyDown(KeyCode.P)) Backstep();
     }
 
 
@@ -91,6 +92,12 @@ public class GameController : MonoSingleton<GameController> {
     void Restart() {
         Clear();
         Start();
+    }
+
+    void Backstep()
+    {
+        var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains($"BACK", StringComparison.OrdinalIgnoreCase));
+        if (choice != null) StoryController.Instance.MakeChoice(choice.index);
     }
 
     void Clear() {
