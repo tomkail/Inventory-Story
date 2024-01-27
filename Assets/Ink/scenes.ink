@@ -36,6 +36,9 @@ Manila envelope - "ER surveillance"
  
 */
 
+~ LoopCount++
+~ previousSceneID = ()
+
 LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , DeviceOperatedPhoto , ErnstRichardsDies, ManEnteringCarOutsideUNPhoto
 
 VAR PhotosInOpeningEnvelope = (MetalCylinderPhoto  , DeviceOperatedPhoto, ErnstRichardsDies)
