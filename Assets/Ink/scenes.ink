@@ -15,9 +15,10 @@ NoteInCar,
 QGivesNoteToAide, 
 QGivesItemToErnst, 
 QGetsDevice,
+DeviceRemovedFromCylinder, // TODO!
 DriveAfterWedding,
 Wedding,
-StolenDevice, 
+DeviceOperated,
 __Template
 
 
@@ -35,7 +36,13 @@ Manila envelope - "ER surveillance"
  
 */
 
-LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , ManEnteringCarOutsideUNPhoto, ErnstRichardsDies
+LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , DeviceOperatedPhoto , ErnstRichardsDies, ManEnteringCarOutsideUNPhoto
+
+VAR PhotosInOpeningEnvelope = (MetalCylinderPhoto  , DeviceOperatedPhoto, ErnstRichardsDies)
+TODO: add "checkpoints" in flow that drop in here 
+TODO: reset at the end of run doesn't reset ink but just bounces. 
+
+// allow in ManEnteringCarOutsideUNPhoto / DeviceStolenFromResearchLab if you've been there
 
 -> scene( PinboardItems, ManilaEnvelope,  "Something's not right.")
 
@@ -43,8 +50,8 @@ LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromRes
     { x: 
     -   ():                 ~ return 1 
     -   ErnstRichardsDies:  ~ return Graveyard 
-    -   ManEnteringCarOutsideUNPhoto:  ~ return   NoteInCar
-    -   DeviceStolenFromResearchLab:    ~ return StolenDevice
+    -   ManEnteringCarOutsideUNPhoto:  ~ return  NoteInCar
+    -   DeviceOperatedPhoto:    ~ return DeviceOperated
     }
     ~ return () 
 
@@ -89,7 +96,7 @@ Wallet
  [ playing card - the KING OF DIAMONDS ]
  */
  
-LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, MetroTicket, KingDiamondsCard
+LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, MetroTicket, KingDiamondsCard, Nothing
 
 -> scene( MortuaryTrayItems + WeddingRing,  Wallet, "But something is out of place.") 
 
@@ -351,7 +358,7 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 === quentin_gives_aide_money 
   
     LIST QuentinGivesAideMoneyItems = (LockedDrawer) , (RumpledShirt) , KeyOnChain , MapOfParisMetro, LoyalAssurance
-    -> scene ( QuentinGivesAideMoneyItems +  QuentinsAide, (LockedDrawer, RumpledShirt, QuentinsAide), "Things often happen by circuitous routes.") 
+    -> scene ( QuentinGivesAideMoneyItems +  QuentinsAide + DeadDropNoteFromQuentin, (LockedDrawer, RumpledShirt, QuentinsAide), "Things often happen by circuitous routes.") 
 === function gives_aide_money_fn(x) 
     { x: 
     -   (): ~ return 1 
@@ -375,19 +382,31 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     ~ return () 
  
  
- 
- 
  === quentin_receives_metal_cylinder 
-    LIST QuentinReceivesCylinderItems = (NoItem) 
-    -> scene ( QuentinReceivesCylinderItems, (), "Remark") 
+    LIST QuentinReceivesCylinderItems = (Wall), LooseBrick, SmallPackage, Toolbox, Screwdriver, Wrench, Pliers
+    VAR QuentinReceivesCylinderInteracts = (SealedMetalCylinder)
+    -> scene ( QuentinReceivesCylinderItems + SealedMetalCylinder, QuentinReceivesCylinderInteracts, "Remark") 
 === function q_receives_cylinder_fn(x) 
     { x: 
     -   (): ~ return 1 
-TODO: A solve 
+    -   Nothing: ~ return DeviceRemovedFromCylinder
     }
       ~ return ()   
  
  
+ 
+ 
+=== device_removed 
+    LIST DeviceRemovedItems =  (ElectricLamp) 
+    VAR DeviceRemovedInteractables = (ElectricLamp, SealedMetalCylinder, Device)
+    -> scene ( DeviceRemovedItems + SealedMetalCylinder, DeviceRemovedInteractables, "Everything has to start somewhere.") 
+=== function device_removed_fn(x) 
+    { x: 
+    -   (): ~ return 1
+    -   Warp:   ~ return Pinboard
+    }
+    ~ return () 
+  
  
  
 === wedding_drive_away 
@@ -415,23 +434,17 @@ TODO: a solve
  
  
  
- 
- /*
-    Stolen Device 
- */
- === device_stolen
-    LIST SmashedResearchLabItems = (ResearchCabinet) 
-    -> scene ( SmashedResearchLabItems, (), "Someone took something too precious to be allowed as stolen.") 
-=== function device_stolen_fn(x) 
+  
+ === device_operated 
+    LIST DeviceOperatedItems =  Device, Warp 
+    VAR DeviceOperatedInteractables = (SealedMetalCylinder, Device)
+    -> scene ( DeviceOperatedItems + SealedMetalCylinder, DeviceOperatedInteractables, "Everything has to start somewhere.") 
+=== function device_operated_fn(x) 
     { x: 
-    -   (): ~ return 1 
-TODO: A solve 
-
+    -   (): ~ return 1
+    -   Warp:   ~ return Pinboard
     }
-~ return ()     
-    
-    
- 
+    ~ return () 
  
  /*
     TEMPLATE

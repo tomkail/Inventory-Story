@@ -4,13 +4,14 @@ VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
 VAR levelSuccessFunction = -> FALSE_
-VAR levelSolutionBasic = ()
+
 
 === use(item) 
     { levelItems !? item:
         -> DONE 
     }
     ~ temp withItems = itemRequiresItem(item)
+    
     { withItems && not (levelItems ^ withItems) :  
         -> DONE // need an item you don't have 
     }
@@ -21,6 +22,7 @@ VAR levelSolutionBasic = ()
     { levelItems ? withItem || not withItem: 
         +   { levelItems !? toGenerate}
             [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
+            
             ~ addItems(toGenerate) 
             { asReplacement:
                 ~ removeItem(item) 
@@ -76,12 +78,12 @@ VAR levelSolutionBasic = ()
     {not DEBUG: 
         -> ingame
     }
-    ~ temp canSlot = levelSolutionItemCount - LIST_COUNT(currentItems)
+    ~ temp freeSlots = levelSolutionItemCount - LIST_COUNT(currentItems)
     [ {LIST_COUNT(currentItems)} / {levelSolutionItemCount} ]
 - (opts)    
     ~ temp item = pop(items) 
     { item: 
-        <- slot(item, canSlot) 
+        <- slot(item, freeSlots) 
     }
     {items: 
         -> opts
@@ -92,15 +94,19 @@ VAR levelSolutionBasic = ()
         >>> SAVE
         -> proceedTo(levelSuccessFunction(currentItems))
     
-= slot(item, canSlot) 
+= slot(item, freeSlots) 
     +   { currentItems  ? item } 
         [  UNSLOT {getItemName(item)} ]
         ~ currentItems -= item 
-    +   { currentItems  !? item } { canSlot }
+    +   { currentItems  !? item } { freeSlots }
         [  SLOT {getItemName(item)} - {getItemTooltip(item)}]
         ~ currentItems += item 
-        { checkForSolution():
+        {
+        - checkForSolution():
             ->-> solved
+        - freeSlots == 1: 
+            [ UNSLOTTING ] 
+            ~ currentItems = ()
         }
     -   ->->
     

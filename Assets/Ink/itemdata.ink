@@ -14,10 +14,11 @@
 
 === function getItemTooltip(item) 
     {item: 
+    -   DeviceOperatedPhoto:    "Operation of device observed from earthquake monitoring station, Jan 61"
     -   QuentinsAide: 
         { currentSceneID:
         -   NoteInCar:  "Ernst Richards?"
-        -   QGivesNoteToAide: "You can trust me, sir."
+        -   QGivesNoteToAide: "Whatever it is, you can trust me, sir."
         -   QGivesItemToErnst: "Ernst Richards?"
         }
     -   WaiterHandsUp:  "Whatever you say, Monsieur!" 
@@ -40,13 +41,14 @@
     -   ManilaEnvelope:     "Hopburg-Steiner Device Timeline"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
-    -   MetalCylinderPhoto: "Device created. March 1961. Nevada."
+    -   MetalCylinderPhoto: "Device created. March 1958. Nevada."
     -   PianoWire:      {currentSceneID == MetroPlatform:
                             It's blood-soaked.
                         - else:
                             It's coiled and clean.
                             
                         }
+    - Nothing:          The cylinder is empty. 
     - BlackLeatherFolder:   "KoD"
     - CoffeeOrderSlip:  "Coffee, table 15."
     - CoffeeSpoon:      A few white grains are still visible on the spoon.
@@ -65,7 +67,7 @@
     
     
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
-    - ErnstRichardsDies:  "Paris. May 1968. Device found by chance on unknown dead man."
+    - ErnstRichardsDies:  "Paris. May 1968. Device shell found on unknown dead man."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Q."
     - DeadDropNoteFromQuentin: "Handover at the Champs du Mars. Midnight tonight. Q."
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
@@ -77,16 +79,29 @@
 === function itemRequiresItem(item) 
     { item: 
     -   LockedDrawer:   ~ return KeyOnChain
-    -   QuentinsAide: ~ return (ERNameBadge, TwoThousandFrancs, DeadDropNoteFromQuentin, DeskPlate)
+    -   QuentinsAide: ~ return (ERNameBadge,  DeadDropNoteFromQuentin, DeskPlate)
     -   MetalLockBox:   ~ return KingKey
     -   Waiter:         ~ return (SmallGun, FlickKnife)
     -   WallSafe:       ~ return WeddingPhoto
     -   DoorLock:   ~ return FlickKnife 
+    -   LooseBrick: ~ return  Screwdriver
     }
     ~ return () 
     
 === function itemGeneratesItems(item, ref asReplacement) 
     {item: 
+    
+    - Device:   ~ return Warp
+    - ElectricLamp: ~ return SealedMetalCylinder
+     - Wall: ~ return LooseBrick
+     - LooseBrick: ~ return SmallPackage
+     - Toolbox: ~ return (Screwdriver, Pliers, Wrench)
+    - SealedMetalCylinder: 
+        { currentSceneID < DeviceRemovedFromCylinder: 
+            ~ return Nothing 
+        - else: 
+            ~ return Device
+        }
     - DoorLock: ~ return replaceAs(asReplacement, BrokenDoorLock)
     - LockedDrawer: ~ return (TwoThousandFrancs, MapOfParisMetro)
     - RumpledShirt: ~ return KeyOnChain
@@ -104,7 +119,7 @@
         }
     - ManilaEnvelope: 
         ~ asReplacement = true
-        ~ return (ManEnteringCarOutsideUNPhoto,  MetalCylinderPhoto , DeviceStolenFromResearchLab ,  ErnstRichardsDies)
+        ~ return PhotosInOpeningEnvelope
     - BunchOfFlowers:   ~ return EvenMoreFlowers
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers

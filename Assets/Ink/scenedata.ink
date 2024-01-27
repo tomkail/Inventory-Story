@@ -95,11 +95,18 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - QGetsDevice: 
     { prop: 
-    - Title: TODO
+    - Title:    Park, Mid-France
     - Time:     TODO
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
+- DeviceRemovedFromCylinder:
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:    15th Aug 1964, 10:35pm 
+    -   Knot:   ~ return -> device_removed  
+    -   ExitKnot: ~ return -> device_removed_fn
+    }    
 - DriveAfterWedding:
     { prop: 
     -   Title:Leaving the Chapel St Jean 
@@ -114,12 +121,12 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> wedding  
     -   ExitKnot: ~ return -> wedding_fn
     }
-- StolenDevice:
+- DeviceOperated:
     { prop: 
-    -   Title:  Research Lab, Area 51
-    -   Time:   April 1962, 3:14pm
-    -   Knot:   ~ return -> device_stolen  
-    -   ExitKnot: ~ return -> device_stolen_fn
+    -   Title:  TemplateTtle
+    -   Time:   18th Jan 1961, 1:18pm 
+    -   Knot:   ~ return -> device_operated  
+    -   ExitKnot: ~ return -> device_operated_fn
     }
 - __Template:
     { prop: 
