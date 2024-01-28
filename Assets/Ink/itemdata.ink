@@ -17,6 +17,7 @@
 
 === function getItemTooltip(item) 
     {item: 
+    -   WifesPromise:   "Let's stay together, forever."
     -   Kosakov:    "The device, please, Ana."
     -   Matthews:   "Don't even think about giving it to him."
     -   Device:  "Property of the US Army"
@@ -39,7 +40,7 @@
         }
     -   MetroTicket:    "CHAMP DE MARS to MONTPELLIER" 
     -   Gravestone:     "Ernst Richards. Died: 23rd April 1968"
-    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Oct '62"
+    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Jan '61"
     -   CylinderInMortuaryPhoto: "Found amongst possessions of ER, murder victim."
     -   DeviceRemovedFromCylinderPhoto: "Aug 15th, 1964. Device is removed from protective sheath."
     -   QuentinsAide: 
@@ -148,15 +149,26 @@
     {item: 
     - ParkBench: ~ return Kosakov
     - Kosakov: 
-        ~ replaceAs(asReplacement, KosakovsThanks)
+        { 
+        - isOrBefore(GoThroughWithWedding): 
+            ~ return (KosakovsThanks, DeviceOperatedPhoto)
+        - else: 
+            ~ return KosakovsThanks
+        }
     - Matthews: ~ replaceAs(asReplacement, MatthewsRelief)
-     - BlackChanelBag: ~ return (SealedMetalCylinder, WeddingPhotograph, KosakovCard)
+    - Lipstick: ~ return SealedMetalCylinder
+     - BlackChanelBag: 
+        { isOrAfter(Wedding):
+            ~ return (Lipstick, WeddingPhotograph, KosakovCard )
+        - else: 
+            ~ return (Lipstick)
+        }
      
      - Telephone: ~ replaceAs(asReplacement, KosakovOnTelephone)
      - KosakovOnTelephone:  ~ replaceAs(asReplacement, KosakovsDrop)
      
     - ManNearBlackCar: ~ return  ManEnteringCarOutsideUNPhoto
-    - Wife:     ~ return Warp
+    - Wife:     ~ return WifesPromise
     -  Quentin: ~ return OtherWeddingRing
     - Annie: ~ return replaceAs(asReplacement, Wife)
  
@@ -175,7 +187,7 @@
     - DoorLock: ~ return replaceAs(asReplacement, BrokenDoorLock)
     - LockedDrawer: ~ return (TwoThousandFrancs, MapOfParisMetro)
     - RumpledShirt: ~ return KeyOnChain
-    - BlueChevy: ~ return TinCanString
+    - BlueChevy: ~ return (TinCanString, Dress)
     - BlackCar: ~ return QuentinsAide    
     - QuentinsAide: 
         ~ asReplacement = true 

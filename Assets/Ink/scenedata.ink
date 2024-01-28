@@ -135,6 +135,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> wedding  
     -   ExitKnot: ~ return -> wedding_fn
     }
+- GoThroughWithWedding:
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:   TemplateTime 
+    -   Knot:   ~ return -> go_through_with_wedding  
+    -   ExitKnot: ~ return -> go_through_with_wedding_fn
+    }    
 - DeviceOperated:
     { prop: 
     -   Title:  TemplateTtle
@@ -142,13 +149,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> device_operated  
     -   ExitKnot: ~ return -> device_operated_fn
     }
-- GoThroughWithWedding:
-    { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
-    -   Knot:   ~ return -> go_through_with_wedding  
-    -   ExitKnot: ~ return -> go_through_with_wedding_fn
-    }
+
 - __Template:
     { prop: 
     -   Title:  TemplateTtle

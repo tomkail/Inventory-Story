@@ -23,8 +23,9 @@ AnnieGivesInnerDeviceToContact,
 DeviceRemovedFromCylinder, // TODO!
 DriveAfterWedding,
 Wedding,
-DeviceOperated,
 GoThroughWithWedding,
+DeviceOperated,
+
 __Template
 
 
@@ -458,7 +459,7 @@ TODO: A solve
  
 === device_removed 
     LIST DeviceRemovedItems =  (ElectricLamp) , (BlackChanelBag), WeddingPhotograph, KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop
-    VAR DeviceRemovedInteractables = (ElectricLamp, SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
+    VAR DeviceRemovedInteractables = (ElectricLamp, Lipstick, SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
     -> scene ( DeviceRemovedItems, DeviceRemovedInteractables, "Everything has to start somewhere.") 
 === function device_removed_fn(x) 
     { levelItems ? Device: 
@@ -475,7 +476,7 @@ TODO: A solve
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString
-   -> scene( WeddingCarItems + Dress + WeddingRing, (BlueChevy), "I had never been so happy as the day we got married." ) 
+   -> scene( WeddingCarItems  + WeddingRing, (BlueChevy), "I had never been so happy as the day Ernst and I got married." ) 
    
  === function wedding_car_fn(x) 
      {x: 
@@ -486,20 +487,34 @@ TODO: A solve
  
  
 === wedding  
-    LIST WeddingItems = (Dress), (Annie), (Quentin), OtherWeddingRing, Wife
+    LIST WeddingItems = (Dress), (Annie), (Quentin), OtherWeddingRing, Wife, WifesPromise
     VAR WeddingInteracts = (Wife, Annie, Quentin)
-    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  WeddingInteracts,  "I thought we'd be together forever." )  
+    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  WeddingInteracts,  "That day is one I'd never take back." )  
     
 === function wedding_fn(x) 
     {x: 
-    -   ():     ~ return 1 
-    -   Warp:   ~ return TopSceneID
+    -   ():             ~ return 1 
+    -   WifesPromise:   ~ return GoThroughWithWedding
 TODO: a solve    
     }
     ~ return () 
  
  
  
+=== go_through_with_wedding 
+    LIST GoThroughWithItems = (ParkBench) , Lipstick
+    VAR GoThroughWithInteractables = (Kosakov, BlackChanelBag)
+    -> scene ( GoThroughWithItems + Kosakov + WeddingRing + BlackChanelBag, GoThroughWithInteractables, "Remark") 
+    
+=== function go_through_with_wedding_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   DeviceOperatedPhoto:    ~ return DeviceOperated
+TODO: A solve 
+    }
+    ~ return ()  
+    
+    
  
   
  === device_operated 
@@ -515,16 +530,8 @@ TODO: a solve
     ~ return () 
     
     
-=== go_through_with_wedding 
-    LIST GoThroughWithItems = (ParkBench) 
-    VAR GoThroughWithInteractables = (Kosakov)
-    -> scene ( GoThroughWithItems + Kosakov + WeddingRing, GoThroughWithInteractables, "Remark") 
-=== function go_through_with_wedding_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-TODO: A solve 
-    }
-    ~ return ()  
+    
+    
  /*
     TEMPLATE
  */
