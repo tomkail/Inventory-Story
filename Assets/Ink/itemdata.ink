@@ -10,15 +10,38 @@
     -   WhiteApron: {after(BackAlleyway):stained} white apron
     -   MetroTicket:        { isOrAfter( MetroPlatform ): bloodstained} metro ticket
     -   ERNameBadge:    security badge
+    
 //    -   KoDStamp:   stamp
     -   else:         {item} 
     }
 
 === function getItemTooltip(item) 
     {item: 
+    -   Kosakov:    "The device, please, Ana."
+    -   Matthews:   "Don't even think about giving it to him."
+    -   Device:  "Property of the US Army"
+    -   Quentin:    
+            {
+            - currentItems ? Wife : 
+                "You're a lucky man, Ern." 
+            - currentItems !? OtherWeddingRing : 
+                "Ready?"
+            - else:
+                "Go on, then!"
+            }
+    -   Annie:      "I do." 
+    -   Wife:       "Kiss me, Ernie..."
+    -   Croupier:   
+        { currentItems !? PileOfChips: 
+            "If you're out of chips, sir, you cannot bet."
+        - else: 
+            "Sir?"
+        }
     -   MetroTicket:    "CHAMP DE MARS to MONTPELLIER" 
     -   Gravestone:     "Ernst Richards. Died: 23rd April 1968"
-    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Jan 61"
+    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Oct '62"
+    -   CylinderInMortuaryPhoto: "Found amongst possessions of ER, murder victim."
+    -   DeviceRemovedFromCylinderPhoto: "Aug 15th, 1964. Device is removed from protective sheath."
     -   QuentinsAide: 
         { currentSceneID:
         -   NoteInCar:  "Ernst Richards?"
@@ -39,10 +62,10 @@
     -   PoliceNotes:             "Attempted theft. Killer was disturbed and escaped. Narcotics in victim's blood."   
     -   BusinessCard:       "Ernst Richards, office clerk, UN."
     -   KingDiamondsCard:   "KING OF DIAMONDS: cards / slots / roulette / girls"
-    -   OtherBusinessCard:  "Bolera Taxis." 
+    -   QsBusinessCard:  "Quentin Perdi, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
     -   OtherOtherBusinessCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
     -   WeddingRing:        "Annie and Ernie -- 3 Oct 1962"
-    -   ManilaEnvelope:     "Timeline of the Hopburg-Steiner Device"  
+    -   ManilaEnvelope:     "Known Timeline of the Hopburg-Steiner Device"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
     -   MetalCylinderPhoto: "Device created. March 1958. Nevada."
@@ -77,11 +100,33 @@
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
   //  - KoDStamp:     "KoD"
     - LoyalAssurance:   "I'll get over to the UN right away, sir."
+    - KosakovCard: "Paris 15643. Ask for K."
+ 
+     
+     - KosakovOnTelephone: "Yes? Do you have something for me?"
+     
+     - KosakovsDrop:    "The Montmatre Tunnel. Two days time. 11:30pm"
+     
+    -   KosakovsThanks:  
+            { is(GoThroughWithWedding): 
+                "This is excellent cover. You have done very well, Ana. Do not worry. Your reward will come."
+                
+            - else: 
+                "Well done, comrade. You have our thanks. We will extract you when it is safe."
+            }
+    -   MatthewsRelief:     "You've made the right decision. I'm glad you've seen what's right here."
+    - Kosakov: "You are having second thoughts? You wish to be extracted?"
+     
     }
     ~ return
     
 === function itemRequiresItem(item) 
     { item: 
+    - Kosakov:
+        ~ return (Device, WeddingRing)
+    - Matthews: ~ return Device
+    - Annie: ~ return OtherWeddingRing
+ 
     -   LockedDrawer:   ~ return KeyOnChain
     -   QuentinsAide: ~ return (ERNameBadge,  DeadDropNoteFromQuentin, DeskPlate)
     -   MetalLockBox:   ~ return KingKey
@@ -89,12 +134,33 @@
     -   WallSafe:       ~ return WeddingPhoto
     -   DoorLock:   ~ return FlickKnife 
     -   LooseBrick: ~ return  Screwdriver
+    -   Croupier: ~ return ValetReceipt
+    -   ManNearBlackCar: ~ return Camera
+    -   Telephone: ~ return KosakovCard
+    -   KosakovOnTelephone:  ~ return Device 
+    
     }
     ~ return () 
     
+    
+    
 === function itemGeneratesItems(item, ref asReplacement) 
     {item: 
-    
+    - ParkBench: ~ return Kosakov
+    - Kosakov: 
+        ~ replaceAs(asReplacement, KosakovsThanks)
+    - Matthews: ~ replaceAs(asReplacement, MatthewsRelief)
+     - BlackChanelBag: ~ return (SealedMetalCylinder, WeddingPhotograph, KosakovCard)
+     
+     - Telephone: ~ replaceAs(asReplacement, KosakovOnTelephone)
+     - KosakovOnTelephone:  ~ replaceAs(asReplacement, KosakovsDrop)
+     
+    - ManNearBlackCar: ~ return  ManEnteringCarOutsideUNPhoto
+    - Wife:     ~ return Warp
+    -  Quentin: ~ return OtherWeddingRing
+    - Annie: ~ return replaceAs(asReplacement, Wife)
+ 
+    - Croupier: ~ return PileOfChips
     - Device:   ~ return Warp
     - ElectricLamp: ~ return SealedMetalCylinder
      - Wall: ~ return LooseBrick
@@ -130,10 +196,10 @@
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
     - Wallet: 
         { before(MetroPlatform): 
-            ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)
+            ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)
             
         - else: 
-            ~ return (BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MetroTicket )
+            ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MetroTicket )
             
         }
     // - DupontInstructions:   ~ return KoDStamp

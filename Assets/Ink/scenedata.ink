@@ -4,7 +4,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
 { sceneID: 
 - Pinboard:     
     { prop: 
-    -   Title: Pinboard
+    -   Title: Desktop
     -   Time:   10th May 1968, 4:32pm
     -   Knot:   ~ return -> pinboard 
     -   ExitKnot: ~ return -> pinboard_exit
@@ -72,9 +72,16 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> apartment 
     -   ExitKnot: ~ return -> apartment_fn 
     }
+- AnnieComesFromWork: 
+    { prop: 
+    -   Title:  Outside the UN Building 
+    -   Time:   23rd April 1968, 3:19pm
+    -   Knot:   ~ return -> annie_in_car 
+    -   ExitKnot: ~ return -> annie_in_car_fn 
+    }
 - NoteInCar:
     { prop: 
-    -   Title:Outside the UN Building 
+    -   Title:  Outside the UN Building 
     -   Time:   23rd April 1968, 3:15pm
     -   Knot:   ~ return -> quentin_passes_note 
     -   ExitKnot: ~ return -> quentin_note_fn 
@@ -100,9 +107,16 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
+- AnnieGivesInnerDeviceToContact: 
+    { prop: 
+    - Title:    The Montmatre Tunnel 
+    - Time:     17th Aug 1964. 11:30pm
+    - Knot: ~ return -> annie_gives_inner_device
+    - ExitKnot: ~ return -> annie_gives_inner_device_fn
+    }
 - DeviceRemovedFromCylinder:
     { prop: 
-    -   Title:  TemplateTtle
+    -   Title:   Basement
     -   Time:    15th Aug 1964, 10:35pm 
     -   Knot:   ~ return -> device_removed  
     -   ExitKnot: ~ return -> device_removed_fn
@@ -127,6 +141,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   18th Jan 1961, 1:18pm 
     -   Knot:   ~ return -> device_operated  
     -   ExitKnot: ~ return -> device_operated_fn
+    }
+- GoThroughWithWedding:
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:   TemplateTime 
+    -   Knot:   ~ return -> go_through_with_wedding  
+    -   ExitKnot: ~ return -> go_through_with_wedding_fn
     }
 - __Template:
     { prop: 

@@ -24,7 +24,10 @@ VAR levelSuccessFunction = -> FALSE_
             [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
             
             ~ addItems(toGenerate) 
-            { asReplacement:
+            { 
+            - levelItems ? Warp:
+                ~ removeItem(levelItems - Warp)
+            - asReplacement:
                 ~ removeItem(item) 
             }
             [ now {levelItems} ]
@@ -61,7 +64,8 @@ VAR levelSuccessFunction = -> FALSE_
     
 === play
     [{previousSceneID}]
-    {previousSceneID : // && LoopCount > 1:
+    {previousSceneID && currentSceneID > previousSceneID: 
+        // && LoopCount > 1:
         +   [BACK] 
             ~ currentSceneID = ()
             ~ temp nextScene = pop_top(previousSceneID)
@@ -138,7 +142,8 @@ VAR levelSuccessFunction = -> FALSE_
     ~ temp nextSceneToHit = getSceneData(currentSceneID, Knot)
     -> nextSceneToHit
 
-
+=== function is(sc)
+    ~ return currentSceneID == sc
 === function before(sc)
     ~ return currentSceneID > sc
 === function after(sc)

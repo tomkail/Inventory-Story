@@ -14,14 +14,17 @@ BackAlleyway,
 BackOfClub, 
 CardTableAtClub, 
 Apartment, 
+AnnieComesFromWork,
 NoteInCar,
 QGivesNoteToAide, 
 QGivesItemToErnst, 
 QGetsDevice,
+AnnieGivesInnerDeviceToContact,
 DeviceRemovedFromCylinder, // TODO!
 DriveAfterWedding,
 Wedding,
 DeviceOperated,
+GoThroughWithWedding,
 __Template
 
 
@@ -42,7 +45,7 @@ Manila envelope - "ER surveillance"
 ~ LoopCount++
 ~ previousSceneID = ()
 
-LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , DeviceOperatedPhoto , ErnstRichardsDies, ManEnteringCarOutsideUNPhoto
+LIST PinboardItems =  (ManilaEnvelope), MetalCylinderPhoto , DeviceStolenFromResearchLab , DeviceOperatedPhoto , ErnstRichardsDies, ManEnteringCarOutsideUNPhoto, DeviceInWallSafe, CylinderInMortuaryPhoto, DeviceRemovedFromCylinderPhoto
 
 VAR PhotosInOpeningEnvelope = (MetalCylinderPhoto  , DeviceOperatedPhoto, ErnstRichardsDies)
 TODO: add "checkpoints" in flow that drop in here 
@@ -56,10 +59,16 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     { x: 
     -   ():                 ~ return 1 
     -   ErnstRichardsDies:  ~ return Graveyard 
+    -   DeviceInWallSafe:   ~ return Apartment
     -   ManEnteringCarOutsideUNPhoto:  ~ return  NoteInCar
     -   DeviceOperatedPhoto:    ~ return DeviceOperated
+    -   CylinderInMortuaryPhoto:    ~ return Mortuary
+    -   DeviceRemovedFromCylinderPhoto: ~ return DeviceRemovedFromCylinder
     }
     ~ return () 
+    
+=== function recordNewPinboardPhoto(photo)
+    ~ PhotosInOpeningEnvelope += photo
 
 === graveyard
 /*
@@ -102,17 +111,27 @@ Wallet
  [ playing card - the KING OF DIAMONDS ]
  */
  
-LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, OtherBusinessCard, OtherOtherBusinessCard, MetroTicket, KingDiamondsCard, Nothing
+ ~ recordNewPinboardPhoto(CylinderInMortuaryPhoto)
+ 
+LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), BusinessCard, QsBusinessCard, OtherOtherBusinessCard, MetroTicket, KingDiamondsCard, Nothing
 
 -> scene( MortuaryTrayItems + WeddingRing,  Wallet, "But something is out of place.") 
 
 === function mortuary_fn(x) 
     { x:
-    - ():                   ~ return 1 
-    - MetroTicket:          ~ return    MetroPlatform
-    - SealedMetalCylinder:  ~ return    MetroPlatform
-    - WeddingRing:          ~ return    Wedding
-    - KingDiamondsCard:     ~ return    BackOfClub
+    - ():                   ~ return    2
+    - (MetroTicket, SealedMetalCylinder):          
+            ~ return    MetroPlatform
+    - (WeddingRing, BusinessCard):          
+            ~ return    Wedding
+    - (KingDiamondsCard, OtherOtherBusinessCard):     
+            ~ return    CardTableAtClub
+    - (QsBusinessCard, MetroTicket): 
+            ~ return QGivesNoteToAide
+    - (QsBusinessCard, WeddingRing): 
+            ~ return Wedding
+    - (QsBusinessCard, SealedMetalCylinder):     
+            ~ return QGetsDevice
     }
     ~ return () 
 
@@ -165,13 +184,14 @@ Kitchens of Hotel. A waiter heads towards the door.
 LIST KitchenItems =  CoffeeOrderSlip, (WaiterNameBadge), (WhiteApron), (Bin), FoodPeelings, EmptyGlassVial, ( CoffeeOnTray ), CoffeeSpoon
 
 
--> scene( KitchenItems, (Bin, WhiteApron) ,  "In bad hands, things go badly. It's that simple.") 
+-> scene( KitchenItems, (Bin, WhiteApron, CoffeeOnTray) ,  "In bad hands, things go badly. It's that simple.") 
 
 === function kitchen_fn(x)  // 2 items 
     { x: 
     -   (): ~ return 2 
-    -   (WaiterNameBadge, WhiteApron):      ~ return HotelBathroom
-    -   (WaiterNameBadge, EmptyGlassVial): ~ return HotelBathroom
+    -   (WaiterNameBadge, WhiteApron):      ~ return BackAlleyway
+    -   (WaiterNameBadge, EmptyGlassVial): ~ return BackAlleyway
+    -   (PianoWire, EmptyGlassVial):     ~ return HotelBathroom
     -   (CoffeeOnTray, EmptyGlassVial):     ~ return HotelBathroom
     -   (CoffeeSpoon, EmptyGlassVial):      ~ return HotelBathroom
     } 
@@ -207,10 +227,9 @@ LIST HotelBathroomItems = (UnconciousWaiter), BlackLeatherFolder, (BlackKitBag) 
 
 === function bathroom_fn (x)
     { x: 
-    - ():   ~ return 1
-    - UnconciousWaiter:         ~ return BackAlleyway
-    -   CasinoChips:            ~ return  BackOfClub
-    -   PhotoOfErnst:           ~ return CardTableAtClub
+    - ():   ~ return 2
+    -  (  UnconciousWaiter, Cosh):      ~ return BackAlleyway
+    -  ( CasinoChips, PhotoOfErnst):    ~ return  BackOfClub
     }
     ~ return () 
     
@@ -234,9 +253,9 @@ LIST HotelAlleywayItems = (DoorLock), PhotoOfErnst,  CasinoChips, BrokenDoorLock
 
 === function alleyway_fn(x) 
     { x: 
-    -   (): ~ return 1 
-    -   CasinoChips:            ~ return BackOfClub
-    -   PhotoOfErnst:           ~ return CardTableAtClub
+    -   (): ~ return 2
+    -   (CasinoChips, PhotoOfErnst):
+            ~ return BackAlleyway
     }
     ~ return ()
 
@@ -305,9 +324,9 @@ Valet parking receipt - Blue Chevy for Ernst Richards
 
 LIST KingDiamondsClubItems =  (HandCards), AceHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), AceHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed, PlayingCard, ( GinAndTonic ), (Croupier) 
 
-VAR cards = (HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades)
+VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades, Croupier )
   
--> scene(KingDiamondsClubItems, cards + Croupier, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
+-> scene(KingDiamondsClubItems, KingDiamondsClubInteractables, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
 
 === function king_diamond_club_fn(x) 
     {x: 
@@ -319,15 +338,19 @@ VAR cards = (HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeC
 
 === apartment
 
-LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey
+LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey 
 
--> scene( ApartmentItems + WeddingRing, (WallSafe, KeyHook),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+-> scene( ApartmentItems + WeddingRing + Annie, (WallSafe, KeyHook, SealedMetalCylinder),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
 
 === function apartment_fn(x) 
-    
+    { currentItems ? SealedMetalCylinder:
+        ~ recordNewPinboardPhoto(DeviceInWallSafe) 
+    }
     {x: 
     - ():   ~ return 2 
     TODO: some way to use the ( AceSpades ): 
+    - ( Annie, CarKey):     
+        ~ return AnnieComesFromWork
     - ( DeadDropNoteFromQuentin, TwoThousandFrancs ): 
         ~ return NoteInCar 
     - ( DeadDropNoteFromQuentin, SealedMetalCylinder ): 
@@ -336,15 +359,31 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
         ~ return DriveAfterWedding
     - ( WeddingRing,  CarKey ) : 
         ~ return DriveAfterWedding  
+    - ( WeddingPhoto,  Annie) : 
+        ~ return Wedding
     - ( WeddingPhoto,  WeddingRing) : 
         ~ return Wedding 
     }
     ~ return () 
     
-    
+=== annie_in_car 
+    LIST AnnieCarItems = (Camera) , (ManNearBlackCar)
+    VAR AnnieCarInteractables = (ManNearBlackCar)
+    -> scene ( AnnieCarItems + CarKey + BlueChevy, AnnieCarInteractables, "I was always watching...") 
+=== function annie_in_car_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   ManEnteringCarOutsideUNPhoto: ~ return NoteInCar
+TODO: A solve 
+    }
+    ~ return () 
+
+
     
 
 === quentin_passes_note 
+
+    ~ recordNewPinboardPhoto(ManEnteringCarOutsideUNPhoto)
 
     LIST OutsideUNBuilding = (BlackCar), QuentinsAide, (ERNameBadge), TwoThousandFrancs
     
@@ -400,16 +439,34 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     }
       ~ return ()   
  
- 
+
+
+=== annie_gives_inner_device 
+    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
+    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
+    -> scene ( AnnieGivesDeviceToItems + Device, AnnieGivesDeviceToInteracts, "Remark") 
+=== function annie_gives_inner_device_fn(x) 
+    { x: 
+    -   ():     ~ return 1 
+    -   Warp:   ~ return Pinboard
+    -   KosakovsThanks:     ~ return GoThroughWithWedding
+    -   MatthewsRelief:      ~ return Pinboard 
+        TODO: change history !!
+    }
+    ~ return () 
  
  
 === device_removed 
-    LIST DeviceRemovedItems =  (ElectricLamp) 
-    VAR DeviceRemovedInteractables = (ElectricLamp, SealedMetalCylinder, Device)
-    -> scene ( DeviceRemovedItems + SealedMetalCylinder, DeviceRemovedInteractables, "Everything has to start somewhere.") 
+    LIST DeviceRemovedItems =  (ElectricLamp) , (BlackChanelBag), WeddingPhotograph, KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop
+    VAR DeviceRemovedInteractables = (ElectricLamp, SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
+    -> scene ( DeviceRemovedItems, DeviceRemovedInteractables, "Everything has to start somewhere.") 
 === function device_removed_fn(x) 
+    { levelItems ? Device: 
+        ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
+    }
     { x: 
-    -   (): ~ return 1
+    -   ():     ~ return 1
+    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
     -   Warp:   ~ return Pinboard
     }
     ~ return () 
@@ -429,12 +486,14 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
  
  
 === wedding  
-    LIST WeddingItems = (Dress)
-    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  (),  "I thought we'd be together forever." )  
+    LIST WeddingItems = (Dress), (Annie), (Quentin), OtherWeddingRing, Wife
+    VAR WeddingInteracts = (Wife, Annie, Quentin)
+    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  WeddingInteracts,  "I thought we'd be together forever." )  
     
 === function wedding_fn(x) 
     {x: 
     -   ():     ~ return 1 
+    -   Warp:   ~ return TopSceneID
 TODO: a solve    
     }
     ~ return () 
@@ -447,15 +506,25 @@ TODO: a solve
     LIST DeviceOperatedItems =  Device, Warp 
     VAR DeviceOperatedInteractables = (SealedMetalCylinder, Device)
     -> scene ( DeviceOperatedItems + SealedMetalCylinder, DeviceOperatedInteractables, "Everything has to start somewhere.") 
+    
 === function device_operated_fn(x) 
     { x: 
     -   ():     ~ return 1
-    -   Warp:   ~ return Pinboard
+    -   Warp:   ~ return TopSceneID
     }
     ~ return () 
     
     
- 
+=== go_through_with_wedding 
+    LIST GoThroughWithItems = (ParkBench) 
+    VAR GoThroughWithInteractables = (Kosakov)
+    -> scene ( GoThroughWithItems + Kosakov + WeddingRing, GoThroughWithInteractables, "Remark") 
+=== function go_through_with_wedding_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+TODO: A solve 
+    }
+    ~ return ()  
  /*
     TEMPLATE
  */
