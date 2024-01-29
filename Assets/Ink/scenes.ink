@@ -3,33 +3,6 @@
 
 LIST NoItemList = NoItem 
 
-LIST Scenes = 
-Pinboard, 
-Graveyard, 
-Mortuary, 
-MetroPlatform, 
-HotelKitchens,
-HotelBathroom,
-BackAlleyway,
-BackOfClub, 
-CardTableAtClub, 
-Apartment, 
-AnnieGivesInnerDeviceToContact,
-DeviceRemovedFromCylinder, 
-ApartmentBeforeErnst,
-AnnieComesFromWork,
-NoteInCar,
-QGivesNoteToAide, 
-QGivesItemToErnst, 
-QGetsDevice,
-DriveAfterWedding,
-Wedding,
-GoThroughWithWedding,
-DeviceOperated,
-
-__Template
-
-
 
 
 === pinboard
@@ -63,9 +36,9 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     -   ErnstRichardsDies:  ~ return Graveyard 
     -   DeviceInWallSafe:   ~ return Apartment
     -   ManEnteringCarOutsideUNPhoto:  ~ return  NoteInCar
-    -   DeviceOperatedPhoto:    ~ return DeviceOperated
+    -   DeviceOperatedPhoto:    ~ return MonitoringStationMorning
     -   CylinderInMortuaryPhoto:    ~ return Mortuary
-    -   DeviceRemovedFromCylinderPhoto: ~ return DeviceRemovedFromCylinder
+    -   DeviceRemovedFromCylinderPhoto: ~ return ApartmentBeforeErnst
     }
     ~ return () 
     
@@ -475,7 +448,8 @@ TODO: A solve
 === function q_receives_cylinder_fn(x) 
     { x: 
     -   (): ~ return 1 
-    -   Nothing: ~ return DeviceRemovedFromCylinder
+    -   Device: ~ return DeviceOperated
+    -   Warp:   ~ return TopSceneID 
     }
       ~ return ()   
  
@@ -523,8 +497,18 @@ TODO: A solve
     }
     ~ return ()  
     
+
     
- 
+ === monitoring_station 
+    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
+    VAR MonitoringInteractables = (LinePrinter, Seisometer, Analyst)
+    -> scene ( MonitoringItems, MonitoringInteractables, "Somewhere, something is happening. Something that affects all of us.") 
+=== function monitoring_station_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   DeviceOperatedPhoto: ~ return DeviceOperated
+    }
+    ~ return () 
   
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 

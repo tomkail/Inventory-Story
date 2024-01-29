@@ -1,3 +1,43 @@
+
+
+LIST Scenes = 
+Pinboard, 
+
+Graveyard, 
+Mortuary, 
+MetroPlatform, 
+
+HotelKitchens,
+HotelBathroom,
+BackAlleyway,
+
+BackOfClub, 
+CardTableAtClub, 
+
+Apartment, 
+AnnieGivesInnerDeviceToContact,
+
+ApartmentBeforeErnst,
+AnnieComesFromWork,
+
+NoteInCar,
+QGivesNoteToAide, 
+
+QGivesItemToErnst, 
+
+QGetsDevice,
+
+DriveAfterWedding,
+Wedding,
+GoThroughWithWedding,
+
+MonitoringStationMorning,
+DeviceOperated,
+
+__Template
+
+
+
 LIST SceneProps = Title, Time, ExitKnot, Knot
 
 === function getSceneData(sceneID, prop) // Title, Time, Knot, Exit
@@ -148,7 +188,14 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   TemplateTime 
     -   Knot:   ~ return -> go_through_with_wedding  
     -   ExitKnot: ~ return -> go_through_with_wedding_fn
-    }    
+    }  
+- MonitoringStationMorning: 
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:   TemplateTime 
+    -   Knot:   ~ return    -> monitoring_station  
+    -   ExitKnot: ~ return  -> monitoring_station_fn
+    }
 - DeviceOperated:
     { prop: 
     -   Title:  TemplateTtle
