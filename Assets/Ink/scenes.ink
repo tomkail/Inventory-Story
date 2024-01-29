@@ -14,13 +14,14 @@ BackAlleyway,
 BackOfClub, 
 CardTableAtClub, 
 Apartment, 
+AnnieGivesInnerDeviceToContact,
+DeviceRemovedFromCylinder, 
+ApartmentBeforeErnst,
 AnnieComesFromWork,
 NoteInCar,
 QGivesNoteToAide, 
 QGivesItemToErnst, 
 QGetsDevice,
-AnnieGivesInnerDeviceToContact,
-DeviceRemovedFromCylinder, // TODO!
 DriveAfterWedding,
 Wedding,
 GoThroughWithWedding,
@@ -337,6 +338,25 @@ VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, T
     ~ return () 
 
 
+
+=== annie_gives_inner_device 
+    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
+    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
+    -> scene ( AnnieGivesDeviceToItems + BlackChanelBag, AnnieGivesDeviceToInteracts, "Remark") 
+=== function annie_gives_inner_device_fn(x) 
+    { x: 
+    -   ():     ~ return 1 
+    -   Warp:   ~ return Pinboard
+    -   KosakovsThanks:     ~ return GoThroughWithWedding
+    -   MatthewsRelief:      ~ return Pinboard 
+        TODO: change history !!
+    }
+    ~ return () 
+ 
+ 
+
+
+
 === apartment
 
 LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey 
@@ -367,14 +387,33 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     }
     ~ return () 
     
+    
+=== apartment_after_ernst 
+    LIST ApartmentWithoutErnstItems = KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop, (BlackChanelBag)
+    VAR ApartmentWithoutErnstInteractables = (WallSafe , SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
+    
+    -> scene ( ApartmentWithoutErnstItems + WallSafe + WeddingPhoto + KeyHook , ApartmentWithoutErnstInteractables, "Remark") 
+=== function apartment_after_ernst_fn(x) 
+    { levelItems ? Device  : 
+        ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
+    }
+    { x: 
+    -   ():     ~ return 1
+    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
+    -   Warp:   ~ return Pinboard
+    } 
+    ~ return ()  
+     
+    
 === annie_in_car 
-    LIST AnnieCarItems = (Camera) , (ManNearBlackCar)
-    VAR AnnieCarInteractables = (ManNearBlackCar)
-    -> scene ( AnnieCarItems + CarKey + BlueChevy, AnnieCarInteractables, "I was always watching...") 
+    LIST AnnieCarItems = (Camera) , (ManNearBlackCar) ,DropNote
+    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag)
+    -> scene ( AnnieCarItems + CarKey + BlueChevy + BlackChanelBag, AnnieCarInteractables, "I was always watching...") 
 === function annie_in_car_fn(x) 
     { x: 
     -   (): ~ return 1 
     -   ManEnteringCarOutsideUNPhoto: ~ return NoteInCar
+    -   DropNote:   ~ return AnnieGivesInnerDeviceToContact
 TODO: A solve 
     }
     ~ return () 
@@ -442,36 +481,6 @@ TODO: A solve
  
 
 
-=== annie_gives_inner_device 
-    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
-    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
-    -> scene ( AnnieGivesDeviceToItems + Device, AnnieGivesDeviceToInteracts, "Remark") 
-=== function annie_gives_inner_device_fn(x) 
-    { x: 
-    -   ():     ~ return 1 
-    -   Warp:   ~ return Pinboard
-    -   KosakovsThanks:     ~ return GoThroughWithWedding
-    -   MatthewsRelief:      ~ return Pinboard 
-        TODO: change history !!
-    }
-    ~ return () 
- 
- 
-=== device_removed 
-    LIST DeviceRemovedItems =  (ElectricLamp) , (BlackChanelBag), WeddingPhotograph, KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop
-    VAR DeviceRemovedInteractables = (ElectricLamp, Lipstick, SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
-    -> scene ( DeviceRemovedItems, DeviceRemovedInteractables, "Everything has to start somewhere.") 
-=== function device_removed_fn(x) 
-    { levelItems ? Device: 
-        ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
-    }
-    { x: 
-    -   ():     ~ return 1
-    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
-    -   Warp:   ~ return Pinboard
-    }
-    ~ return () 
-  
  
  
 === wedding_drive_away 

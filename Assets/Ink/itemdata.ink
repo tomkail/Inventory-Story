@@ -97,6 +97,7 @@
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
     - ErnstRichardsDies:  "Paris. May 1968. Device shell found on theft victim's corpse."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Q."
+    - DropNote:     "Suspected handover at UN building around 3 o'clock today." 
     - DeadDropNoteFromQuentin: "Handover at the Champs du Mars. Midnight tonight. Q."
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
   //  - KoDStamp:     "KoD"
@@ -106,7 +107,7 @@
      
      - KosakovOnTelephone: "Yes? Do you have something for me?"
      
-     - KosakovsDrop:    "The Montmatre Tunnel. Two days time. 11:30pm"
+     - KosakovsDrop:    "We are out of time. Montmatre Tunnel. Tonight. 11:30pm"
      
     -   KosakovsThanks:  
             { is(GoThroughWithWedding): 
@@ -156,10 +157,16 @@
             ~ return KosakovsThanks
         }
     - Matthews: ~ replaceAs(asReplacement, MatthewsRelief)
-    - Lipstick: ~ return SealedMetalCylinder
+    - Lipstick: 
+        { is(AnnieGivesInnerDeviceToContact):
+            ~ return Device
+        }
      - BlackChanelBag: 
-        { isOrAfter(Wedding):
-            ~ return (Lipstick, WeddingPhotograph, KosakovCard )
+        {
+        - is(ApartmentBeforeErnst):
+            ~ return (Lipstick, WeddingPhoto, KosakovCard )
+        - is(AnnieComesFromWork): 
+            ~ return (Lipstick, DropNote, WeddingPhoto)
         - else: 
             ~ return (Lipstick)
         }
@@ -174,7 +181,7 @@
  
     - Croupier: ~ return PileOfChips
     - Device:   ~ return Warp
-    - ElectricLamp: ~ return SealedMetalCylinder
+
      - Wall: ~ return LooseBrick
      - LooseBrick: ~ return SmallPackage
      - Toolbox: ~ return (Screwdriver, Pliers, Wrench)
