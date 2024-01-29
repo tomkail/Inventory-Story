@@ -86,7 +86,7 @@ VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers,
 === function graveyard_fn(x) 
     { x: 
     -   ():                 ~ return 1 
-    -   MoreFlowers:        ~ return Wedding 
+    -   EvenMoreFlowers:        ~ return Wedding 
     -   WeddingRing:        ~ return Mortuary
     }
     ~ return () 
