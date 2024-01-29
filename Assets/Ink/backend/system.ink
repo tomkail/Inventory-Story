@@ -53,7 +53,7 @@ VAR levelSuccessFunction = -> FALSE_
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
     [ {currentSceneID}  ] 
-    >>> Scene (title={title}) (date={date})
+    >>> Scene (title={title}) (date={date}) (count = { levelSuccessFunction(())} ) (initialItems = {levelItems})
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
