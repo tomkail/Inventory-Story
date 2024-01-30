@@ -53,12 +53,13 @@ VAR levelSuccessFunction = -> FALSE_
 === scene(items, interactables, VOLine)
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
-    [ {currentSceneID}  ] 
-    >>> Scene (title={title}) (date={date}) (count = { levelSuccessFunction(())} ) (initialItems = {levelItems})
+    ~ temp solnCount = levelSuccessFunction(())
+    ~ StartScene (currentSceneID, title, date, solnCount, items)
+// only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
-    ~ levelSolutionItemCount = levelSuccessFunction(()) // returns an int
+    ~ levelSolutionItemCount = solnCount // returns an int
     ~ currentItems = () 
     VO: {VOLine}
     -> play 
@@ -121,6 +122,10 @@ VAR levelSuccessFunction = -> FALSE_
             ~ currentItems = ()
         }
     -   ->->
+    
+EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)     
+=== function StartScene  (sceneID, titleText, dateText, slotCount, startingItems) 
+    [ {sceneID}: {titleText} / {dateText} ] 
     
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
