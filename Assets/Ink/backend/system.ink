@@ -17,26 +17,27 @@ VAR levelSuccessFunction = -> FALSE_
     }
 - (opts)
     ~ temp withItem = pop(withItems) 
-    ~ temp asReplacement = false 
-    ~ temp toGenerate = itemGeneratesItems(item, asReplacement)
+    VAR asReplacement = false 
     { levelItems ? withItem || not withItem: 
-        +   { levelItems !? toGenerate}
-            [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
-            
-            ~ addItems(toGenerate) 
-            { 
-            - levelItems ? Warp:
-                ~ removeItem(levelItems - Warp)
-            - asReplacement:
-                ~ removeItem(item) 
-            }
-            [ now {levelItems} ]
-            ->-> 
+        ~ asReplacement = false  // default to false 
+        ~ temp toGenerate = itemGeneratesItems(item)
+        <- use_item(item, withItem, toGenerate, asReplacement)
     } 
     { withItems:    // handle multiple solutions 
         -> opts 
     } 
-
+=  use_item(item, withItem, toGenerate, replacing)
+    +   { levelItems !? toGenerate}
+        [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
+        ~ addItems(toGenerate) 
+        { 
+        - levelItems ? Warp:
+            ~ removeItem(levelItems - Warp)
+        - replacing:
+            ~ removeItem(item) 
+        }
+        [ now {levelItems} ]
+        ->-> 
 
 
 === function addItems(items) 
@@ -52,18 +53,18 @@ VAR levelSuccessFunction = -> FALSE_
 === scene(items, interactables, VOLine)
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
-    [ {currentSceneID}  ] 
-    >>> Scene (title={title}) (date={date})
+    ~ temp solnCount = levelSuccessFunction(())
+    ~ StartScene (currentSceneID, title, date, solnCount, items)
+// only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
-    ~ levelSolutionItemCount = levelSuccessFunction(()) // returns an int
+    ~ levelSolutionItemCount = solnCount // returns an int
     ~ currentItems = () 
     VO: {VOLine}
     -> play 
     
 === play
-    [{previousSceneID}]
     {previousSceneID && currentSceneID > previousSceneID: 
         // && LoopCount > 1:
         +   [BACK] 
@@ -122,6 +123,10 @@ VAR levelSuccessFunction = -> FALSE_
         }
     -   ->->
     
+EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)     
+=== function StartScene  (sceneID, titleText, dateText, slotCount, startingItems) 
+    [ {sceneID}: {titleText} / {dateText} ] 
+    
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
@@ -131,7 +136,9 @@ VAR levelSuccessFunction = -> FALSE_
     }
     
     
-    
+=== function replaceAs(item) 
+    ~ asReplacement = true
+    ~ return item     
 
 === function got(item) 
     ~ return levelItems ? item

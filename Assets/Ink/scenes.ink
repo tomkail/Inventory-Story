@@ -3,31 +3,6 @@
 
 LIST NoItemList = NoItem 
 
-LIST Scenes = 
-Pinboard, 
-Graveyard, 
-Mortuary, 
-MetroPlatform, 
-HotelKitchens,
-HotelBathroom,
-BackAlleyway,
-BackOfClub, 
-CardTableAtClub, 
-Apartment, 
-AnnieComesFromWork,
-NoteInCar,
-QGivesNoteToAide, 
-QGivesItemToErnst, 
-QGetsDevice,
-AnnieGivesInnerDeviceToContact,
-DeviceRemovedFromCylinder, // TODO!
-DriveAfterWedding,
-Wedding,
-DeviceOperated,
-GoThroughWithWedding,
-__Template
-
-
 
 
 === pinboard
@@ -61,9 +36,9 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     -   ErnstRichardsDies:  ~ return Graveyard 
     -   DeviceInWallSafe:   ~ return Apartment
     -   ManEnteringCarOutsideUNPhoto:  ~ return  NoteInCar
-    -   DeviceOperatedPhoto:    ~ return DeviceOperated
+    -   DeviceOperatedPhoto:    ~ return MonitoringStationMorning
     -   CylinderInMortuaryPhoto:    ~ return Mortuary
-    -   DeviceRemovedFromCylinderPhoto: ~ return DeviceRemovedFromCylinder
+    -   DeviceRemovedFromCylinderPhoto: ~ return ApartmentBeforeErnst
     }
     ~ return () 
     
@@ -85,7 +60,7 @@ VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers,
 === function graveyard_fn(x) 
     { x: 
     -   ():                 ~ return 1 
-    -   MoreFlowers:        ~ return Wedding 
+    -   EvenMoreFlowers:        ~ return Wedding 
     -   WeddingRing:        ~ return Mortuary
     }
     ~ return () 
@@ -336,6 +311,25 @@ VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, T
     ~ return () 
 
 
+
+=== annie_gives_inner_device 
+    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
+    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
+    -> scene ( AnnieGivesDeviceToItems + BlackChanelBag, AnnieGivesDeviceToInteracts, "Remark") 
+=== function annie_gives_inner_device_fn(x) 
+    { x: 
+    -   ():     ~ return 1 
+    -   Warp:   ~ return Pinboard
+    -   KosakovsThanks:     ~ return GoThroughWithWedding
+    -   MatthewsRelief:      ~ return Pinboard 
+        TODO: change history !!
+    }
+    ~ return () 
+ 
+ 
+
+
+
 === apartment
 
 LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey 
@@ -366,14 +360,33 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     }
     ~ return () 
     
+    
+=== apartment_after_ernst 
+    LIST ApartmentWithoutErnstItems = KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop, (BlackChanelBag)
+    VAR ApartmentWithoutErnstInteractables = (WallSafe , SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
+    
+    -> scene ( ApartmentWithoutErnstItems + WallSafe + WeddingPhoto + KeyHook , ApartmentWithoutErnstInteractables, "Remark") 
+=== function apartment_after_ernst_fn(x) 
+    { levelItems ? Device  : 
+        ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
+    }
+    { x: 
+    -   ():     ~ return 1
+    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
+    -   Warp:   ~ return Pinboard
+    } 
+    ~ return ()  
+     
+    
 === annie_in_car 
-    LIST AnnieCarItems = (Camera) , (ManNearBlackCar)
-    VAR AnnieCarInteractables = (ManNearBlackCar)
-    -> scene ( AnnieCarItems + CarKey + BlueChevy, AnnieCarInteractables, "I was always watching...") 
+    LIST AnnieCarItems = (Camera) , (ManNearBlackCar) ,DropNote
+    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag)
+    -> scene ( AnnieCarItems + CarKey + BlueChevy + BlackChanelBag, AnnieCarInteractables, "I was always watching...") 
 === function annie_in_car_fn(x) 
     { x: 
     -   (): ~ return 1 
     -   ManEnteringCarOutsideUNPhoto: ~ return NoteInCar
+    -   DropNote:   ~ return AnnieGivesInnerDeviceToContact
 TODO: A solve 
     }
     ~ return () 
@@ -435,47 +448,18 @@ TODO: A solve
 === function q_receives_cylinder_fn(x) 
     { x: 
     -   (): ~ return 1 
-    -   Nothing: ~ return DeviceRemovedFromCylinder
+    -   Device: ~ return DeviceOperated
+    -   Warp:   ~ return TopSceneID 
     }
       ~ return ()   
  
 
 
-=== annie_gives_inner_device 
-    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
-    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
-    -> scene ( AnnieGivesDeviceToItems + Device, AnnieGivesDeviceToInteracts, "Remark") 
-=== function annie_gives_inner_device_fn(x) 
-    { x: 
-    -   ():     ~ return 1 
-    -   Warp:   ~ return Pinboard
-    -   KosakovsThanks:     ~ return GoThroughWithWedding
-    -   MatthewsRelief:      ~ return Pinboard 
-        TODO: change history !!
-    }
-    ~ return () 
- 
- 
-=== device_removed 
-    LIST DeviceRemovedItems =  (ElectricLamp) , (BlackChanelBag), WeddingPhotograph, KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop
-    VAR DeviceRemovedInteractables = (ElectricLamp, SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
-    -> scene ( DeviceRemovedItems, DeviceRemovedInteractables, "Everything has to start somewhere.") 
-=== function device_removed_fn(x) 
-    { levelItems ? Device: 
-        ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
-    }
-    { x: 
-    -   ():     ~ return 1
-    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
-    -   Warp:   ~ return Pinboard
-    }
-    ~ return () 
-  
  
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString
-   -> scene( WeddingCarItems + Dress + WeddingRing, (BlueChevy), "I had never been so happy as the day we got married." ) 
+   -> scene( WeddingCarItems  + WeddingRing, (BlueChevy), "I had never been so happy as the day Ernst and I got married." ) 
    
  === function wedding_car_fn(x) 
      {x: 
@@ -486,21 +470,45 @@ TODO: A solve
  
  
 === wedding  
-    LIST WeddingItems = (Dress), (Annie), (Quentin), OtherWeddingRing, Wife
+    LIST WeddingItems = (Dress), (Annie), (Quentin), OtherWeddingRing, Wife, WifesPromise
     VAR WeddingInteracts = (Wife, Annie, Quentin)
-    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  WeddingInteracts,  "I thought we'd be together forever." )  
+    -> scene(  WeddingItems + MoreFlowers + WeddingRing,  WeddingInteracts,  "That day is one I'd never take back." )  
     
 === function wedding_fn(x) 
     {x: 
-    -   ():     ~ return 1 
-    -   Warp:   ~ return TopSceneID
+    -   ():             ~ return 1 
+    -   WifesPromise:   ~ return GoThroughWithWedding
 TODO: a solve    
     }
     ~ return () 
  
  
  
- 
+=== go_through_with_wedding 
+    LIST GoThroughWithItems = (ParkBench) , Lipstick
+    VAR GoThroughWithInteractables = (Kosakov, BlackChanelBag)
+    -> scene ( GoThroughWithItems + Kosakov + WeddingRing + BlackChanelBag, GoThroughWithInteractables, "Remark") 
+    
+=== function go_through_with_wedding_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   DeviceOperatedPhoto:    ~ return DeviceOperated
+TODO: A solve 
+    }
+    ~ return ()  
+    
+
+    
+ === monitoring_station 
+    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
+    VAR MonitoringInteractables = (LinePrinter, Seisometer, Analyst)
+    -> scene ( MonitoringItems, MonitoringInteractables, "Somewhere, something is happening. Something that affects all of us.") 
+=== function monitoring_station_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   DeviceOperatedPhoto: ~ return DeviceOperated
+    }
+    ~ return () 
   
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 
@@ -515,16 +523,8 @@ TODO: a solve
     ~ return () 
     
     
-=== go_through_with_wedding 
-    LIST GoThroughWithItems = (ParkBench) 
-    VAR GoThroughWithInteractables = (Kosakov)
-    -> scene ( GoThroughWithItems + Kosakov + WeddingRing, GoThroughWithInteractables, "Remark") 
-=== function go_through_with_wedding_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-TODO: A solve 
-    }
-    ~ return ()  
+    
+    
  /*
     TEMPLATE
  */

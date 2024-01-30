@@ -1,3 +1,43 @@
+
+
+LIST Scenes = 
+Pinboard, 
+
+Graveyard, 
+Mortuary, 
+MetroPlatform, 
+
+HotelKitchens,
+HotelBathroom,
+BackAlleyway,
+
+BackOfClub, 
+CardTableAtClub, 
+
+Apartment, 
+AnnieGivesInnerDeviceToContact,
+
+ApartmentBeforeErnst,
+AnnieComesFromWork,
+
+NoteInCar,
+QGivesNoteToAide, 
+
+QGivesItemToErnst, 
+
+QGetsDevice,
+
+DriveAfterWedding,
+Wedding,
+GoThroughWithWedding,
+
+MonitoringStationMorning,
+DeviceOperated,
+
+__Template
+
+
+
 LIST SceneProps = Title, Time, ExitKnot, Knot
 
 === function getSceneData(sceneID, prop) // Title, Time, Knot, Exit
@@ -23,6 +63,15 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> mortuary 
     -   ExitKnot: ~ return -> mortuary_fn
     }
+    
+- AnnieGivesInnerDeviceToContact: 
+    { prop: 
+    - Title:    The Montmatre Tunnel 
+    - Time:     23rd April 1968, 11:27pm
+    - Knot: ~ return -> annie_gives_inner_device
+    - ExitKnot: ~ return -> annie_gives_inner_device_fn
+    }    
+    
 - MetroPlatform: 
     { prop: 
     -   Title:  Metro Platform, Champ de Mars 
@@ -65,6 +114,8 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> kingdiamondsclub 
     -   ExitKnot: ~ return -> king_diamond_club_fn
     }
+
+
 - Apartment: 
     { prop: 
     -   Title:  Apartment, Montpellier
@@ -72,6 +123,15 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> apartment 
     -   ExitKnot: ~ return -> apartment_fn 
     }
+ - ApartmentBeforeErnst:
+    { prop: 
+    -   Title:  Apartment, Montpellier
+    -   Time:   23rd April 1968, 8:09pm
+    -   Knot:   ~ return -> apartment_after_ernst
+    -   ExitKnot: ~ return -> apartment_after_ernst_fn 
+    }   
+ 
+    
 - AnnieComesFromWork: 
     { prop: 
     -   Title:  Outside the UN Building 
@@ -107,20 +167,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
-- AnnieGivesInnerDeviceToContact: 
-    { prop: 
-    - Title:    The Montmatre Tunnel 
-    - Time:     17th Aug 1964. 11:30pm
-    - Knot: ~ return -> annie_gives_inner_device
-    - ExitKnot: ~ return -> annie_gives_inner_device_fn
-    }
-- DeviceRemovedFromCylinder:
-    { prop: 
-    -   Title:   Basement
-    -   Time:    15th Aug 1964, 10:35pm 
-    -   Knot:   ~ return -> device_removed  
-    -   ExitKnot: ~ return -> device_removed_fn
-    }    
+    
 - DriveAfterWedding:
     { prop: 
     -   Title:Leaving the Chapel St Jean 
@@ -135,6 +182,20 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> wedding  
     -   ExitKnot: ~ return -> wedding_fn
     }
+- GoThroughWithWedding:
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:   TemplateTime 
+    -   Knot:   ~ return -> go_through_with_wedding  
+    -   ExitKnot: ~ return -> go_through_with_wedding_fn
+    }  
+- MonitoringStationMorning: 
+    { prop: 
+    -   Title:  TemplateTtle
+    -   Time:   TemplateTime 
+    -   Knot:   ~ return    -> monitoring_station  
+    -   ExitKnot: ~ return  -> monitoring_station_fn
+    }
 - DeviceOperated:
     { prop: 
     -   Title:  TemplateTtle
@@ -142,13 +203,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> device_operated  
     -   ExitKnot: ~ return -> device_operated_fn
     }
-- GoThroughWithWedding:
-    { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
-    -   Knot:   ~ return -> go_through_with_wedding  
-    -   ExitKnot: ~ return -> go_through_with_wedding_fn
-    }
+
 - __Template:
     { prop: 
     -   Title:  TemplateTtle

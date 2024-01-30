@@ -10,13 +10,19 @@
     -   WhiteApron: {after(BackAlleyway):stained} white apron
     -   MetroTicket:        { isOrAfter( MetroPlatform ): bloodstained} metro ticket
     -   ERNameBadge:    security badge
-    
+    - MetalCylinderPhoto: blueprint of small device
+    - ErnstRichardsDies: photo of civilian corpse
+    - DeviceOperatedPhoto: printout of earthquake spike
 //    -   KoDStamp:   stamp
     -   else:         {item} 
     }
-
 === function getItemTooltip(item) 
     {item: 
+    -   Analyst: 
+            "What's the big fuss, dude? Why'd you get me in here so early?" 
+    -   SurprisedAnalyst: 
+            "But that's massive. The machine must be broken. A shockwave like that would have toppled a cityblock."
+    -   WifesPromise:   "Let's stay together, forever."
     -   Kosakov:    "The device, please, Ana."
     -   Matthews:   "Don't even think about giving it to him."
     -   Device:  "Property of the US Army"
@@ -39,7 +45,7 @@
         }
     -   MetroTicket:    "CHAMP DE MARS to MONTPELLIER" 
     -   Gravestone:     "Ernst Richards. Died: 23rd April 1968"
-    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Oct '62"
+    -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Jan '61"
     -   CylinderInMortuaryPhoto: "Found amongst possessions of ER, murder victim."
     -   DeviceRemovedFromCylinderPhoto: "Aug 15th, 1964. Device is removed from protective sheath."
     -   QuentinsAide: 
@@ -96,6 +102,7 @@
     - DeviceStolenFromResearchLab: "Device stolen. April 1962."
     - ErnstRichardsDies:  "Paris. May 1968. Device shell found on theft victim's corpse."
     - NoteFromQuentin:  "Ernie - Hold onto this for me. Keep it safe. Q."
+    - DropNote:     "Suspected handover at UN building around 3 o'clock today." 
     - DeadDropNoteFromQuentin: "Handover at the Champs du Mars. Midnight tonight. Q."
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
   //  - KoDStamp:     "KoD"
@@ -105,7 +112,7 @@
      
      - KosakovOnTelephone: "Yes? Do you have something for me?"
      
-     - KosakovsDrop:    "The Montmatre Tunnel. Two days time. 11:30pm"
+     - KosakovsDrop:    "We are out of time. Montmatre Tunnel. Tonight. 11:30pm"
      
     -   KosakovsThanks:  
             { is(GoThroughWithWedding): 
@@ -122,6 +129,7 @@
     
 === function itemRequiresItem(item) 
     { item: 
+    - Analyst: ~ return DeviceOperatedPhoto
     - Kosakov:
         ~ return (Device, WeddingRing)
     - Matthews: ~ return Device
@@ -144,38 +152,57 @@
     
     
     
-=== function itemGeneratesItems(item, ref asReplacement) 
+=== function itemGeneratesItems(item) 
     {item: 
+    -  Analyst: ~ return replaceAs(SurprisedAnalyst)
+    - LinePrinter: ~ return DeviceOperatedPhoto
     - ParkBench: ~ return Kosakov
     - Kosakov: 
-        ~ replaceAs(asReplacement, KosakovsThanks)
-    - Matthews: ~ replaceAs(asReplacement, MatthewsRelief)
-     - BlackChanelBag: ~ return (SealedMetalCylinder, WeddingPhotograph, KosakovCard)
+        { 
+        - isOrBefore(GoThroughWithWedding): 
+            ~ return (KosakovsThanks, DeviceOperatedPhoto)
+        - else: 
+            ~ return KosakovsThanks
+        }
+    - Matthews: ~ return replaceAs( MatthewsRelief)
+    - Lipstick: 
+        { is(AnnieGivesInnerDeviceToContact):
+            ~ return Device
+        }
+     - BlackChanelBag: 
+        {
+        - is(ApartmentBeforeErnst):
+            ~ return (Lipstick, WeddingPhoto, KosakovCard )
+        - is(AnnieComesFromWork): 
+            ~ return (Lipstick, DropNote, WeddingPhoto)
+        - else: 
+            ~ return (Lipstick)
+        }
      
-     - Telephone: ~ replaceAs(asReplacement, KosakovOnTelephone)
-     - KosakovOnTelephone:  ~ replaceAs(asReplacement, KosakovsDrop)
+     - Telephone: ~ replaceAs( KosakovOnTelephone)
+     - KosakovOnTelephone:  ~ replaceAs( KosakovsDrop)
      
     - ManNearBlackCar: ~ return  ManEnteringCarOutsideUNPhoto
-    - Wife:     ~ return Warp
+    - Wife:     ~ return WifesPromise
     -  Quentin: ~ return OtherWeddingRing
-    - Annie: ~ return replaceAs(asReplacement, Wife)
+    - Annie: ~ return replaceAs( Wife)
  
     - Croupier: ~ return PileOfChips
     - Device:   ~ return Warp
-    - ElectricLamp: ~ return SealedMetalCylinder
+
      - Wall: ~ return LooseBrick
      - LooseBrick: ~ return SmallPackage
      - Toolbox: ~ return (Screwdriver, Pliers, Wrench)
     - SealedMetalCylinder: 
-        { after( DeviceRemovedFromCylinder ) : 
+        { after( ApartmentBeforeErnst ) : 
             ~ return Nothing 
         - else: 
             ~ return Device
         }
-    - DoorLock: ~ return replaceAs(asReplacement, BrokenDoorLock)
+    - DoorLock: ~ return replaceAs( BrokenDoorLock)
     - LockedDrawer: ~ return (TwoThousandFrancs, MapOfParisMetro)
     - RumpledShirt: ~ return KeyOnChain
-    - BlueChevy: ~ return TinCanString
+    - BlueChevy: ~ return (TinCanString, Dress)
     - BlackCar: ~ return QuentinsAide    
     - QuentinsAide: 
         ~ asReplacement = true 
@@ -213,35 +240,35 @@
     - BlackLeatherFolder: 
         ~ return (GlassVialOfPowder, PhotoOfErnst, CasinoChips)
     - Waiter: 
-        ~ return replaceAs(asReplacement, WaiterHandsUp)
+        ~ return replaceAs( WaiterHandsUp)
     - HandCards: ~ return (AceHearts, ThreeClubs, SevenHearts, AceSpades, PlayingCard)
     - AceHeartsReversed:   
-        ~ return replaceAs(asReplacement, AceHearts)
+        ~ return replaceAs( AceHearts)
     - ThreeClubsReversed:   
-        ~ return replaceAs(asReplacement, ThreeClubs)
+        ~ return replaceAs( ThreeClubs)
     - SevenHeartsReversed:  
-        ~ return replaceAs(asReplacement,  SevenHearts )
+        ~ return replaceAs(  SevenHearts )
     - AceSpadesReversed:    
-        ~ return replaceAs(asReplacement,  AceSpades )
+        ~ return replaceAs(  AceSpades )
     - AceHearts:            
-        ~ return replaceAs(asReplacement,  AceHeartsReversed )
+        ~ return replaceAs(  AceHeartsReversed )
     - ThreeClubs:           
-        ~ return replaceAs(asReplacement,  ThreeClubsReversed )
+        ~ return replaceAs(  ThreeClubsReversed )
     - SevenHearts:          
-        ~ return replaceAs(asReplacement,  SevenHeartsReversed )
+        ~ return replaceAs(  SevenHeartsReversed )
     - AceSpades:            
-        ~ return replaceAs(asReplacement,  AceSpadesReversed )
+        ~ return replaceAs(  AceSpadesReversed )
     - PlayingCard:          
-        ~ return replaceAs(asReplacement,  PlayingCardReversed )
+        ~ return replaceAs(  PlayingCardReversed )
     - PlayingCardReversed:  
-        ~ return replaceAs(asReplacement,  PlayingCard )
+        ~ return replaceAs(  PlayingCard )
     - MetalLockBox:         ~ return PileOfChips
     - PileOfChips:          
-        ~ return replaceAs(asReplacement, EvenMoreChips  )
+        ~ return replaceAs( EvenMoreChips  )
     - EvenMoreChips:          
-        ~ return replaceAs(asReplacement,  (EvenEvenMoreChips , ValetReceipt) )
+        ~ return replaceAs(  (EvenEvenMoreChips , ValetReceipt) )
     - ValetReceipt: 
-        ~ return replaceAs(asReplacement, EvenEvenMoreChips)
+        ~ return replaceAs( EvenEvenMoreChips)
     - Jacket:               
         ~ return (Wallet)
     - Gravestone: ~ return ((BunchOfFlowers, AnotherBunchOfFlowers))
@@ -257,6 +284,3 @@
     ERROR: {item} has no generator list 
     
     
-=== function replaceAs(ref asReplacement, item) 
-    ~ asReplacement = true
-    ~ return item 
