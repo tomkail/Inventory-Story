@@ -1,9 +1,39 @@
 
--> proceedTo(TopSceneID)
+// -> proceedTo(TopSceneID)
 
 LIST NoItemList = NoItem 
 
-
+// OpeningSequence
+=== opening_sequence
+    LIST OpeningItems = Agent, Briefcase, KeyOnWristChain
+    { stopping: 
+    -   -> scene(Device, () , "Nevada, 1958. The Hopburg-Steiner is constructed.") 
+    -   -> scene(SealedMetalCylinder, SealedMetalCylinder , "Despite being only palm-sized, be assured this is a device of extreme consequence.") 
+    -   -> scene(Agent, (Agent, Briefcase, SealedMetalCylinder) , "In April 1962, an unknown foreign agent exited the lab in Area 51 with the device in a briefcase.")
+    
+    -   -> proceedTo(MonitoringStationMorning)
+    }
+    
+=== function opening_sequence_fn (x)
+    {x:
+    -   ():         ~ return 1 
+    -   Device:     ~ return OpeningSequence 
+    
+    }
+    ~ return () 
+    
+    
+=== monitoring_station 
+    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
+    VAR MonitoringInteractables = (LinePrinter, Analyst)
+    -> scene ( MonitoringItems, MonitoringInteractables, "Its location remains unknown, but it is believed that is has indeed been activated.") 
+=== function monitoring_station_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   SurprisedAnalyst: ~ return DeviceOperated
+    }
+    ~ return () 
+      
 
 === pinboard
 /*
@@ -28,7 +58,7 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
 
 // allow in ManEnteringCarOutsideUNPhoto / DeviceStolenFromResearchLab if you've been there
 
--> scene( PinboardItems, ManilaEnvelope,  "Something's not right.")
+-> scene( PinboardItems, ManilaEnvelope,  "Something's not right here.")
 
 === function pinboard_exit(x)
     { x: 
@@ -499,17 +529,7 @@ TODO: A solve
     
 
     
- === monitoring_station 
-    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
-    VAR MonitoringInteractables = (LinePrinter, Seisometer, Analyst)
-    -> scene ( MonitoringItems, MonitoringInteractables, "Somewhere, something is happening. Something that affects all of us.") 
-=== function monitoring_station_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   DeviceOperatedPhoto: ~ return DeviceOperated
-    }
-    ~ return () 
-  
+
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 
     VAR DeviceOperatedInteractables = (SealedMetalCylinder, Device)
