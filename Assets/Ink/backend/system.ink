@@ -53,12 +53,13 @@ VAR levelSuccessFunction = -> FALSE_
 === scene(items, interactables, VOLine)
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
+    ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
     ~ temp solnCount = levelSuccessFunction(())
     ~ StartScene (currentSceneID, title, date, solnCount, items)
 // only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
-    ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
+    
     ~ levelSolutionItemCount = solnCount // returns an int
     ~ currentItems = () 
     VO: {VOLine}
