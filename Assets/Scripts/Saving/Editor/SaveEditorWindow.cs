@@ -111,14 +111,14 @@ public class SaveEditorWindow : EditorWindow {
     static void DrawSelectedSave () {
         if(selectedFileSaveState != null) {
             EditorGUILayout.LabelField(SaveEditorWindowSettings.Instance.selectedFile);
-            EditorGUILayout.LabelField("Game Meta Info");
-            EditorGUILayout.TextArea(selectedFileSaveState.gameMetaInformationJSON, GUILayout.MaxHeight(100));
-
-            EditorGUILayout.LabelField("Save Meta Info");
-            EditorGUILayout.TextArea(selectedFileSaveState.saveMetaInformationJSON, GUILayout.MaxHeight(100));
+            // EditorGUILayout.LabelField("Game Meta Info");
+            // EditorGUILayout.TextArea(selectedFileSaveState.gameMetaInfo, GUILayout.MaxHeight(100));
+            //
+            // EditorGUILayout.LabelField("Save Meta Info");
+            // EditorGUILayout.TextArea(selectedFileSaveState.saveMetaInfo, GUILayout.MaxHeight(100));
 
             EditorGUILayout.LabelField("Game JSON");
-            EditorGUILayout.TextArea(selectedFileSaveState.gameJSON, GUILayout.MaxHeight(100));
+            EditorGUILayout.TextArea(selectedFileSaveState.storySaveJson, GUILayout.MaxHeight(100));
         }
     }
 
@@ -184,9 +184,9 @@ public class SaveEditorWindow : EditorWindow {
         if(SaveEditorWindowSettings.Instance.selectedFile != null && File.Exists(SaveEditorWindowSettings.Instance.selectedFile)) {
             selectedFileJSON = File.ReadAllText(SaveEditorWindowSettings.Instance.selectedFile);
             selectedFileSaveState = JsonUtility.FromJson<SaveState>(selectedFileJSON);
-            selectedFileSaveState.gameMetaInformationJSON = JsonBeautifier.FormatJson(selectedFileSaveState.gameMetaInformationJSON);
-            selectedFileSaveState.saveMetaInformationJSON = JsonBeautifier.FormatJson(selectedFileSaveState.saveMetaInformationJSON);
-            selectedFileSaveState.gameJSON = JsonBeautifier.FormatJson(selectedFileSaveState.gameJSON);
+            // selectedFileSaveState.gameMetaInformationJSON = JsonBeautifier.FormatJson(selectedFileSaveState.gameMetaInformationJSON);
+            // selectedFileSaveState.saveMetaInformationJSON = JsonBeautifier.FormatJson(selectedFileSaveState.saveMetaInformationJSON);
+            selectedFileSaveState.storySaveJson = JsonBeautifier.FormatJson(selectedFileSaveState.storySaveJson);
         } else {
             selectedFileJSON = null;
             selectedFileSaveState = null;

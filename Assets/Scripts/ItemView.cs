@@ -1,16 +1,22 @@
+using System.Collections.Generic;
+using EasyButtons;
 using Ink.Runtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+    public const float minWidth = 160;
+    public const float maxWidth = 340;
+    public const float margin = 20;
+    
     public SLayout layout => GetComponent<SLayout>();
     public SLayout background;
     public Draggable draggable => GetComponent<Draggable>();
     public HoverTooltip tooltip => GetComponent<HoverTooltip>();
 
     public InkListItem inkListItem;
-    public TextMeshProUGUI text;
+    public SLayout labelLayout;
     public string description;
     
     bool hovered;
@@ -26,12 +32,27 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         draggable.OnClicked += OnClicked;
     }
 
-    public void Init(InkListItem inkListItem) {
+    public void Init(InkListItem inkListItem, Vector2 position) {
         this.inkListItem = inkListItem;
+        
+        layout.position = position;
+        draggable.SetPositionImmediate(layout.rectTransform.anchoredPosition);
+        
         gameObject.name = $"Item: {this.inkListItem.itemName}";
-        text.text = GameController.Instance.GetItemName(inkListItem);
+        labelLayout.textMeshPro.text = GameController.Instance.GetItemName(inkListItem);
         tooltip.tooltipText = description = GameController.Instance.GetItemTooltip(inkListItem);
+        Layout();
         UpdateSelectionState();
+    }
+
+    [Button]
+    void Layout() {
+        var minContentSize = minWidth + margin * 2;
+        var maxContentSize = maxWidth - margin * 2;
+        labelLayout.textMeshPro.ApplyTightPreferredSize(maxWidth-margin * 2);
+        layout.width = SLayoutUtils.AutoLayoutWithDynamicSizing(layout, new List<LayoutItem>() {new (LayoutItemParams.Fixed(Mathf.Clamp(labelLayout.width, minContentSize, maxContentSize)), labelLayout)}, SLayoutUtils.Axis.X, 0, margin, margin, 0);
+        // layout.height = SLayoutUtils.AutoLayoutWithDynamicSizing(layout, new List<LayoutItem>() {new LayoutItem(LayoutItemParams.Fixed(Mathf.Clamp(labelLayout.height, minContentSize, maxContentSize)), labelLayout)}, SLayoutUtils.Axis.Y, 0, margin, margin, 0);
+        layout.height = SLayoutUtils.AutoLayoutWithDynamicSizing(layout, new List<LayoutItem>() {LayoutItem.Fixed(labelLayout, SLayoutUtils.Axis.Y)}, SLayoutUtils.Axis.Y, 0, margin, margin, 0);
     }
 
     void OnClicked(Draggable arg1, PointerEventData arg2) {
@@ -50,7 +71,7 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void OnStopDragging() {
         tooltip.enabled = true;
         UpdateSelectionState();
-        GameController.Instance.sceneController.OnCompleteDrag(this);
+        GameController.Instance.sceneController.currentLevelController.OnCompleteDrag(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

@@ -38,8 +38,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -329, y: -62}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: -349, y: -39.879997}
+  m_SizeDelta: {x: 280, y: 75.759995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9046512949398434011
 MonoBehaviour:
@@ -53,8 +53,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2d3bbb76de4c45b7d11ba104cebbd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  margin: 20
   background: {fileID: 4044401506347270453}
-  text: {fileID: 5122375188514738414}
+  labelLayout: {fileID: 7390963658065451950}
   description: 
   selectionState: 0
 --- !u!114 &-6866404115651592618
@@ -122,7 +123,7 @@ MonoBehaviour:
   maxDragVelocityRotation: 30
   m_ContentStartPosition: {x: 0, y: 0}
   m_PointerStartLocalCursor: {x: 0, y: 0}
-  dragTargetPosition: {x: -329, y: -62}
+  dragTargetPosition: {x: -349, y: -142}
   _dragVelocity: {x: 0, y: 0}
 --- !u!114 &4985623323321507355
 MonoBehaviour:
@@ -281,6 +282,7 @@ GameObject:
   - component: {fileID: 2819152005423053719}
   - component: {fileID: 8361892238758612133}
   - component: {fileID: 5122375188514738414}
+  - component: {fileID: 7390963658065451950}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -302,11 +304,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 562940238538044133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -40, y: -40}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -20}
+  m_SizeDelta: {x: 240, y: 35.76}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &8361892238758612133
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -404,3 +406,16 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7390963658065451950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4181207561900481985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a957b7a21aa496f898fb4e78cff282, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originTopLeft: 1

@@ -109,6 +109,7 @@ public class StoryController : MonoSingleton<StoryController> {
 	void BindExternalFunctions () {
 		story.onError += OnStoryError;
 		story.variablesState["DEBUG"] = false;
+		story.BindExternalFunction ("Save", SaveLoadManager.Save);
 		// story.BindExternalFunction ("Testing", () => false);
 	}
 	

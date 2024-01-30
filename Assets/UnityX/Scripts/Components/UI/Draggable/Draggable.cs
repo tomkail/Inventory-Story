@@ -12,8 +12,12 @@ public delegate void OnStartDraggingEvent();
 /// </summary>
 public delegate void OnStopDraggingEvent();
 
-public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerClickHandler {
-	public RectTransform rectTransform => (RectTransform)transform;
+public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHandler {
+	public RectTransform rectTransform {
+		get {
+			return (RectTransform)transform;
+		}
+	}
 	public PointerEventData lastPointerEventData;
 
 	/// <summary>
@@ -29,7 +33,11 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	public Action<Draggable, PointerEventData> OnClicked;
 	
 	// Container this object resides inside
-	public RectTransform viewRect => (RectTransform)transform.parent;
+	public RectTransform viewRect {
+		get {
+			return (RectTransform)transform.parent;
+		}
+	}
 
 	/// If the target position is controlled here or elsewhere
 	// public bool setTargetPositionAutomatically = true;
@@ -126,7 +134,6 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	}
 	
 	void StopDragging (bool revert = false) {
-		if (!dragging) return;
 		dragging = false;
 		dragVelocity = Vector2.zero;
 		dragOffset = Vector2.zero;

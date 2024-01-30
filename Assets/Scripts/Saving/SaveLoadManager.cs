@@ -70,29 +70,7 @@ public static class SaveLoadManager {
     }
 
     public static string GetSaveStateJSON () {
-        return JsonUtility.ToJson(CreateSaveState());
-    }
-
-
-    public static SaveState CreateSaveState () {
-        SaveState saveState = new SaveState();
-        
-        System.Text.StringBuilder saveDescriptionSB = new System.Text.StringBuilder();
-        // saveDescriptionSB.AppendLine("Game state is "+GameController.Instance.gameModel.levelName+" turn "+GameController.Instance.gameModel.currentTurn+". ");
-        saveState.saveDescription = saveDescriptionSB.ToString();
-
-        var gameMetaInfo = new GameMetaInformation();
-        gameMetaInfo.gameName = Application.productName;
-        
-        var saveMetaInfo = new SaveMetaInformation();
-        saveMetaInfo.saveVersion = new SaveVersion(SaveVersion.buildSaveVersion);
-        saveMetaInfo.saveDateTime = System.DateTime.Now;
-
-        saveState.gameMetaInformationJSON = JsonUtility.ToJson(gameMetaInfo);
-        saveState.saveMetaInformationJSON = JsonUtility.ToJson(saveMetaInfo);
-        saveState.gameJSON = RequestGameSaveJSON();
-        
-        return saveState;
+        return JsonUtility.ToJson(RequestGameSaveJSON());
     }
 
     public static void LoadSaveState (string saveStateJSON) {
@@ -101,13 +79,11 @@ public static class SaveLoadManager {
         if (string.IsNullOrEmpty(saveStateJSON)) throw new InvalidSaveException("Save state JSON is null or empty");
         SaveState saveState = JsonUtility.FromJson<SaveState>(saveStateJSON);
 
-        // GameMetaInformation gameMetaInfo = JsonUtility.FromJson<GameMetaInformation>(saveState.gameMetaInformationJSON);
-        SaveMetaInformation saveMetaInfo = JsonUtility.FromJson<SaveMetaInformation>(saveState.saveMetaInformationJSON);
-        if(saveMetaInfo.saveVersion.version < SaveVersion.minCompatableSaveVersion) {
-	        throw new InvalidSaveException("Can't load save because save version "+saveMetaInfo.saveVersion.version+" is less than minimum compatible version "+SaveVersion.minCompatableSaveVersion);
+        if(saveState.saveMetaInfo.saveVersion.version < SaveVersion.minCompatableSaveVersion) {
+	        throw new InvalidSaveException("Can't load save because save version "+saveState.saveMetaInfo.saveVersion.version+" is less than minimum compatible version "+SaveVersion.minCompatableSaveVersion);
         }
         
-        OnLoadGameSaveState(saveState.gameJSON);
+        OnLoadGameSaveState(saveState.storySaveJson);
     }
     
     public class InvalidSaveException : Exception

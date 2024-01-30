@@ -114,6 +114,8 @@ public class LayoutItem {
     
     public LayoutItem(LayoutItemParams layoutItemParams, bool expandSize, float pivot, params SLayout[] layouts) {
         this.layoutItemParams = layoutItemParams;
+        this.expandSize = expandSize;
+        this.pivot = pivot;
         if(layouts is {Length: > 0}) this.layouts = new List<SLayout>(layouts);
     }
 

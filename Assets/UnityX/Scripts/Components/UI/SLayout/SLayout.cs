@@ -881,6 +881,12 @@ public partial class SLayout : UIBehaviour {
 		return targetLayoutPos;
 	}
 
+	public Vector2 LocalToScreenPosition(Vector2 localPos) {
+		var worldPos = ConvertPositionToTarget(localPos, null);
+		Camera cam = canvas.renderMode == RenderMode.ScreenSpaceCamera || canvas.renderMode == RenderMode.WorldSpace ? canvas.worldCamera : null;
+		return RectTransformUtility.WorldToScreenPoint(cam, worldPos);
+	}
+
 	/// <summary>
 	/// Converts a rect in local space of this SLayout to the local space of another SLayout. Local space is relative to the layout's position and direction as specified by the "origin top left" property
 	/// If you pass a null SLayout, it will get the rect in the space of the canvas.

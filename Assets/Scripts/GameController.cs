@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Ink.Runtime;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -8,10 +9,6 @@ using Random = UnityEngine.Random;
 public class GameController : MonoSingleton<GameController> {
     public TextAsset storyJson;
     public Story story => StoryController.Instance.story;
-
-    public InkListChangeHandler levelItems;
-    // InkListChangeHandler currentItems;
-    // InkListChangeHandler currentAnswerSet;
 
     public SceneController sceneController;
     // public Button confirmButton;
@@ -23,17 +20,48 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     string RequestGameSaveJSON() {
-        return story.state.ToJson();
+        SaveState saveState = new SaveState();
+    
+        System.Text.StringBuilder saveDescriptionSB = new System.Text.StringBuilder();
+        // saveDescriptionSB.AppendLine("Game state is "+GameController.Instance.gameModel.levelName+" turn "+GameController.Instance.gameModel.currentTurn+". ");
+        saveState.saveDescription = saveDescriptionSB.ToString();
+
+        saveState.gameMetaInfo = new GameMetaInformation();
+        saveState.gameMetaInfo.gameName = Application.productName;
+    
+        saveState.saveMetaInfo = new SaveMetaInformation();
+        saveState.saveMetaInfo.saveVersion = new SaveVersion(SaveVersion.buildSaveVersion);
+        saveState.saveMetaInfo.saveDateTime = System.DateTime.Now;
+
+        saveState.storySaveJson = story.state.ToJson();
+
+        foreach (var level in sceneController.levels) {
+            var levelItemStates = new List<LevelItemState>();
+            foreach (var item in level.itemViews) {
+                levelItemStates.Add(new LevelItemState() {
+                    inkListItem = item.inkListItem,
+                    position = item.layout.position,
+                });
+            }
+            saveState.levelStates.Add(new LevelState() {
+                itemStates = levelItemStates
+            });
+        }
+    
+        return JsonUtility.ToJson(saveState);
     }
 
     void OnLoadGameSaveState(string saveStateJson) {
         Clear();
-        BeginGame(saveStateJson);
+        var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
+        BeginGame(saveState);
     }
 
     void Start () {
         Clear();
-        BeginGame(SaveLoadManager.ReadFromSaveFile());
+        var saveStateJson = SaveLoadManager.ReadFromSaveFile();
+        var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
+        BeginGame(saveState);
     }
 
     void Update() {
@@ -42,53 +70,14 @@ public class GameController : MonoSingleton<GameController> {
     }
 
 
-    void BeginGame(string saveStateJson = null) {
-        StoryController.Instance.InitStory(storyJson, saveStateJson);
+    void BeginGame(SaveState saveState) {
+        StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
         StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
-        // confirmButton.onClick.AddListener(() => {
-        //     
-        // });
         
-        // slotGroup.draggableGroup.OnSlottedDraggable += (draggable, slot) => {
-        //     // TryCompleteLevel();
-        //     var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
-        //     if (choice != null) {
-        //         StoryController.Instance.MakeChoice(choice.index);
-        //     }
-        // };
-        // slotGroup.draggableGroup.OnUnslottedDraggable += (draggable, slot) => {
-        //     var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains(draggable.GetComponent<ItemView>().inkListItem.itemName));
-        //     if (choice != null) {
-        //         StoryController.Instance.MakeChoice(choice.index);
-        //     }
-        // };
-        
-        
-        levelItems = new InkListChangeHandler("levelItems");
-        levelItems.AddVariableObserver(story);
-        levelItems.OnChange += sceneController.OnChangeLevelItems;
-        levelItems.RefreshValue(story, false);
-        
-        // currentItems = new InkListChangeHandler("currentItems");
-        // currentItems.AddVariableObserver(story);
-        // currentItems.OnChange += OnChangeCurrentItems;
-        // currentItems.RefreshValue(story, false);
-
-        story.ObserveVariable("levelSolutionItemCount", (varName, newValue) => {
-            sceneController.OnChangeCurrentLevelAnswerSet((int) newValue);
-        });
-
-        /*
-        currentAnswerSet = new InkListChangeHandler("levelSolutionItems");
-        currentAnswerSet.AddVariableObserver(story);
-        currentAnswerSet.OnChange += OnChangeCurrentLevelAnswerSet;
-        currentAnswerSet.RefreshValue(story, false);
-        */
         
         StoryController.Instance.Begin();
-        sceneController.slotGroup.Init((int)story.variablesState["levelSolutionItemCount"]);
     }
-    
+
     void Restart() {
         Clear();
         Start();
@@ -124,10 +113,27 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     public string GetItemName(InkListItem inkListItem) {
-        return story.RunInkFunction<string>("getItemName", InkListItemToInkList(inkListItem));
+        var str = story.RunInkFunction<string>("getItemName", InkListItemToInkList(inkListItem));
+        if (str.ToLower() != str) {
+            // No item name exists for this item
+            // Debug.LogWarning("getItemName didn't return improved name for " + inkListItem.itemName);
+            StringBuilder sb = new StringBuilder();
+            sb.Append(char.ToUpper(str[0])); // Ensure the first character is uppercase.
+            for (int i = 1; i < str.Length; i++) {
+                if (char.IsUpper(str[i])) {
+                    sb.Append(' ');
+                    sb.Append(char.ToLower(str[i]));
+                } else {
+                    sb.Append(str[i]);
+                }
+            }
+            return sb.ToString();
+        }
+        return InkStylingUtility.ProcessText(str);
     }
     public string GetItemTooltip(InkListItem inkListItem) {
-        return story.RunInkFunction<string>("getItemTooltip", InkListItemToInkList(inkListItem));
+        var str = story.RunInkFunction<string>("getItemTooltip", InkListItemToInkList(inkListItem));
+        return InkStylingUtility.ProcessText(str);
     }
     
     public InkList InkListItemToInkList(InkListItem inkListItem) {
