@@ -297,18 +297,36 @@ Valet parking receipt - Blue Chevy for Ernst Richards
 
 */
 
-LIST KingDiamondsClubItems =  (HandCards), AceHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), AceHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed, PlayingCard, ( GinAndTonic ), (Croupier) 
+LIST KingDiamondsClubItems =  (HandCards), QueenHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), QueenHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed, PlayingCard, ( GinAndTonic ), (Croupier) 
 
-VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades, Croupier )
+VAR KingDiamondsClubInteractables = ( HandCards, QueenHeartsReversed, QueenHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades, Croupier )
   
 -> scene(KingDiamondsClubItems, KingDiamondsClubInteractables, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
 
 === function king_diamond_club_fn(x) 
     {x: 
     -   ():     ~ return 1 
-    -   AceSpadesReversed:  ~ return Apartment 
+    -   AceSpadesReversed:      ~ return Apartment
+    -   ValetReceipt:            ~ return ParkingLot
     }
     ~ return () 
+
+
+
+=== parking_lot 
+   
+    LIST ParkingLotItems = (Valet) , (KingDiamondsNightclub)
+    VAR ParkingLotInteractables = (Valet, BlueChevy)
+    -> scene ( ParkingLotItems + BlueChevy + CarKey, ParkingLotInteractables, "Remark") 
+    
+=== function parking_lot_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   CarKey:     ~ return Apartment
+    -   Camera:     ~ return AnnieComesFromWork
+    }
+    ~ return ()  
+
 
 
 
@@ -334,7 +352,7 @@ VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, T
 
 LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey 
 
--> scene( ApartmentItems + WeddingRing + Annie, (WallSafe, KeyHook, SealedMetalCylinder),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+-> scene( ApartmentItems + WeddingRing + Annie + Wallet, (WallSafe, KeyHook, SealedMetalCylinder),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
 
 === function apartment_fn(x) 
     { currentItems ? SealedMetalCylinder:
@@ -343,6 +361,8 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     {x: 
     - ():   ~ return 2 
     TODO: some way to use the ( AceSpades ): 
+    - (AceSpades, KingDiamondsCard):    
+        ~ return StealCardFromKingDiamonds
     - ( Annie, CarKey):     
         ~ return AnnieComesFromWork
     - ( DeadDropNoteFromQuentin, TwoThousandFrancs ): 
@@ -379,8 +399,8 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
      
     
 === annie_in_car 
-    LIST AnnieCarItems = (Camera) , (ManNearBlackCar) ,DropNote
-    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag)
+    LIST AnnieCarItems = Camera , (ManNearBlackCar) ,DropNote
+    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag, BlueChevy )
     -> scene ( AnnieCarItems + CarKey + BlueChevy + BlackChanelBag, AnnieCarInteractables, "I was always watching...") 
 === function annie_in_car_fn(x) 
     { x: 
@@ -428,6 +448,8 @@ TODO: A solve
     
 
 
+
+
     
 === item_from_quentin  
     LIST UNDeskJobItems =  (USFlag), (DeskPlate), Envelope, NoteFromQuentin 
@@ -439,6 +461,29 @@ TODO: A solve
                 ~ return QGetsDevice
     }
     ~ return () 
+ 
+ 
+ 
+ === king_clubs_steal_card
+ 
+    LIST KingClubsStealCardItems = StolenCard 
+    VAR KingClubsStealCardInteractables = (HandCards, Jacket, Croupier)
+    -> scene ( KingClubsStealCardItems + Croupier + PileOfChips + Jacket, KingClubsStealCardInteractables, "I think Ernst died because he took something he shouldn't have taken.") 
+ === function king_clubs_steal_card_fn(x)
+ 
+    { x: 
+    -   (): ~ return 1
+TODO: forwards?!
+    - (PlayingCard): 
+        ~ return CardTableAtClub 
+    - (QueenHearts): 
+        ~ return Wedding 
+    - (StolenCard):  
+        ~ return Apartment 
+    
+    }
+    ~ return () 
+ 
  
  
  === quentin_receives_metal_cylinder 
@@ -454,8 +499,18 @@ TODO: A solve
       ~ return ()   
  
 
-
- 
+/// GamblersAnonymous
+=== gamblers_anonymous
+    LIST GamblersItems = (Circle) , GroupSupport
+    VAR GamblersInteractables = (Circle)
+    -> scene ( GamblersItems, GamblersInteractables, "Ernst tried to get help, but somehow, it would never stick.") 
+=== function gamblers_anonymous_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+// this doesn't make sense    
+    - GroupSupport:     DriveAfterWedding 
+    }
+    ~ return () 
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString

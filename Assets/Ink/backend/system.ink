@@ -42,6 +42,9 @@ VAR levelSuccessFunction = -> FALSE_
 
 === function addItems(items) 
     ~ levelItems += items
+    ~ temp replacements = itemReplacesItemWhenGenerated(items) 
+    ~ removeItem(replacements) 
+    
     
 === function removeItem(items)
     ~ levelItems -= items
