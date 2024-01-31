@@ -90,9 +90,9 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     void Clear() {
+        sceneController.Clear();
         StoryController.Instance.OnParsedInstructions -= OnParsedStoryInstructions;
         StoryController.Instance.EndStory();
-        sceneController.Clear();
     }
 
     void OnParsedStoryInstructions() {

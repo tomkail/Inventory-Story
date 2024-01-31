@@ -790,7 +790,7 @@ public partial class SLayout : UIBehaviour {
 		return layoutRect;
     }
 	
-	// This returns a coordinate to be applied to this object's position property. Setting it to the center property may result in the object being offset by the pivot!
+	// This returns a coordinate to be applied to this object's position property
     public Vector2 WorldToSLayoutPosition (Vector3 worldPoint) {
 		var rt = rectTransform;
 		var parentRectT = rt.parent as RectTransform;
@@ -798,14 +798,14 @@ public partial class SLayout : UIBehaviour {
 		var localPoint = transform.parent.InverseTransformPoint(worldPoint);
 		Vector2 anchoredPos = (Vector2)localPoint + pivot;
 		
-		float toLeftEdge = rt.pivot.x * rt.rect.width;
+		float toLeftEdge = rt.pivot.x * width;
 		float parentToLeftEdge = parentRectT.pivot.x * parentRectT.rect.width;
 		float leftInset = parentToLeftEdge - toLeftEdge;
 		anchoredPos.x += leftInset;
 		
 		if( originTopLeft ) {
 			// This calculation can almost certainly be simplied a LOT. This system confuses the heck out of me and I worked it out by just hacking things about.
-			float toTopEdge = (1.0f-rt.pivot.y) * rt.rect.height;
+			float toTopEdge = (1.0f-rt.pivot.y) * height;
 			float parentToTopEdge = (1.0f-parentRectT.pivot.y) * parentRectT.rect.height;
 			float topInset = parentToTopEdge - toTopEdge;
 			anchoredPos.y += topInset;
@@ -814,9 +814,10 @@ public partial class SLayout : UIBehaviour {
 			anchoredPos.y -= parentRectT.rect.height * (parentRectT.pivot.y - 0.5f) * 2;
 			// BUG - this line doesn't work when called when animating the rect, because the height is not yet updated.
 			// Fixing it is probably a pain - we probably need to pass in the height (or really a model of the layout with the height already set)
-			anchoredPos.y -= rt.rect.height * (1-rt.pivot.y) * 2;
+			anchoredPos.y -= height * (1-rt.pivot.y) * 2;
+			anchoredPos.y += height;
 		} else {
-			float toBottomEdge = rt.pivot.y * rt.rect.height;
+			float toBottomEdge = rt.pivot.y * height;
 			float parentToBottomEdge = parentRectT.pivot.y * parentRectT.rect.height;
 			float bottomInset = parentToBottomEdge - toBottomEdge;
 			anchoredPos.y += bottomInset;

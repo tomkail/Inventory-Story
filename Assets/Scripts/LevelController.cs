@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Ink.Runtime;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -12,13 +13,14 @@ using Random = UnityEngine.Random;
 public class LevelController : MonoBehaviour {
     public Story story => GameController.Instance.story;
     public SLayout layout => GetComponent<SLayout>();
-    public RectTransform itemContainer;
+    public RectTransform itemContainer { get; private set; }
     public List<ItemView> itemViews = new List<ItemView>();
+    public ItemView draggingItem => itemViews.FirstOrDefault(x => x.draggable.dragging);
     public LevelRequiredItemsSlotGroup slotGroup;
     public ItemSpawnLocation[] itemSpawnLocations => GetComponentsInChildren<ItemSpawnLocation>();
 
 
-    public InkListChangeHandler levelItems;
+    public InkListChangeHandler levelItemsObserver;
     
     public Action OnInit;
     public Action OnSetAsCurrentLevel;
@@ -27,7 +29,11 @@ public class LevelController : MonoBehaviour {
     public Action OnUnsetVisibleLevel;
     
     public LevelState levelState;
-    
+
+    void Awake() {
+        CreateItemContainer();
+    }
+
     public void Init(SceneInstruction sceneInstruction) {
         levelState = new LevelState() {
             titleText = sceneInstruction.title,
@@ -35,34 +41,39 @@ public class LevelController : MonoBehaviour {
         };
         OnInit?.Invoke();
     }
-    
+
     public void Init(LevelState levelState) {
         this.levelState = levelState;
         OnInit?.Invoke();
     }
+    
+    public void Init(LevelLoadParams levelLoadParams) {
+        levelItemsObserver = new InkListChangeHandler("levelItems");
+        levelItemsObserver.OnChange += OnChangeLevelItems;
+        
+        this.levelState = new LevelState() {
+            sceneId = levelLoadParams.sceneId.fullName,
+            titleText = levelLoadParams.titleText,
+            dateText = levelLoadParams.dateText
+        };
+        OnInit?.Invoke();
+    }
 
     public void SetAsCurrentLevel() {
-        levelItems = new InkListChangeHandler("levelItems");
-        levelItems.AddVariableObserver(story);
-        levelItems.OnChange += OnChangeLevelItems;
-        
+        levelItemsObserver.AddVariableObserver(story);
         story.ObserveVariable("levelSolutionItemCount", OnChangeSolutionItemCount);
         
         slotGroup.Init((int)story.variablesState["levelSolutionItemCount"]);
-        levelItems.RefreshValue(story, false);
+        levelItemsObserver.RefreshValue(story, false);
         
         OnSetAsCurrentLevel?.Invoke();
     }
 
     public void UnsetAsCurrentLevel() {
+        levelItemsObserver.RemoveVariableObserver(story);
         story.RemoveVariableObserver(OnChangeSolutionItemCount);
         
         OnUnsetAsCurrentLevel?.Invoke();
-        
-        // Clear();
-        // GameController.Instance.story.variablesState[GameController.Instance.levelItems.variableName] = new InkList();
-        // GameController.Instance.levelItems.Reset();
-        // GameController.Instance.levelItems.RefreshValue(GameController.Instance.story, false);
     }
     
     public void SetAsVisibleLevel() {
@@ -74,7 +85,8 @@ public class LevelController : MonoBehaviour {
     }
 
     public Vector3 GetWorldSpawnLocationForItem(InkListItem item) {
-        var spawnLocation = itemSpawnLocations.FirstOrDefault(x => x.gameObject.name == item.itemName);
+        var spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.fullName, StringComparison.OrdinalIgnoreCase));
+        if(spawnLocation == null) spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.itemName, StringComparison.OrdinalIgnoreCase));
         if(spawnLocation != null) return spawnLocation.transform.position;
         var randomLocalPos = new Vector2(Random.Range(itemContainer.rect.xMin, itemContainer.rect.xMax), Random.Range(itemContainer.rect.yMin, itemContainer.rect.yMax));
         return itemContainer.TransformPoint(randomLocalPos);
@@ -92,7 +104,7 @@ public class LevelController : MonoBehaviour {
     }
 
     void OnChangeSolutionItemCount(string variablename, object newValue) {
-        OnChangeCurrentLevelAnswerSet((int) newValue);
+        OnChangeCurrentLevelAnswerSet((int)StoryController.TryCoerce<int>(newValue));
     }
 
     public void OnChangeCurrentLevelAnswerSet(int newSlotCount) {// IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
@@ -102,10 +114,16 @@ public class LevelController : MonoBehaviour {
     void CreateItemView(InkListItem inkListItem) {
         var item = Instantiate(PrefabDatabase.Instance.itemViewPrefab, itemContainer);
         itemViews.Add(item);
-        item.Init(inkListItem, new Vector2(Random.Range(0, item.layout.parentRect.width-item.layout.width), Random.Range(0, item.layout.parentRect.height-item.layout.height)));
+        item.Init(inkListItem);
+        var itemWorldPosition = GetWorldSpawnLocationForItem(inkListItem);
+        item.targetLocalPoint = item.layout.parentRectTransform.InverseTransformPoint(itemWorldPosition);
+        var localSpawnPoint = item.targetLocalPoint + RandomX.onUnitCircle * Random.Range(100, 200);
+        localSpawnPoint = item.GetClampedAnchoredPositionInsideParent(localSpawnPoint);
+        item.SetWorldPosition(item.layout.parentRectTransform.TransformPoint(localSpawnPoint));
+        
         slotGroup.draggableGroup.draggables.Add(item.draggable);
     }
-    
+
     void DestroyItemView(InkListItem inkListItem) {
         itemViews.Where(view => view.inkListItem.Equals(inkListItem)).ToList().ForEach(view => {
             slotGroup.draggableGroup.draggables.Remove(view.draggable);
@@ -113,10 +131,8 @@ public class LevelController : MonoBehaviour {
             Destroy(view.gameObject);
         });
     }
-
-
-
-    public void OnCompleteDrag(ItemView item) {
+    
+    public void OnCompleteItemDrag(ItemView item) {
         /*
         if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
             foreach (var wrongItemList in wrongItems) {
@@ -142,7 +158,8 @@ public class LevelController : MonoBehaviour {
             // Check - have we solved the level?
             if (story.RunInkFunction<bool>("checkForSolution")) {
                 var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains("SOLVED"));
-                StoryController.Instance.MakeChoice(choice.index);
+                if(choice != null)
+                    StoryController.Instance.MakeChoice(choice.index);
             } else {
                 foreach (var itemList in (InkList)story.variablesState["currentItems"]) {
                     var itemView = itemViews.FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
@@ -158,6 +175,16 @@ public class LevelController : MonoBehaviour {
     public void LoadBackground(BackgroundInstruction backgroundInstruction) {
         Debug.Log(backgroundInstruction.assetPath);
         // background.sprite = Resources.Load<Sprite>(backgroundInstruction.assetPath);
+    }
+    
+    void CreateItemContainer() {
+        itemContainer = new GameObject("Items").AddComponent<RectTransform>();
+        itemContainer.gameObject.AddComponent<SLayout>();
+        itemContainer.SetParent(transform, false);
+        itemContainer.SetAsLastSibling();
+        itemContainer.anchorMin = new Vector2(0, 0);
+        itemContainer.anchorMax = new Vector2(1,1);
+        itemContainer.sizeDelta = new Vector2(0,0);
     }
     
     public void Clear() {

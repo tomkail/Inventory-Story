@@ -393,41 +393,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originTopLeft: 1
---- !u!1 &1911621096777582026
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5144150422340474094}
-  m_Layer: 5
-  m_Name: Items
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &5144150422340474094
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1911621096777582026}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 853309545565985850}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3093251342870131511
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +428,6 @@ RectTransform:
   m_Children:
   - {fileID: 2023603970054644730}
   - {fileID: 1992175089748251900}
-  - {fileID: 5144150422340474094}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -483,13 +447,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502298b57296a44a493828dfae61568b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemContainer: {fileID: 5144150422340474094}
   itemViews: []
   slotGroup: {fileID: 2739278130948574216}
-  levelItems:
+  levelItemsObserver:
     _variableName: 
     observing: 0
   levelState:
+    sceneId: 
     titleText: 
     dateText: 
     itemStates: []
@@ -875,7 +839,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 274, y: 102}
+  m_AnchoredPosition: {x: 206, y: 87}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2567993325384078100

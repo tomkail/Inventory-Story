@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Ink.Runtime;
 using TMPro;
 using UnityEngine;
 
@@ -26,7 +27,15 @@ public class SceneController : MonoBehaviour {
     }
 
     public void Clear() {
-        if(currentLevelController != null) currentLevelController.Clear();
+        SetCurrentLevel(null);
+        swipeView.targetPage = null;
+        for (var index = levels.Count - 1; index >= 0; index--) {
+            var level = levels[index];
+            swipeView.pages.Remove(level.layout.rectTransform);
+            level.Clear();
+            Destroy(level.gameObject);
+            levels.RemoveAt(index);
+        }
     }
     
     public void PerformContent(ScriptContent content) {
@@ -53,6 +62,20 @@ public class SceneController : MonoBehaviour {
 
         var newLevelController = Instantiate(PrefabDatabase.Instance.levelPrefab, levelsContainer.transform);
         newLevelController.Init(sceneInstruction);
+        
+        levels.Add(newLevelController);
+        swipeView.pages.Add(newLevelController.layout.rectTransform);
+        
+        LayoutLevels();
+        SetCurrentLevel(newLevelController);
+        SetVisibleLevel(newLevelController);
+    }
+
+    public void StartScene(LevelLoadParams levelLoadParams) {
+        SaveLoadManager.Save();
+
+        var newLevelController = Instantiate(PrefabDatabase.Instance.levelPrefab, levelsContainer.transform);
+        newLevelController.Init(levelLoadParams);
         
         levels.Add(newLevelController);
         swipeView.pages.Add(newLevelController.layout.rectTransform);

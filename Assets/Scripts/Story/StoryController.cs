@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Ink.Runtime;
 
@@ -110,6 +111,20 @@ public class StoryController : MonoSingleton<StoryController> {
 		story.onError += OnStoryError;
 		story.variablesState["DEBUG"] = false;
 		story.BindExternalFunction ("Save", SaveLoadManager.Save);
+		story.BindExternalFunctionGeneral("StartScene", (args) => {
+			var levelLoadParams = new LevelLoadParams();
+			levelLoadParams.sceneId = ((InkList)TryCoerce<InkList>(args[0])).FirstOrDefault().Key; 
+			levelLoadParams.titleText = (string)TryCoerce<string>(args[1]); 
+			levelLoadParams.dateText = (string)TryCoerce<string>(args[2]); 
+			levelLoadParams.slotCount = (int)TryCoerce<int>(args[3]);
+			levelLoadParams.startingItems = (InkList) TryCoerce<InkList>(args[4]);
+	
+			GameController.Instance.sceneController.StartScene(levelLoadParams);
+			return null;
+		});
+		// story.BindExternalFunction("StartScene", (InkListItem sceneId, string titleText, string dataText, int slotCount, InkList startingItems) => {
+		// 	GameController.Instance.sceneController.StartScene(sceneId, titleText, dataText, slotCount, startingItems);
+		// });
 		// story.BindExternalFunction ("Testing", () => false);
 	}
 	
@@ -123,12 +138,54 @@ public class StoryController : MonoSingleton<StoryController> {
 			DebugX.LogError("Ink Error: "+message);
 		}
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+	public static T TryCast<T>(object value) {
+		if (value is T value1) return value1;
+		else {
+			Debug.LogError ("Failed to cast " + value.GetType ().Name + " to " + typeof(T).Name);
+			return default;
+		}
+	}
+
+	public static object TryCoerce<T>(object value) {
+		if (value == null)
+			return null;
+
+		if (value is T)
+			return (T) value;
+
+		if (value is float && typeof(T) == typeof(int)) {
+			int intVal = (int)Math.Round ((float)value);
+			return intVal;
+		}
+
+		if (value is int && typeof(T) == typeof(float)) {
+			float floatVal = (float)(int)value;
+			return floatVal;
+		}
+
+		if (value is int && typeof(T) == typeof(bool)) {
+			int intVal = (int)value;
+			return intVal == 0 ? false : true;
+		}
+
+		if (value is bool && typeof(T) == typeof(int)) {
+			bool boolVal = (bool)value;
+			return boolVal ? 1 : 0;
+		}
+
+		if (typeof(T) == typeof(string)) {
+			return value.ToString ();
+		}
+
+		Debug.LogError ("Failed to cast " + value.GetType ().Name + " to " + typeof(T).Name);
+
+		return null;
+	}
 	
 	
 
