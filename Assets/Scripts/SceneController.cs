@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Ink.Runtime;
-using TMPro;
 using UnityEngine;
 
 public class SceneController : MonoBehaviour {
     [SerializeField] SLayout levelsContainer;
     public List<LevelController> levels = new List<LevelController>();
-    public LevelController currentLevelController;
+    [Disable] public LevelController currentLevelController;
     public SwipeView swipeView;
-    public TextMeshProUGUI voText;
+    public NarrationUIView narrationView;
 
     void Awake() {
         swipeView.OnChangeTargetPage += OnChangeTargetPage;
@@ -44,10 +43,9 @@ public class SceneController : MonoBehaviour {
         else if (content is SceneInstruction sceneInstruction) SetScene(sceneInstruction);
         else if (content is DialogueInstruction dialogueInstruction) HandleDialogue(dialogueInstruction);
     }
-
+    
     void HandleDialogue(DialogueInstruction dialogueInstruction) {
-        Debug.Log(dialogueInstruction.speaker + ": " + dialogueInstruction.text);
-        voText.text = dialogueInstruction.text;
+        narrationView.ShowText(dialogueInstruction.text);
         VOController.Instance.StreamAndCache(dialogueInstruction.text);
     }
     /*

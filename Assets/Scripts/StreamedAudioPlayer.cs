@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class StreamedAudioPlayer {
+    public Func<AudioSource> CreateAudioSource;
+    
     public float lookaheadTime = 1;
             
     public bool playing;
@@ -64,10 +67,11 @@ public class StreamedAudioPlayer {
             var clip = streamClipQueue.Dequeue();
             var source = GetAudioSource();
             source.clip = clip;
+            nextPlayTime = Math.Max(nextPlayTime, AudioSettings.dspTime + 0.1);
             source.PlayScheduled(nextPlayTime);
             double clipLength = (double)clip.samples / clip.frequency;
             nextPlayTime += clipLength; // Update nextPlayTime for the next clip
-            // Debug.Log($"Scheduled play of {clip.name} with length {clipLength} at {nextPlayTime}");
+            Debug.Log($"Scheduled play of {clip.name} with length {clipLength} at {nextPlayTime}");
         }
     }
 
@@ -76,8 +80,11 @@ public class StreamedAudioPlayer {
         var source = audioSources.FirstOrDefault(s => !s.isPlaying);
         if (source == null) {
             // If no available audio source, create a new one
-            source = new GameObject("Audio Source").AddComponent<AudioSource>();
-            source.playOnAwake = false;
+            if (CreateAudioSource == null) {
+                source = new GameObject("Audio Source").AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                source.spatialBlend = 0;
+            } else source = CreateAudioSource();
             audioSources.Add(source);
         }
         return source;

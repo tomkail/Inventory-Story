@@ -12,10 +12,10 @@
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.utilities.rest": "2.5.0",
-        "com.utilities.encoder.ogg": "3.1.2"
+        "com.utilities.rest": "2.5.1",
+        "com.utilities.encoder.ogg": "3.1.3"
       },
-      "hash": "57c8c0ac9402d87d34bc9fe50f06d66937832405"
+      "hash": "fd5b6780835dbbaa6aa5d6ac9e73c4d6bad15e50"
     },
     "com.unity.2d.animation": {
       "version": "9.0.4",
@@ -285,7 +285,7 @@
       "dependencies": {
         "com.utilities.audio": "1.1.2"
       },
-      "hash": "16f66ca25d3282cfde171da3aad4d4fe312c0343"
+      "hash": "95c8f6910bf16ab8b2c36e5204d9eee7b8b4ea94"
     },
     "com.utilities.encoder.wav": {
       "version": "https://github.com/RageAgainstThePixel/com.utilities.encoder.wav.git#upm",

@@ -88,6 +88,7 @@ public class LevelController : MonoBehaviour {
         var spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.fullName, StringComparison.OrdinalIgnoreCase));
         if(spawnLocation == null) spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.itemName, StringComparison.OrdinalIgnoreCase));
         if(spawnLocation != null) return spawnLocation.transform.position;
+        Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.fullName}");
         var randomLocalPos = new Vector2(Random.Range(itemContainer.rect.xMin, itemContainer.rect.xMax), Random.Range(itemContainer.rect.yMin, itemContainer.rect.yMax));
         return itemContainer.TransformPoint(randomLocalPos);
     }
