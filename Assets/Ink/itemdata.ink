@@ -10,27 +10,40 @@
     -   WhiteApron: {after(BackAlleyway):stained} white apron
     -   MetroTicket:        { isOrAfter( MetroPlatform ): bloodstained} metro ticket
     -   ERNameBadge:    security badge
-    - MetalCylinderPhoto: blueprint of small device
+    - MetalCylinderPhoto: photograph of thin device
     - ErnstRichardsDies: photo of civilian corpse
     - DeviceOperatedPhoto: printout of earthquake spike
+    - SealedMetalCylinder: 
+        { generatedItems ^ (Nothing, Device): empty | sealed } metal cylinder
+
+    - StolenCard: a stolen Ace of Spades
 //    -   KoDStamp:   stamp
     -   else:         {item} 
     }
 === function getItemTooltip(item) 
     {item: 
+    -   SealedMetalCylinder:    \*WARNING\*
+    - GroupSupport: "We're all here for you, Ernst."
+    -   Camera:     "Property: A. Richards."
+    - Valet: 
+        { levelItems !? ValetReceipt:
+            "Can I take your car, sir?"
+        - else: 
+            "Have a good night!"
+        }
     -   Analyst: 
             "What's the big fuss, dude? Why'd you get me in here so early?" 
     -   SurprisedAnalyst: 
-            "But that's massive. The machine must be broken. A shockwave like that would have toppled a cityblock."
+            "But a shockwave like that would have toppled a cityblock!"
     -   WifesPromise:   "Let's stay together, forever."
     -   Kosakov:    "The device, please, Ana."
     -   Matthews:   "Don't even think about giving it to him."
     -   Device:  "Property of the US Army"
     -   Quentin:    
             {
-            - currentItems ? Wife : 
+            - levelItems ? Wife : 
                 "You're a lucky man, Ern." 
-            - currentItems !? OtherWeddingRing : 
+            - levelItems !? OtherWeddingRing : 
                 "Ready?"
             - else:
                 "Go on, then!"
@@ -38,7 +51,10 @@
     -   Annie:      "I do." 
     -   Wife:       "Kiss me, Ernie..."
     -   Croupier:   
-        { currentItems !? PileOfChips: 
+        {
+        - is(StealCardFromKingDiamonds) && levelItems !? PileOfChips:
+            "Whenever you're ready, sir." 
+        - levelItems !? PileOfChips: 
             "If you're out of chips, sir, you cannot bet."
         - else: 
             "Sir?"
@@ -74,7 +90,7 @@
     -   ManilaEnvelope:     "Known Timeline of the Hopburg-Steiner Device"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
-    -   MetalCylinderPhoto: "Device created. March 1958. Nevada."
+    -   MetalCylinderPhoto: "Created 3/58 Nevada."
     -   PianoWire:      {currentSceneID == MetroPlatform:
                             It's blood-soaked.
                         - else:
@@ -126,9 +142,24 @@
      
     }
     ~ return
+
+=== function itemReplacesItemWhenGenerated(items)    
+    ~ temp item = pop(items) 
+    { not item: 
+        ~ return () 
+    }
+    {item: 
+    -   StolenCard: ~ item = AceSpades 
+    -   HandCards: 
+            ~ return PileOfChips 
+    -  else:     ~ item = ()
+    }
+    ~ return item + itemReplacesItemWhenGenerated(items) 
     
 === function itemRequiresItem(item) 
     { item: 
+    - Valet: ~ return CarKey 
+    - Briefcase: ~ return KeyOnWristChain
     - Analyst: ~ return DeviceOperatedPhoto
     - Kosakov:
         ~ return (Device, WeddingRing)
@@ -142,10 +173,19 @@
     -   WallSafe:       ~ return WeddingPhoto
     -   DoorLock:   ~ return FlickKnife 
     -   LooseBrick: ~ return  Screwdriver
-    -   Croupier: ~ return ValetReceipt
+    -   Croupier:
+        { is(StealCardFromKingDiamonds): 
+            ~ return PileOfChips 
+        - else: 
+            ~ return ValetReceipt
+        }
     -   ManNearBlackCar: ~ return Camera
     -   Telephone: ~ return KosakovCard
     -   KosakovOnTelephone:  ~ return Device 
+    - Jacket: 
+        { is(StealCardFromKingDiamonds):
+            ~ return AceSpades 
+        }
     
     }
     ~ return () 
@@ -154,6 +194,8 @@
     
 === function itemGeneratesItems(item) 
     {item: 
+    - Circle: ~ return GroupSupport
+    - Valet: ~ return ValetReceipt
     -  Analyst: ~ return replaceAs(SurprisedAnalyst)
     - LinePrinter: ~ return DeviceOperatedPhoto
     - ParkBench: ~ return Kosakov
@@ -187,7 +229,12 @@
     -  Quentin: ~ return OtherWeddingRing
     - Annie: ~ return replaceAs( Wife)
  
-    - Croupier: ~ return PileOfChips
+    - Croupier: 
+        { is(StealCardFromKingDiamonds):
+            ~ return HandCards
+        - else: 
+            ~ return PileOfChips
+        }
     - Device:   ~ return Warp
 
      - Wall: ~ return LooseBrick
@@ -202,7 +249,13 @@
     - DoorLock: ~ return replaceAs( BrokenDoorLock)
     - LockedDrawer: ~ return (TwoThousandFrancs, MapOfParisMetro)
     - RumpledShirt: ~ return KeyOnChain
-    - BlueChevy: ~ return (TinCanString, Dress)
+    - BlueChevy:
+        {
+        - is(DriveAfterWedding):
+            ~ return (TinCanString, Dress)
+        - isOrAfter(AnnieComesFromWork): 
+            ~ return (Camera)
+        }
     - BlackCar: ~ return QuentinsAide    
     - QuentinsAide: 
         ~ asReplacement = true 
@@ -222,7 +275,10 @@
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
     - Wallet: 
-        { before(MetroPlatform): 
+        {
+        - isOrBefore(Apartment):
+            ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard)
+        - before(MetroPlatform): 
             ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)
             
         - else: 
@@ -241,17 +297,17 @@
         ~ return (GlassVialOfPowder, PhotoOfErnst, CasinoChips)
     - Waiter: 
         ~ return replaceAs( WaiterHandsUp)
-    - HandCards: ~ return (AceHearts, ThreeClubs, SevenHearts, AceSpades, PlayingCard)
-    - AceHeartsReversed:   
-        ~ return replaceAs( AceHearts)
+    - HandCards: ~ return replaceAs((QueenHearts, ThreeClubs, SevenHearts, AceSpades, PlayingCard))
+    - QueenHeartsReversed:   
+        ~ return replaceAs( QueenHearts)
     - ThreeClubsReversed:   
         ~ return replaceAs( ThreeClubs)
     - SevenHeartsReversed:  
         ~ return replaceAs(  SevenHearts )
     - AceSpadesReversed:    
         ~ return replaceAs(  AceSpades )
-    - AceHearts:            
-        ~ return replaceAs(  AceHeartsReversed )
+    - QueenHearts:            
+        ~ return replaceAs(  QueenHeartsReversed )
     - ThreeClubs:           
         ~ return replaceAs(  ThreeClubsReversed )
     - SevenHearts:          
@@ -269,8 +325,16 @@
         ~ return replaceAs(  (EvenEvenMoreChips , ValetReceipt) )
     - ValetReceipt: 
         ~ return replaceAs( EvenEvenMoreChips)
-    - Jacket:               
-        ~ return (Wallet)
+    - Agent: ~ return  (Briefcase, KeyOnWristChain)
+    - Briefcase: ~ return SealedMetalCylinder 
+
+    - Jacket:      
+        { 
+        - is(StealCardFromKingDiamonds): 
+            ~ return (StolenCard) 
+        - else: 
+            ~ return (Wallet)
+        }
     - Gravestone: ~ return ((BunchOfFlowers, AnotherBunchOfFlowers))
     - WallSafe: 
         ~ return (SealedMetalCylinder , AceSpades)

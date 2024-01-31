@@ -1,6 +1,7 @@
 
 
 LIST Scenes = 
+
 Pinboard, 
 
 Graveyard, 
@@ -13,6 +14,7 @@ BackAlleyway,
 
 BackOfClub, 
 CardTableAtClub, 
+ParkingLot,
 
 Apartment, 
 AnnieGivesInnerDeviceToContact,
@@ -25,7 +27,11 @@ QGivesNoteToAide,
 
 QGivesItemToErnst, 
 
+StealCardFromKingDiamonds,
+
 QGetsDevice,
+
+GamblersAnonymous,
 
 DriveAfterWedding,
 Wedding,
@@ -33,7 +39,7 @@ GoThroughWithWedding,
 
 MonitoringStationMorning,
 DeviceOperated,
-
+OpeningSequence,
 __Template
 
 
@@ -42,6 +48,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
 
 === function getSceneData(sceneID, prop) // Title, Time, Knot, Exit
 { sceneID: 
+- OpeningSequence:     
+    { prop: 
+    -   Title: Desktop
+    -   Knot:   ~ return -> opening_sequence 
+    -   Time:   10th May 1968, 4:32pm
+    -   ExitKnot: ~ return -> opening_sequence_fn
+    }
 - Pinboard:     
     { prop: 
     -   Title: Desktop
@@ -114,7 +127,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> kingdiamondsclub 
     -   ExitKnot: ~ return -> king_diamond_club_fn
     }
-
+- ParkingLot: 
+    { prop: 
+    -   Title: Parking Lot, King of Diamonds Club
+    -   Time:   23rd April 1968, 5:159m
+    -   Knot:   ~ return -> parking_lot 
+    -   ExitKnot: ~ return -> parking_lot_fn
+    }
 
 - Apartment: 
     { prop: 
@@ -160,6 +179,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> item_from_quentin  
     -   ExitKnot: ~ return -> item_question_fn
     }
+- StealCardFromKingDiamonds: 
+    { prop: 
+    -   Title:  Card Table, King of Diamonds Club
+    -   Time:   18th July 1967, 10:16pm
+    -   Knot:   ~ return -> king_clubs_steal_card  
+    -   ExitKnot: ~ return -> king_clubs_steal_card_fn
+    }
 - QGetsDevice: 
     { prop: 
     - Title:    Park, Mid-France
@@ -167,7 +193,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
-    
+- GamblersAnonymous: 
+    { prop: 
+    -   Title:  Missionary Hall 
+    -   Time:   5th May, 1964 
+    -   Knot: ~ return -> gamblers_anonymous 
+    -   ExitKnot: ~ return -> gamblers_anonymous_fn 
+    }
 - DriveAfterWedding:
     { prop: 
     -   Title:Leaving the Chapel St Jean 

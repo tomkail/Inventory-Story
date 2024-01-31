@@ -1,9 +1,39 @@
 
--> proceedTo(TopSceneID)
+// -> proceedTo(TopSceneID)
 
 LIST NoItemList = NoItem 
 
-
+// OpeningSequence
+=== opening_sequence
+    LIST OpeningItems = Agent, Briefcase, KeyOnWristChain
+    { stopping: 
+    -   -> scene(Device, () , "Nevada, 1958. The Hopburg-Steiner is constructed.") 
+    -   -> scene(SealedMetalCylinder, SealedMetalCylinder , "Despite being only palm-sized, be assured this is a device of extreme consequence.") 
+    -   -> scene(Agent, (Agent, Briefcase, SealedMetalCylinder) , "In April 1962, an unknown foreign agent exited the lab in Area 51 with the device in a briefcase.")
+    
+    -   -> proceedTo(MonitoringStationMorning)
+    }
+    
+=== function opening_sequence_fn (x)
+    {x:
+    -   ():         ~ return 1 
+    -   Device:     ~ return OpeningSequence 
+    
+    }
+    ~ return () 
+    
+    
+=== monitoring_station 
+    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
+    VAR MonitoringInteractables = (LinePrinter, Analyst)
+    -> scene ( MonitoringItems, MonitoringInteractables, "Its location remains unknown, but it is believed that is has indeed been activated.") 
+=== function monitoring_station_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   SurprisedAnalyst: ~ return DeviceOperated
+    }
+    ~ return () 
+      
 
 === pinboard
 /*
@@ -28,7 +58,7 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
 
 // allow in ManEnteringCarOutsideUNPhoto / DeviceStolenFromResearchLab if you've been there
 
--> scene( PinboardItems, ManilaEnvelope,  "Something's not right.")
+-> scene( PinboardItems, ManilaEnvelope,  "Something's not right here.")
 
 === function pinboard_exit(x)
     { x: 
@@ -297,18 +327,36 @@ Valet parking receipt - Blue Chevy for Ernst Richards
 
 */
 
-LIST KingDiamondsClubItems =  (HandCards), AceHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), AceHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed, PlayingCard, ( GinAndTonic ), (Croupier) 
+LIST KingDiamondsClubItems =  (HandCards), QueenHearts, ThreeClubs, SevenHearts, AceSpades, (ValetReceipt), QueenHeartsReversed, ThreeClubsReversed, SevenHeartsReversed, AceSpadesReversed, PlayingCardReversed, PlayingCard, ( GinAndTonic ), (Croupier) 
 
-VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades, Croupier )
+VAR KingDiamondsClubInteractables = ( HandCards, QueenHeartsReversed, QueenHearts, ThreeClubsReversed, ThreeClubs, SevenHeartsReversed, SevenHearts, AceSpadesReversed, AceSpades, Croupier )
   
 -> scene(KingDiamondsClubItems, KingDiamondsClubInteractables, "Because someone tried to change things. To turn them to their own advantage. Only the house always wins.") 
 
 === function king_diamond_club_fn(x) 
     {x: 
     -   ():     ~ return 1 
-    -   AceSpadesReversed:  ~ return Apartment 
+    -   AceSpadesReversed:      ~ return Apartment
+    -   ValetReceipt:            ~ return ParkingLot
     }
     ~ return () 
+
+
+
+=== parking_lot 
+   
+    LIST ParkingLotItems = (Valet) , (KingDiamondsNightclub)
+    VAR ParkingLotInteractables = (Valet, BlueChevy)
+    -> scene ( ParkingLotItems + BlueChevy + CarKey, ParkingLotInteractables, "Remark") 
+    
+=== function parking_lot_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   CarKey:     ~ return Apartment
+    -   Camera:     ~ return AnnieComesFromWork
+    }
+    ~ return ()  
+
 
 
 
@@ -334,7 +382,7 @@ VAR KingDiamondsClubInteractables = ( HandCards, AceHeartsReversed, AceHearts, T
 
 LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (KeyHook), CarKey 
 
--> scene( ApartmentItems + WeddingRing + Annie, (WallSafe, KeyHook, SealedMetalCylinder),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
+-> scene( ApartmentItems + WeddingRing + Annie + Wallet, (WallSafe, KeyHook, SealedMetalCylinder),   "I told him not to go. But he wouldn't listen. He said this time it would be different.")  
 
 === function apartment_fn(x) 
     { currentItems ? SealedMetalCylinder:
@@ -343,6 +391,8 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     {x: 
     - ():   ~ return 2 
     TODO: some way to use the ( AceSpades ): 
+    - (AceSpades, KingDiamondsCard):    
+        ~ return StealCardFromKingDiamonds
     - ( Annie, CarKey):     
         ~ return AnnieComesFromWork
     - ( DeadDropNoteFromQuentin, TwoThousandFrancs ): 
@@ -379,8 +429,8 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
      
     
 === annie_in_car 
-    LIST AnnieCarItems = (Camera) , (ManNearBlackCar) ,DropNote
-    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag)
+    LIST AnnieCarItems = Camera , (ManNearBlackCar) ,DropNote
+    VAR AnnieCarInteractables = (ManNearBlackCar, BlackChanelBag, BlueChevy )
     -> scene ( AnnieCarItems + CarKey + BlueChevy + BlackChanelBag, AnnieCarInteractables, "I was always watching...") 
 === function annie_in_car_fn(x) 
     { x: 
@@ -428,6 +478,8 @@ TODO: A solve
     
 
 
+
+
     
 === item_from_quentin  
     LIST UNDeskJobItems =  (USFlag), (DeskPlate), Envelope, NoteFromQuentin 
@@ -439,6 +491,29 @@ TODO: A solve
                 ~ return QGetsDevice
     }
     ~ return () 
+ 
+ 
+ 
+ === king_clubs_steal_card
+ 
+    LIST KingClubsStealCardItems = StolenCard 
+    VAR KingClubsStealCardInteractables = (HandCards, Jacket, Croupier)
+    -> scene ( KingClubsStealCardItems + Croupier + PileOfChips + Jacket, KingClubsStealCardInteractables, "I think Ernst died because he took something he shouldn't have taken.") 
+ === function king_clubs_steal_card_fn(x)
+ 
+    { x: 
+    -   (): ~ return 1
+TODO: forwards?!
+    - (PlayingCard): 
+        ~ return CardTableAtClub 
+    - (QueenHearts): 
+        ~ return Wedding 
+    - (StolenCard):  
+        ~ return Apartment 
+    
+    }
+    ~ return () 
+ 
  
  
  === quentin_receives_metal_cylinder 
@@ -454,8 +529,18 @@ TODO: A solve
       ~ return ()   
  
 
-
- 
+/// GamblersAnonymous
+=== gamblers_anonymous
+    LIST GamblersItems = (Circle) , GroupSupport
+    VAR GamblersInteractables = (Circle)
+    -> scene ( GamblersItems, GamblersInteractables, "Ernst tried to get help, but somehow, it would never stick.") 
+=== function gamblers_anonymous_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+// this doesn't make sense    
+    - GroupSupport:     DriveAfterWedding 
+    }
+    ~ return () 
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString
@@ -499,17 +584,7 @@ TODO: A solve
     
 
     
- === monitoring_station 
-    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
-    VAR MonitoringInteractables = (LinePrinter, Seisometer, Analyst)
-    -> scene ( MonitoringItems, MonitoringInteractables, "Somewhere, something is happening. Something that affects all of us.") 
-=== function monitoring_station_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   DeviceOperatedPhoto: ~ return DeviceOperated
-    }
-    ~ return () 
-  
+
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 
     VAR DeviceOperatedInteractables = (SealedMetalCylinder, Device)
