@@ -4,7 +4,7 @@ VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
 VAR levelSuccessFunction = -> FALSE_
-
+VAR generatedItems = ()
 
 === use(item) 
     { levelItems !? item:
@@ -41,6 +41,7 @@ VAR levelSuccessFunction = -> FALSE_
 
 
 === function addItems(items) 
+    ~ generatedItems += items
     ~ levelItems += items
     ~ temp replacements = itemReplacesItemWhenGenerated(items) 
     ~ removeItem(replacements) 
@@ -62,9 +63,9 @@ VAR levelSuccessFunction = -> FALSE_
 // only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
-    
     ~ levelSolutionItemCount = solnCount // returns an int
-    ~ currentItems = () 
+    ~ currentItems = ()
+    ~ generatedItems = ()
     VO: {VOLine}
     -> play 
     

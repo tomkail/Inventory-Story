@@ -10,15 +10,19 @@
     -   WhiteApron: {after(BackAlleyway):stained} white apron
     -   MetroTicket:        { isOrAfter( MetroPlatform ): bloodstained} metro ticket
     -   ERNameBadge:    security badge
-    - MetalCylinderPhoto: blueprint of small device
+    - MetalCylinderPhoto: photograph of thin device
     - ErnstRichardsDies: photo of civilian corpse
     - DeviceOperatedPhoto: printout of earthquake spike
+    - SealedMetalCylinder: 
+        { generatedItems ^ (Nothing, Device): empty | sealed } metal cylinder
+
     - StolenCard: a stolen Ace of Spades
 //    -   KoDStamp:   stamp
     -   else:         {item} 
     }
 === function getItemTooltip(item) 
     {item: 
+    -   SealedMetalCylinder:    \*WARNING\*
     - GroupSupport: "We're all here for you, Ernst."
     -   Camera:     "Property: A. Richards."
     - Valet: 
@@ -30,7 +34,7 @@
     -   Analyst: 
             "What's the big fuss, dude? Why'd you get me in here so early?" 
     -   SurprisedAnalyst: 
-            "But that's massive. The machine must be broken. A shockwave like that would have toppled a cityblock."
+            "But a shockwave like that would have toppled a cityblock!"
     -   WifesPromise:   "Let's stay together, forever."
     -   Kosakov:    "The device, please, Ana."
     -   Matthews:   "Don't even think about giving it to him."
@@ -86,7 +90,7 @@
     -   ManilaEnvelope:     "Known Timeline of the Hopburg-Steiner Device"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
-    -   MetalCylinderPhoto: "Device created. March 1958. Nevada."
+    -   MetalCylinderPhoto: "Created 3/58 Nevada."
     -   PianoWire:      {currentSceneID == MetroPlatform:
                             It's blood-soaked.
                         - else:
@@ -155,6 +159,7 @@
 === function itemRequiresItem(item) 
     { item: 
     - Valet: ~ return CarKey 
+    - Briefcase: ~ return KeyOnWristChain
     - Analyst: ~ return DeviceOperatedPhoto
     - Kosakov:
         ~ return (Device, WeddingRing)
@@ -320,6 +325,9 @@
         ~ return replaceAs(  (EvenEvenMoreChips , ValetReceipt) )
     - ValetReceipt: 
         ~ return replaceAs( EvenEvenMoreChips)
+    - Agent: ~ return  (Briefcase, KeyOnWristChain)
+    - Briefcase: ~ return SealedMetalCylinder 
+
     - Jacket:      
         { 
         - is(StealCardFromKingDiamonds): 

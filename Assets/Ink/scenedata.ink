@@ -1,6 +1,7 @@
 
 
 LIST Scenes = 
+
 Pinboard, 
 
 Graveyard, 
@@ -38,7 +39,7 @@ GoThroughWithWedding,
 
 MonitoringStationMorning,
 DeviceOperated,
-
+OpeningSequence,
 __Template
 
 
@@ -47,6 +48,13 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
 
 === function getSceneData(sceneID, prop) // Title, Time, Knot, Exit
 { sceneID: 
+- OpeningSequence:     
+    { prop: 
+    -   Title: Desktop
+    -   Knot:   ~ return -> opening_sequence 
+    -   Time:   10th May 1968, 4:32pm
+    -   ExitKnot: ~ return -> opening_sequence_fn
+    }
 - Pinboard:     
     { prop: 
     -   Title: Desktop
