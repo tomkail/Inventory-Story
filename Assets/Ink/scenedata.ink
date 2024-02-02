@@ -1,47 +1,5 @@
 
 
-LIST Scenes = 
-
-Pinboard, 
-
-Graveyard, 
-Mortuary, 
-MetroPlatform, 
-
-HotelKitchens,
-HotelBathroom,
-BackAlleyway,
-
-BackOfClub, 
-CardTableAtClub, 
-ParkingLot,
-
-Apartment, 
-AnnieGivesInnerDeviceToContact,
-
-ApartmentBeforeErnst,
-AnnieComesFromWork,
-
-NoteInCar,
-QGivesNoteToAide, 
-
-QGivesItemToErnst, 
-
-StealCardFromKingDiamonds,
-
-QGetsDevice,
-
-GamblersAnonymous,
-
-DriveAfterWedding,
-Wedding,
-GoThroughWithWedding,
-
-MonitoringStationMorning,
-DeviceOperated,
-OpeningSequence,
-__Template
-
 
 
 LIST SceneProps = Title, Time, ExitKnot, Knot
@@ -64,11 +22,19 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - Graveyard: 
     { prop: 
-    -   Title:  Graveyard new Rue Clemins
+    -   Title:  Graveyard near Rue Clemins
     -   Time:      29th April 1968, 11:07am
     -   Knot:   ~ return -> graveyard 
     -   ExitKnot: ~ return -> graveyard_fn
     }
+
+- AnnieHearsOfDeathScene:
+    { prop: 
+    -   Title:  AnnieHearsOfDeathTtle
+    -   Time:   AnnieHearsOfDeathTime 
+    -   Knot:   ~ return -> AnnieHearsOfDeath  
+    -   ExitKnot: ~ return -> AnnieHearsOfDeath_fn
+    }    
 - Mortuary: 
     { prop: 
     -   Title: Mortuary, 4th Quartier 
@@ -85,11 +51,11 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     - ExitKnot: ~ return -> annie_gives_inner_device_fn
     }    
     
-- MetroPlatform: 
+- MetroPlatformScene: 
     { prop: 
     -   Title:  Metro Platform, Champ de Mars 
     -   Time:   23rd April 1968, 11:25pm
-    -   Knot:   ~ return -> metro_platform 
+    -   Knot:   ~ return -> MetroPlatform 
     -   ExitKnot: ~ return -> metro_platform_fn
     }
 - HotelKitchens:
@@ -189,10 +155,20 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
 - QGetsDevice: 
     { prop: 
     - Title:    Park, Mid-France
-    - Time:     TODO
+    - Time:      25th July, 1967
     - Knot: ~ return -> quentin_receives_metal_cylinder
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
+    
+
+- QuentinGetsDeviceAnnieWatchingScene:
+    { prop: 
+    - Title:    Park, Mid-France
+    - Time:      25th July, 1967
+    -   Knot:   ~ return -> QuentinGetsDeviceAnnieWatching  
+    -   ExitKnot: ~ return -> QuentinGetsDeviceAnnieWatching_fn
+    }    
+    
 - GamblersAnonymous: 
     { prop: 
     -   Title:  Missionary Hall 
@@ -200,6 +176,25 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot: ~ return -> gamblers_anonymous 
     -   ExitKnot: ~ return -> gamblers_anonymous_fn 
     }
+
+
+- ErnDiesEarlyScene:
+    { prop: 
+    -   Title:  Graveyard near Rue Clemins
+    -   Time:   8th Oct, 1963, 11:21am 
+    -   Knot:   ~ return -> ErnDiesEarly  
+    -   ExitKnot: ~ return -> ErnDiesEarly_fn
+    }
+    
+- InBedWithErnstScene:
+    { prop: 
+    -   Title:  Bedroom, Apartment, Montpellier
+    -   Time:   4th Oct 1963, 2:32am
+    -   Knot:   ~ return -> InBedWithErnst  
+    -   ExitKnot: ~ return -> InBedWithErnst_fn
+    }
+    
+    
 - DriveAfterWedding:
     { prop: 
     -   Title:Leaving the Chapel St Jean 

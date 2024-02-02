@@ -18,7 +18,7 @@ VAR generatedItems = ()
 - (opts)
     ~ temp withItem = pop(withItems) 
     VAR asReplacement = false 
-    { levelItems ? withItem || not withItem: 
+    { got(withItem) || not withItem: 
         ~ asReplacement = false  // default to false 
         ~ temp toGenerate = itemGeneratesItems(item)
         <- use_item(item, withItem, toGenerate, asReplacement)
@@ -27,11 +27,11 @@ VAR generatedItems = ()
         -> opts 
     } 
 =  use_item(item, withItem, toGenerate, replacing)
-    +   { levelItems !? toGenerate}
+    +   { not got(toGenerate)}
         [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
         ~ addItems(toGenerate) 
         { 
-        - levelItems ? Warp:
+        - got( Warp ) :
             ~ removeItem(levelItems - Warp)
         - replacing:
             ~ removeItem(item) 
@@ -50,8 +50,6 @@ VAR generatedItems = ()
 === function removeItem(items)
     ~ levelItems -= items
 
-=== function require(item) 
-    ~ return levelItems !? item
 
 
 === scene(items, interactables, VOLine)
@@ -147,6 +145,9 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
 
 === function got(item) 
     ~ return levelItems ? item
+
+=== function require(item) 
+    ~ return levelItems !? item    
 
 === proceedTo(nextSceneIDToHit)
     ~ previousSceneID += currentSceneID
