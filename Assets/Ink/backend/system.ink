@@ -18,7 +18,7 @@ VAR generatedItems = ()
 - (opts)
     ~ temp withItem = pop(withItems) 
     VAR asReplacement = false 
-    { got(withItem) || not withItem: 
+    { levelItems ? withItem || not withItem: 
         ~ asReplacement = false  // default to false 
         ~ temp toGenerate = itemGeneratesItems(item)
         <- use_item(item, withItem, toGenerate, asReplacement)
@@ -27,11 +27,11 @@ VAR generatedItems = ()
         -> opts 
     } 
 =  use_item(item, withItem, toGenerate, replacing)
-    +   { not got(toGenerate)}
+    +   { not (levelItems ^ toGenerate) }
         [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
         ~ addItems(toGenerate) 
         { 
-        - got( Warp ) :
+        - levelItems ? Warp:
             ~ removeItem(levelItems - Warp)
         - replacing:
             ~ removeItem(item) 
@@ -50,6 +50,8 @@ VAR generatedItems = ()
 === function removeItem(items)
     ~ levelItems -= items
 
+=== function require(item) 
+    ~ return levelItems !? item
 
 
 === scene(items, interactables, VOLine)
@@ -133,7 +135,18 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
-        ~ return BOOL( levelSuccessFunction(currentItems) )
+        ~ temp result = levelSuccessFunction(currentItems)
+        
+        { previousSceneID ? result:
+            // can't repeat a scene
+            ~ return false 
+        }
+        
+        { DEBUG:
+            // assert result is a list 
+            ~ temp i = LIST_MIN(result)
+        }
+        ~ return BOOL( result )
     - else: 
         ~ return false 
     }
@@ -145,9 +158,6 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
 
 === function got(item) 
     ~ return levelItems ? item
-
-=== function require(item) 
-    ~ return levelItems !? item    
 
 === proceedTo(nextSceneIDToHit)
     ~ previousSceneID += currentSceneID

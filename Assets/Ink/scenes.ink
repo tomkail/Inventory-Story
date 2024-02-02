@@ -63,6 +63,7 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
 === function pinboard_exit(x)
     { x: 
     -   ():                 ~ return 1 
+    -   ManilaEnvelope:     ~ return BerlinDeadDropScene
     -   ErnstRichardsDies:  ~ return Graveyard 
     -   DeviceInWallSafe:   ~ return Apartment
     -   ManEnteringCarOutsideUNPhoto:  ~ return  NoteInCar
@@ -74,6 +75,68 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     
 === function recordNewPinboardPhoto(photo)
     ~ PhotosInOpeningEnvelope += photo
+    
+/*
+    BerlinDeadDrop
+ */
+ 
+ 
+ 
+=== BerlinDeadDrop 
+    LIST BerlinDeadDropItems = (Streetlamp) , ( Soldier) , (Postbox), SoldierWithGunPointed
+    VAR BerlinDeadDropInteractables = (Soldier, Postbox, ManilaEnvelope) 
+    
+    -> scene ( BerlinDeadDropItems, BerlinDeadDropInteractables, "But I did as I was told to do. For what good it did me.") 
+    
+=== function BerlinDeadDrop_fn(x) 
+    { x: 
+    -   ManilaEnvelope: ~ return DroppingBerlinDeadDropScene
+    -   Postbox:     ~ return DroppingBerlinDeadDropScene
+    -   ManilaEnvelope:     ~ return Pinboard
+    }
+    ~ return pinboard_exit(x)
+    
+    
+    
+ /*
+    DroppingBerlinDeadDrop
+ */
+
+ 
+=== DroppingBerlinDeadDrop 
+    LIST DroppingBerlinDeadDropItems = (YellowSkoda) , PostboxWithHiddenEnvelope, ComradeAna
+    VAR DroppingBerlinDeadDropInteractables = (Postbox, YellowSkoda)
+    
+    -> scene ( DroppingBerlinDeadDropItems + Streetlamp + Postbox + ManilaEnvelope, DroppingBerlinDeadDropInteractables, "There was never time to think. Only to act.") 
+    
+=== function DroppingBerlinDeadDrop_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   YellowSkoda:    ~ return BorderCheckpointScene
+    -   ComradeAna:     ~ return BorderCheckpointScene
+    -   PostboxWithHiddenEnvelope:  ~ return BerlinDeadDropScene
+    }
+    ~ return () 
+
+ 
+ /*
+    BorderCheckpoint
+ */
+ 
+ 
+=== BorderCheckpoint 
+    LIST BorderCheckpointItems = (BorderGuard) , (Border), NoWeddingRing, BorderGuardWaving,BorderPapers,WayIntoEastGermany
+    VAR BorderCheckpointInteractables = (BorderGuard, Border, ComradeAna)
+    
+    -> scene ( BorderCheckpointItems + ComradeAna, BorderCheckpointInteractables, "Remark") 
+=== function BorderCheckpoint_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   NoWeddingRing: ~ return Graveyard
+    -   WayIntoEastGermany:     ~ return DroppingBerlinDeadDropScene
+    }
+    ~ return () 
+   
 
 === graveyard
 /*
@@ -82,44 +145,18 @@ Gravestone - Ernst Richards
  Flowers
  [ Wedding ring - inscribed "Annabel and Ernst October 1962"  ]
  */
-LIST GraveyardItems =  (Gravestone), WeddingRing, BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers, (Veil), EyesBrimmingWithTears
-VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers, Veil)
+LIST GraveyardItems =  (Gravestone), WeddingRing, BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers
+VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers, EvenMoreFlowers)
 
 -> scene( GraveyardItems, GraveyardInteractables,  "I know I loved him. I would have loved him all my life, if I could have.") 
 
 === function graveyard_fn(x) 
     { x: 
-    -   (): 
-            ~ return 1 
-    -   (EvenMoreFlowers):    
-            ~ return Wedding 
-    -   EyesBrimmingWithTears: 
-            ~ return AnnieHearsOfDeathScene
-    -   WeddingRing:
-            ~ return Mortuary
+    -   ():                 ~ return 1 
+    -   EvenMoreFlowers:        ~ return Wedding 
+    -   WeddingRing:        ~ return Mortuary
     }
     ~ return () 
-
-
-
- /*
-    AnnieHearsOfDeath
- */
- 
- 
-=== AnnieHearsOfDeath 
-    LIST AnnieHearsOfDeathItems = (UnlitLamp) , PhonecallFromMortuary, (EmptySideOfTheBed), RingingTelephone, LitLamp
-    VAR AnnieHearsOfDeathInteractables = (UnlitLamp, LitLamp, RingingTelephone)
-    
-    -> scene ( AnnieHearsOfDeathItems, AnnieHearsOfDeathInteractables, "Remark") 
-=== function AnnieHearsOfDeath_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   PhonecallFromMortuary : ~ return Mortuary
-    -   EmptySideOfTheBed:      ~ return Apartment
-    }
-    ~ return () 
-
 
 
 === mortuary 
@@ -152,7 +189,7 @@ LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), Business
     { x:
     - ():                   ~ return    2
     - (MetroTicket, SealedMetalCylinder):          
-            ~ return    MetroPlatform
+            ~ return    MetroPlatformScene
     - (WeddingRing, BusinessCard):          
             ~ return    Wedding
     - (KingDiamondsCard, OtherOtherBusinessCard):     
@@ -168,7 +205,7 @@ LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), Business
 
 
 
-=== MetroPlatform
+=== metro_platform
     /*
 
 
@@ -387,16 +424,15 @@ VAR KingDiamondsClubInteractables = ( HandCards, QueenHeartsReversed, QueenHeart
 
 
 === annie_gives_inner_device 
-    LIST AnnieGivesDeviceToItems = ( Kosakov)  , KosakovsThanks, QuentinsRelief, QuentinDead
-    
-    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Quentin , Device )
-    -> scene ( AnnieGivesDeviceToItems + BlackChanelBag + Quentin, AnnieGivesDeviceToInteracts, "Remark") 
+    LIST AnnieGivesDeviceToItems = ( Kosakov), (Matthews )  , KosakovsThanks, MatthewsRelief
+    VAR AnnieGivesDeviceToInteracts = ( Kosakov, Matthews , Device )
+    -> scene ( AnnieGivesDeviceToItems + BlackChanelBag, AnnieGivesDeviceToInteracts, "Remark") 
 === function annie_gives_inner_device_fn(x) 
     { x: 
-    -   ():                 ~ return 1 
-    -   Warp:               ~ return Pinboard
+    -   ():     ~ return 1 
+    -   Warp:   ~ return Pinboard
     -   KosakovsThanks:     ~ return GoThroughWithWedding
-    -   QuentinsRelief:      ~ return Pinboard 
+    -   MatthewsRelief:      ~ return Pinboard 
         TODO: change history !!
     }
     ~ return () 
@@ -439,29 +475,20 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     
     
 === apartment_after_ernst 
-    LIST ApartmentWithoutErnstItems = KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop, (BlackChanelBag), LipstickHidingDevice
-    
+    LIST ApartmentWithoutErnstItems = KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop, (BlackChanelBag)
     VAR ApartmentWithoutErnstInteractables = (WallSafe , SealedMetalCylinder, Device, BlackChanelBag, Telephone, KosakovOnTelephone)
     
     -> scene ( ApartmentWithoutErnstItems + WallSafe + WeddingPhoto + KeyHook , ApartmentWithoutErnstInteractables, "Remark") 
 === function apartment_after_ernst_fn(x) 
-    { got ( Device  ): 
+    { levelItems ? Device  : 
         ~ recordNewPinboardPhoto(DeviceRemovedFromCylinderPhoto)
     }
-    
     { x: 
     -   ():     ~ return 1
-    -   (LipstickHidingDevice, KosakovsDrop):  
-            ~ return AnnieGivesInnerDeviceToContact
-            // forward (!)
-    -   ( DropNote, ManEnteringCarOutsideUNPhoto) :
-            ~ return AnnieComesFromWork
-            
-    -   Warp:           
-            ~ return Pinboard
+    -   KosakovsDrop:   ~ return AnnieGivesInnerDeviceToContact // forward (!)
+    -   Warp:   ~ return Pinboard
     } 
     ~ return ()  
-     
      
     
 === annie_in_car 
@@ -471,11 +498,9 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
 === function annie_in_car_fn(x) 
     { x: 
     -   (): ~ return 1 
-    -   ManEnteringCarOutsideUNPhoto: 
-            ~ return NoteInCar
-    -   DropNote:   
-            ~ return ApartmentBeforeErnst // forwards
-
+    -   ManEnteringCarOutsideUNPhoto: ~ return NoteInCar
+    -   DropNote:   ~ return AnnieGivesInnerDeviceToContact
+TODO: A solve 
     }
     ~ return () 
 
@@ -565,10 +590,6 @@ TODO: forwards?!
     -   Warp:   ~ return TopSceneID 
     }
       ~ return ()   
-      TODO: how did quentin find out? 
- 
- 
- 
  
 
 /// GamblersAnonymous
@@ -580,50 +601,9 @@ TODO: forwards?!
     { x: 
     -   (): ~ return 1 
 // this doesn't make sense    
-    - GroupSupport:     InBedWithErnstScene 
+    - GroupSupport:     DriveAfterWedding 
     }
     ~ return () 
- 
- 
- 
-    
-
-
-/*
-
-
-*/ 
-
- /*
-    InBedWithErnst
- */
- 
- 
- 
- 
- 
-=== InBedWithErnst
-
-    LIST InBedWithErnstItems = (SleepingErnst) , LovingMumble, (Pillow), Gun , HusbandsBody, HiddenGun
-    VAR InBedWithErnstInteractables = (SleepingErnst, Pillow )
-    
-    -> scene ( InBedWithErnstItems, InBedWithErnstInteractables, "I did love him. I shouldn't have. But I did.") 
-=== function InBedWithErnst_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   LovingMumble: ~ return DriveAfterWedding
-    -   HiddenGun:  ~ return GoThroughWithWedding
-    
-    TODO: allow early murder (!)
-    -   HusbandsBody:   ~ return ErnDiesEarlyScene 
-    
-             // forward, timline switch 
-
-    }
-    ~ return () 
-
-
- 
  
 === wedding_drive_away 
    LIST WeddingCarItems = (BlueChevy), TinCanString
@@ -683,3 +663,16 @@ TODO: A solve
     
     
     
+ /*
+    TEMPLATE
+ */
+=== template 
+    LIST TemplateItems = (TemplateItem) 
+    VAR TemplateInteractables = (TemplateItem)
+    -> scene ( TemplateItems, TemplateInteractables, "Remark") 
+=== function template_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+TODO: A solve 
+    }
+    ~ return () 

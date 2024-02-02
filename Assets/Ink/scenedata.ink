@@ -15,11 +15,34 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }
 - Pinboard:     
     { prop: 
-    -   Title: Desktop
-    -   Time:   10th May 1968, 4:32pm
+    -   Title: East Berlin
+    -   Time:   10th May 1968, 11:32pm
     -   Knot:   ~ return -> pinboard 
     -   ExitKnot: ~ return -> pinboard_exit
     }
+
+- BerlinDeadDropScene:
+    { prop: 
+    -   Title:  Mink Strasse, East Berlin
+    -   Time:   10th May 1968, 7:19pm 
+    -   Knot:   ~ return -> BerlinDeadDrop  
+    -   ExitKnot: ~ return -> BerlinDeadDrop_fn
+    }  
+- DroppingBerlinDeadDropScene:
+    { prop: 
+    -   Title:  Mink Strasse, East Berlin
+    -   Time:   10th May 1968, 2:34pm 
+    -   Knot:   ~ return -> DroppingBerlinDeadDrop  
+    -   ExitKnot: ~ return -> DroppingBerlinDeadDrop_fn
+    }
+- BorderCheckpointScene:
+    { prop: 
+    -   Title:  Checkpoint Ralph, West Berlin Side
+    -   Time:   10th May 1968, 4:31pm 
+    -   Knot:   ~ return -> BorderCheckpoint  
+    -   ExitKnot: ~ return -> BorderCheckpoint_fn
+    }        
+        
 - Graveyard: 
     { prop: 
     -   Title:  Graveyard near Rue Clemins
@@ -55,7 +78,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     { prop: 
     -   Title:  Metro Platform, Champ de Mars 
     -   Time:   23rd April 1968, 11:25pm
-    -   Knot:   ~ return -> MetroPlatform 
+    -   Knot:   ~ return -> metro_platform 
     -   ExitKnot: ~ return -> metro_platform_fn
     }
 - HotelKitchens:

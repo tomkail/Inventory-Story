@@ -3,6 +3,10 @@ LIST Scenes =
 
 Pinboard, 
 
+BerlinDeadDropScene,
+DroppingBerlinDeadDropScene,
+BorderCheckpointScene,
+
 Graveyard, 
 AnnieHearsOfDeathScene,
 Mortuary, 
