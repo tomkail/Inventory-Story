@@ -3,36 +3,7 @@
 
 LIST NoItemList = NoItem 
 
-// OpeningSequence
-=== opening_sequence
-    LIST OpeningItems = Agent, Briefcase, KeyOnWristChain
-    { stopping: 
-    -   -> scene(Device, () , "Nevada, 1958. The Hopburg-Steiner is constructed.") 
-    -   -> scene(SealedMetalCylinder, SealedMetalCylinder , "Despite being only palm-sized, be assured this is a device of extreme consequence.") 
-    -   -> scene(Agent, (Agent, Briefcase, SealedMetalCylinder) , "In April 1962, an unknown foreign agent exited the lab in Area 51 with the device in a briefcase.")
-    
-    -   -> proceedTo(MonitoringStationMorning)
-    }
-    
-=== function opening_sequence_fn (x)
-    {x:
-    -   ():         ~ return 1 
-    -   Device:     ~ return OpeningSequence 
-    
-    }
-    ~ return () 
-    
-    
-=== monitoring_station 
-    LIST MonitoringItems = (LinePrinter) , (EmptyCoffeeCup), (Seisometer), (Analyst), SurprisedAnalyst
-    VAR MonitoringInteractables = (LinePrinter, Analyst)
-    -> scene ( MonitoringItems, MonitoringInteractables, "Its location remains unknown, but it is believed that is has indeed been activated.") 
-=== function monitoring_station_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   SurprisedAnalyst: ~ return DeviceOperated
-    }
-    ~ return () 
+  
       
 
 === pinboard
@@ -70,6 +41,7 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     -   DeviceOperatedPhoto:    ~ return MonitoringStationMorning
     -   CylinderInMortuaryPhoto:    ~ return Mortuary
     -   DeviceRemovedFromCylinderPhoto: ~ return ApartmentBeforeErnst
+    -   MetalCylinderPhoto: ~ return QGetsDeviceScene
     }
     ~ return () 
     
@@ -620,10 +592,10 @@ TODO: forwards?!
  
  
  
- === quentin_receives_metal_cylinder 
-    LIST QuentinReceivesCylinderItems = (Wall), LooseBrick, SmallPackage, Toolbox, Screwdriver, Wrench, Pliers
-    VAR QuentinReceivesCylinderInteracts = (SealedMetalCylinder)
-    -> scene ( QuentinReceivesCylinderItems + SealedMetalCylinder, QuentinReceivesCylinderInteracts, "Remark") 
+ === QGetsDevice 
+    LIST QuentinReceivesCylinderItems = (Wall), LooseBrick, SmallPackage, (Toolbox), (ParkAttendantUniform), Screwdriver, Hammer, Pliers
+    VAR QuentinReceivesCylinderInteracts = (Wall, SmallPackage,LooseBrick, SealedMetalCylinder, Toolbox)
+    -> scene ( QuentinReceivesCylinderItems, QuentinReceivesCylinderInteracts, "The device was passed to an American agent by means of a dead drop.") 
 === function q_receives_cylinder_fn(x) 
     { x: 
     -   (): ~ return 1 
@@ -632,6 +604,9 @@ TODO: forwards?!
     }
       ~ return ()   
       TODO: how did quentin find out? 
+ 
+ 
+ 
  
  
  
@@ -732,7 +707,18 @@ TODO: A solve
     ~ return ()  
     
 
+   
+=== monitoring_station 
+    LIST MonitoringItems = (LinePrinter) , (Hotline), (EmptyCoffeeCup), Analyst, SurprisedAnalyst
+    VAR MonitoringInteractables = (LinePrinter, Analyst, Hotline)
+    -> scene ( MonitoringItems , MonitoringInteractables, "Its location remains unknown, but our best evidence suggests the device has indeed been activated.") 
     
+=== function monitoring_station_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+    -   SurprisedAnalyst: ~ return DeviceOperated
+    }
+    ~ return ()    
 
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 

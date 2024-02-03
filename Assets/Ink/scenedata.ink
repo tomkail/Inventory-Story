@@ -13,6 +13,20 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   10th May 1968, 4:32pm
     -   ExitKnot: ~ return -> opening_sequence_fn
     }
+- ContainerOpeningBeatScene:
+    { prop: 
+    -   Title:  Desktop
+    -   Time:    10th May 1968, 4:32pm 
+    -   Knot:   ~ return -> ContainerOpeningBeat  
+    -   ExitKnot: ~ return -> ContainerOpeningBeat_fn
+    }
+- AgentUnknownBeatScene:
+    { prop: 
+    -   Title:  Desktop
+    -   Time:    10th May 1968, 4:32pm 
+    -   Knot:   ~ return -> AgentUnknownBeat  
+    -   ExitKnot: ~ return -> AgentUnknownBeat_fn
+    }    
 - Pinboard:     
     { prop: 
     -   Title: East Berlin
@@ -175,11 +189,11 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> king_clubs_steal_card  
     -   ExitKnot: ~ return -> king_clubs_steal_card_fn
     }
-- QGetsDevice: 
+- QGetsDeviceScene: 
     { prop: 
     - Title:    Park, Mid-France
     - Time:      25th July, 1967
-    - Knot: ~ return -> quentin_receives_metal_cylinder
+    - Knot: ~ return -> QGetsDevice
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
     
@@ -241,15 +255,15 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }  
 - MonitoringStationMorning: 
     { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
+    -   Title:  Earthquake Monitoring Station, Pasedena
+    -   Time:   18th Jan 1961, 6:27pm  
     -   Knot:   ~ return    -> monitoring_station  
     -   ExitKnot: ~ return  -> monitoring_station_fn
     }
 - DeviceOperated:
     { prop: 
     -   Title:  TemplateTtle
-    -   Time:   18th Jan 1961, 1:18pm 
+    -   Time:   18th Jan 1961, 1:18am 
     -   Knot:   ~ return -> device_operated  
     -   ExitKnot: ~ return -> device_operated_fn
     }

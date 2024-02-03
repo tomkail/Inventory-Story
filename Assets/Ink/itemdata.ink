@@ -1,6 +1,10 @@
 
+VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst) 
+
+
 === function getItemName(item)
     {item: 
+    - LooseBrick:   hollow brick
     -   ManilaEnvelope:             manila envelope
     -   BunchOfFlowers:             black lilies 
     -   AnotherBunchOfFlowers:      white lilies
@@ -23,6 +27,7 @@
     
 === function getItemTooltip(item) 
     {item: 
+    - SmallPackage: "For Q. Keep safe. High enemy interest."
 - PhonecallFromMortuary: "I'm very sorry... but we need you to come in and identify your husband's body." 
      - BorderGuard:  "Papers." 
 - NoWeddingRing:    "I took it off." 
@@ -188,7 +193,8 @@
     -   HiddenGun:    ~ item =  Gun
        - BorderGuardWaving: ~ item = BorderPapers
     - PostboxWithHiddenEnvelope: ~ item = ManilaEnvelope 
-
+    - SurprisedAnalyst: 
+            ~ item = DeviceOperatedPhoto
     -   StolenCard: 
             ~ item = AceSpades 
     -   QuentinDead: 
@@ -205,6 +211,7 @@
     
 === function itemRequiresItem(item) 
     { item: 
+    - Wall: ~ return Hammer
     - ShadowyFigure : ~ return WeddingRing 
     - Pillow:  
         { got(Gun): 
@@ -325,9 +332,9 @@
         - else: 
             ~ return (Lipstick)
         }
-     
-     - Telephone: ~ replaceAs( KosakovOnTelephone)
-     - KosakovOnTelephone:  ~ replaceAs( KosakovsDrop)
+     - Hotline: ~ return Analyst
+     - Telephone: ~ return replaceAs( KosakovOnTelephone)
+     - KosakovOnTelephone:  ~ return replaceAs( KosakovsDrop)
      
     - ManNearBlackCar: ~ return  ManEnteringCarOutsideUNPhoto
     - Wife:     ~ return WifesPromise
@@ -344,7 +351,8 @@
 
      - Wall: ~ return LooseBrick
      - LooseBrick: ~ return SmallPackage
-     - Toolbox: ~ return (Screwdriver, Pliers, Wrench)
+     - SmallPackage: ~ return SealedMetalCylinder
+     - Toolbox: ~ return (Screwdriver, Hammer, Pliers)
     - SealedMetalCylinder: 
         { after( ApartmentBeforeErnst ) : 
             ~ return Nothing 

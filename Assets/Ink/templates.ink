@@ -1,15 +1,15 @@
 
  /*
-    TEMPLATE
+    AgentUnknownBeat
  */
  
  
-=== template 
-    LIST TemplateItems = (TemplateItem) 
-    VAR TemplateInteractables = (TemplateItem)
+=== AgentUnknownBeat 
+    LIST AgentUnknownBeatItems = (AgentUnknownBeatItem) 
+    VAR AgentUnknownBeatInteractables = (AgentUnknownBeatItem)
     
-    -> scene ( TemplateItems, TemplateInteractables, "Remark") 
-=== function template_fn(x) 
+    -> scene ( AgentUnknownBeatItems, AgentUnknownBeatInteractables, "Remark") 
+=== function AgentUnknownBeat_fn(x) 
     { x: 
     -   (): ~ return 1 
 TODO: A solve 
@@ -19,12 +19,12 @@ TODO: A solve
 /*
 
 
-- TemplateScene:
+- AgentUnknownBeatScene:
     { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
-    -   Knot:   ~ return -> template  
-    -   ExitKnot: ~ return -> template_fn
+    -   Title:  AgentUnknownBeatTtle
+    -   Time:   AgentUnknownBeatTime 
+    -   Knot:   ~ return -> AgentUnknownBeat  
+    -   ExitKnot: ~ return -> AgentUnknownBeat_fn
     }
     
 */

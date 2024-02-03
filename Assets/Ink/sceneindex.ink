@@ -33,7 +33,7 @@ QGivesItemToErnst,
 
 StealCardFromKingDiamonds,
 
-QGetsDevice,
+QGetsDeviceScene,
 QuentinGetsDeviceAnnieWatchingScene,
 
 GamblersAnonymous,
@@ -50,5 +50,7 @@ MonitoringStationMorning,
 DeviceOperated,
 
 OpeningSequence,
+ContainerOpeningBeatScene,
+AgentUnknownBeatScene,
 
 __Template

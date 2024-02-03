@@ -20,7 +20,8 @@ VAR generatedItems = ()
     VAR asReplacement = false 
     { levelItems ? withItem || not withItem: 
         ~ asReplacement = false  // default to false 
-        ~ temp toGenerate = itemGeneratesItems(item)
+        ~ temp toGenerate = itemGeneratesItems(item) 
+        
         <- use_item(item, withItem, toGenerate, asReplacement)
     } 
     { withItems:    // handle multiple solutions 
@@ -35,6 +36,9 @@ VAR generatedItems = ()
             ~ removeItem(levelItems - Warp)
         - replacing:
             ~ removeItem(item) 
+        }
+        { OneUseOnlyItems ? item: 
+            ~ levelInteractables -= item
         }
         [ now {levelItems} ]
         ->-> 
@@ -136,8 +140,8 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
         ~ temp result = levelSuccessFunction(currentItems)
-        
-        { previousSceneID ? result:
+         
+        { previousSceneID ? result && ReplayableScenes !? result:
             // can't repeat a scene
             ~ return false 
         }
