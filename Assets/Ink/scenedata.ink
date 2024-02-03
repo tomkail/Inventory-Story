@@ -78,7 +78,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     { prop: 
     -   Title:  Metro Platform, Champ de Mars 
     -   Time:   23rd April 1968, 11:25pm
-    -   Knot:   ~ return -> metro_platform 
+    -   Knot:   ~ return -> MetroPlatform 
     -   ExitKnot: ~ return -> metro_platform_fn
     }
 - HotelKitchens:
@@ -254,12 +254,6 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   ExitKnot: ~ return -> device_operated_fn
     }
 
-- __Template:
-    { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
-    -   Knot:   ~ return -> template  
-    -   ExitKnot: ~ return -> template_fn
-    }
+
 - else: [ ERROR: need scene data for {sceneID} ]
 }

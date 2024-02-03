@@ -15,14 +15,16 @@
     - DeviceOperatedPhoto: printout of earthquake spike
     - SealedMetalCylinder: 
         { generatedItems ^ (Nothing, Device): empty | sealed } metal cylinder
-
+    - Lipstick:      empty lipstick tube
     - StolenCard: a stolen Ace of Spades
 //    -   KoDStamp:   stamp
     -   else:         {item} 
     }
+    
 === function getItemTooltip(item) 
     {item: 
-    - BorderGuard:  "Papers." 
+- PhonecallFromMortuary: "I'm very sorry... but we need you to come in and identify your husband's body." 
+     - BorderGuard:  "Papers." 
 - NoWeddingRing:    "I took it off." 
 
 - BorderGuardWaving:    "You're free to cross." 
@@ -30,12 +32,21 @@
 - Soldier: "Move along, please." 
 - SoldierWithGunPointed:    "I don't want to see this. Move along." 
 
+     - ComradeAna: 
+        {
+        - is (BorderCheckpointScene): 
+            "Let's just get this over with."
+        - got(ManilaEnvelope): 
+            "Do the drop, and let's get out of here." 
+        - else: 
+            "No time to lose. Back to the border."
+        }
 
     -   SealedMetalCylinder:    \*WARNING\*
     - GroupSupport: "We're all here for you, Ernst."
     -   Camera:     "Property: A. Richards."
     - Valet: 
-        { levelItems !? ValetReceipt:
+        { not got(ValetReceipt):
             "Can I take your car, sir?"
         - else: 
             "Have a good night!"
@@ -46,13 +57,15 @@
             "But a shockwave like that would have toppled a cityblock!"
     -   WifesPromise:   "Let's stay together, forever."
     -   Kosakov:    "The device, please, Ana."
-    -   Matthews:   "Don't even think about giving it to him."
+           
     -   Device:  "Property of the US Army"
     -   Quentin:    
             {
-            - levelItems ? Wife : 
+            - currentSceneID ? AnnieGivesInnerDeviceToContact:
+                 "Don't even think about giving it to him."
+            - got ( Wife ):  
                 "You're a lucky man, Ern." 
-            - levelItems !? OtherWeddingRing : 
+            - not got ( OtherWeddingRing ): 
                 "Ready?"
             - else:
                 "Go on, then!"
@@ -61,9 +74,9 @@
     -   Wife:       "Kiss me, Ernie..."
     -   Croupier:   
         {
-        - is(StealCardFromKingDiamonds) && levelItems !? PileOfChips:
+        - is(StealCardFromKingDiamonds) &&  not got(PileOfChips):
             "Whenever you're ready, sir." 
-        - levelItems !? PileOfChips: 
+        -  not got(PileOfChips ) : 
             "If you're out of chips, sir, you cannot bet."
         - else: 
             "Sir?"
@@ -79,6 +92,7 @@
         -   QGivesNoteToAide: "Whatever it is, you can trust me, sir."
         -   QGivesItemToErnst: "Ernst Richards?"
         }
+    
     -   WaiterHandsUp:  "Whatever you say, Monsieur!" 
     -   Waiter:     "What are you looking at, huh?"
     -   UnconciousWaiter:   "Uhhhh...."
@@ -93,14 +107,14 @@
     -   PoliceNotes:             "Attempted theft. Killer was disturbed and escaped. Narcotics in victim's blood."   
     -   BusinessCard:       "Ernst Richards, office clerk, UN."
     -   KingDiamondsCard:   "KING OF DIAMONDS: cards / slots / roulette / girls"
-    -   QsBusinessCard:  "Quentin Perdi, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
+    -   QsBusinessCard:  "Quentin Roch, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
     -   OtherOtherBusinessCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
     -   WeddingRing:        "Annie and Ernie -- 3 Oct 1962"
     -   ManilaEnvelope:     "Known Timeline of the Hopburg-Steiner Device"  
     -   ManEnteringCarOutsideUNPhoto:  "ER, 23rd April 68"
   
     -   MetalCylinderPhoto: "Created 3/58 Nevada."
-    -   PianoWire:      {currentSceneID == MetroPlatformScene:
+    -   PianoWire:      {currentSceneID == MetroPlatform:
                             It's blood-soaked.
                         - else:
                             It's coiled and clean.
@@ -134,15 +148,7 @@
     - LoyalAssurance:   "I'll get over to the UN right away, sir."
     - KosakovCard: "Paris 15643. Ask for K."
  
-     - ComradeAna: 
-        {
-        - is (BorderCheckpointScene): 
-            "Let's just get this over with."
-        - got(ManilaEnvelope): 
-            "Do the drop, and let's get out of here." 
-        - else: 
-            "No time to lose. Back to the border."
-        }
+     
      - KosakovOnTelephone: "Yes? Do you have something for me?"
      
      - KosakovsDrop:    "We are out of time. Montmatre Tunnel. Tonight. 11:30pm"
@@ -154,9 +160,19 @@
             - else: 
                 "Well done, comrade. You have our thanks. We will extract you when it is safe."
             }
-    -   MatthewsRelief:     "You've made the right decision. I'm glad you've seen what's right here."
+    -   QuentinsRelief:     "You've made the right decision. I'm glad you've seen what's right here."
+    - QuentinDead:  "Annie... why..."
     - Kosakov: "You are having second thoughts? You wish to be extracted?"
-     
+    - LovingMumble: "I'm so lucky I found you..."
+    - NewInstructionsFromKosakov: 
+        "You'll need to monitor Roch without him seeing you."  
+    - ShadowyFigure: 
+        { got(NewInstructionsFromKosakov): 
+            "My advice, Ana, is to throw yourself back into your work."
+        - else: 
+            "That phase of your life is over. Time to leave it behind."
+        }
+    
     }
     ~ return
 
@@ -166,27 +182,44 @@
         ~ return () 
     }
     {item: 
-    - BorderGuardWaving: ~ item = BorderPapers
+    - UnlitLamp:    
+            ~  item = ( RingingTelephone, Telephone ) 
+    -   Gun:        ~ item = HiddenGun 
+    -   HiddenGun:    ~ item =  Gun
+       - BorderGuardWaving: ~ item = BorderPapers
     - PostboxWithHiddenEnvelope: ~ item = ManilaEnvelope 
-    -   StolenCard: ~ item = AceSpades 
+
+    -   StolenCard: 
+            ~ item = AceSpades 
+    -   QuentinDead: 
+            ~ item = Quentin  
     -   HandCards: 
-            ~ return PileOfChips 
-    -  else:     ~ item = ()
+            ~ item = PileOfChips 
+    -   HusbandsBody: 
+            ~ item = (SleepingErnst, LovingMumble) 
+    -  else:     
+            ~ item = ()
     }
     ~ return item + itemReplacesItemWhenGenerated(items) 
     
+    
 === function itemRequiresItem(item) 
     { item: 
-     - Postbox: ~ return ManilaEnvelope 
- 
- 
-    - Soldier: ~ return ManilaEnvelope
+    - ShadowyFigure : ~ return WeddingRing 
+    - Pillow:  
+        { got(Gun): 
+            ~ return Gun 
+        }
+    - SleepingErnst: 
+        { got(Gun):  // only if you've got it 
+            ~ return Gun 
+        }
     - Valet: ~ return CarKey 
     - Briefcase: ~ return KeyOnWristChain
     - Analyst: ~ return DeviceOperatedPhoto
     - Kosakov:
         ~ return (Device, WeddingRing)
-    - Matthews: ~ return Device
+    - Quentin: ~ return Device
     - Annie: ~ return OtherWeddingRing
  
     -   LockedDrawer:   ~ return KeyOnChain
@@ -209,17 +242,23 @@
         { is(StealCardFromKingDiamonds):
             ~ return AceSpades 
         }
-    - Border: ~ return BorderGuardWaving
+    - Lipstick : ~ return Device 
+      - Postbox: ~ return ManilaEnvelope 
+ 
+ 
+    - Soldier: ~ return ManilaEnvelope
+        - Border: ~ return BorderGuardWaving
     - BorderGuard: ~ return BorderPapers 
+    
     }
     ~ return () 
+    
     
     
     
 === function itemGeneratesItems(item) 
     {item: 
     
-
 - BorderGuard: ~ return replaceAs(BorderGuardWaving)
 - ComradeAna:  ~ return (BorderPapers, NoWeddingRing)
 
@@ -232,6 +271,31 @@
  
     - Postbox: ~ return ManilaEnvelope
 - Soldier: ~ return  replaceAs(SoldierWithGunPointed)
+    - RingingTelephone:    ~ return replaceAs((Telephone, PhonecallFromMortuary))
+ - UnlitLamp: 
+    { got(PhonecallFromMortuary): 
+        ~ return replaceAs((LitLamp, Telephone))
+    - else: 
+        ~ return replaceAs((LitLamp, RingingTelephone))
+    }
+ - LitLamp: ~ return replaceAs(UnlitLamp)
+    - Veil: ~ return EyesBrimmingWithTears
+ 
+    - ShadowyFigure : ~ return (NewInstructionsFromKosakov)
+    - SleepingErnst:  
+        {not got(Gun) : 
+            ~ return LovingMumble
+        - else: 
+            
+            ~ return HusbandsBody
+        }
+    - Pillow:  
+        {got(Gun): 
+            ~ return HiddenGun
+        - else: 
+            ~ return Gun 
+        }
+    
     - Circle: ~ return GroupSupport
     - Valet: ~ return ValetReceipt
     -  Analyst: ~ return replaceAs(SurprisedAnalyst)
@@ -242,17 +306,20 @@
         - isOrBefore(GoThroughWithWedding): 
             ~ return (KosakovsThanks, DeviceOperatedPhoto)
         - else: 
-            ~ return KosakovsThanks
+            ~ return ( KosakovsThanks,  QuentinDead ) 
         }
-    - Matthews: ~ return replaceAs( MatthewsRelief)
+    - Quentin: ~ return QuentinsRelief
+    - LipstickHidingDevice: 
+            ~ return replaceAs ( ( Device , Lipstick )  ) 
     - Lipstick: 
-        { is(AnnieGivesInnerDeviceToContact):
-            ~ return Device
-        }
+        ~ return replaceAs( LipstickHidingDevice  )
+        
      - BlackChanelBag: 
         {
+        - is(AnnieGivesInnerDeviceToContact): 
+            ~ return (LipstickHidingDevice,  KosakovCard )
         - is(ApartmentBeforeErnst):
-            ~ return (Lipstick, WeddingPhoto, KosakovCard )
+            ~ return (Lipstick, WeddingPhoto, KosakovCard, DropNote, ManEnteringCarOutsideUNPhoto )
         - is(AnnieComesFromWork): 
             ~ return (Lipstick, DropNote, WeddingPhoto)
         - else: 
@@ -316,6 +383,7 @@
         {
         - isOrBefore(Apartment):
             ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard)
+            
         - before(MetroPlatformScene): 
             ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder)
             
