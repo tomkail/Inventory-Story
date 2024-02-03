@@ -71,7 +71,7 @@ public class GameController : MonoSingleton<GameController> {
 
 
     void BeginGame(SaveState saveState) {
-        StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
+        StoryController.Instance.InitStory(storyJson, saveState != null ? saveState.storySaveJson : null);
         StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
         
         
