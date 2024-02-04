@@ -188,8 +188,7 @@ public static class RectTransformX {
 //		Debug.Log(rect+" "+rectTransform.localPosition+" "+rectTransform.anchoredPosition+" "+rectTransform.rect);
 //	}
 
-	public static void SetSizeWithCurrentAnchors(this RectTransform rectTransform, Vector2 size)
-	{
+	public static void SetSizeWithCurrentAnchors(this RectTransform rectTransform, Vector2 size) {
 		RectTransform parent = rectTransform.parent as RectTransform;
 		var parentSize = !(bool) (Object) parent ? Vector2.zero : parent.rect.size;
 		var anchor = rectTransform.anchorMax - rectTransform.anchorMin;
@@ -206,39 +205,12 @@ public static class RectTransformX {
 	public static void SetSizeInCanvasSpace(this RectTransform trans, Vector2 newSize) {
 		Vector2 oldSize = trans.rect.size;
 		Vector2 deltaSize = newSize - oldSize;
-		trans.offsetMin = trans.offsetMin - new Vector2(deltaSize.x * trans.pivot.x, deltaSize.y * trans.pivot.y);
-		trans.offsetMax = trans.offsetMax + new Vector2(deltaSize.x * (1f - trans.pivot.x), deltaSize.y * (1f - trans.pivot.y));
+		var pivot = trans.pivot;
+		trans.offsetMin -= new Vector2(deltaSize.x * pivot.x, deltaSize.y * pivot.y);
+		trans.offsetMax += new Vector2(deltaSize.x * (1f - pivot.x), deltaSize.y * (1f - pivot.y));
 	}
 
-
-	// ------ OLD STUFF
-
-
-	/// <summary>
-	/// Find the size of the parent required to fit the child at a new size, given current anchoring.
-	/// When anchors are together, parent is the same as it currently is.
-	/// When anchors are at the parent corners, parent needs to grow 1:1 with child.
-	/// </summary>
-	/// <returns>The required size of the parent on the given axis.</returns>
-	/// <param name="size">The desired size of the target RectTransform.</param>
-	/// <param name="axis">The axis for the size calculation.</param>
-	// Everything under here was built for 80 Days, and may either not work or be unhelpful. If you find something good, comment it up and add it above this line.
-
-	public static float SizeOfParentToFitSize(this RectTransform thisRect, float size, RectTransform.Axis axis) {
-		
-		int axisIndex = (int)axis;
-		float currentSize = thisRect.rect.size[axisIndex];
-
-		float anchorSeparation = thisRect.anchorMax[axisIndex] - thisRect.anchorMin[axisIndex];
-
-		RectTransform parent = thisRect.parent.transform as RectTransform;
-		float parentSize = parent.rect.size[axisIndex];
-
-		float toParent = parentSize - currentSize;
-		float newParent = size + anchorSeparation * toParent;
-		
-		return newParent;
-	}
+	
 	
 	
 	// Add this to convert a local position to an anchored position
@@ -252,6 +224,7 @@ public static class RectTransformX {
 	public static Vector2 GetAnchoredToLocalPositionOffset(this RectTransform rectTransform) {
 		return -rectTransform.GetLocalToAnchoredPositionOffset();
 	}
+	
 	
 	
 	// Returns the anchored position required to make a custom pivot point for a rect transform move to the specified anchor point on the target.
@@ -271,6 +244,52 @@ public static class RectTransformX {
 		return localPointInContainer + anchoredPositionOffset + pivotOffset;
 	}
 	
+	
+    // Returns the given local position for the rectTransform, clamped within a screen space rect. 
+	public static Vector2 GetClampedLocalPositionInsideScreenRect(RectTransform rectTransform, Vector2 localPosition, Rect screenRect, Camera camera) {
+		ScreenRectToLocalRectInRectangle((RectTransform)rectTransform.parent, screenRect, camera, out var localContainerRect);
+		var rectSize = rectTransform.rect.size;
+		var pivotOffset = rectSize * (rectTransform.pivot);
+		localContainerRect = new Rect(localContainerRect.x+pivotOffset.x, localContainerRect.y+pivotOffset.y, localContainerRect.width-rectSize.x, localContainerRect.height-rectSize.y);
+		return localContainerRect.ClosestPoint(localPosition);
+	}
+    
+	// Returns the given anchored position for the rectTransform, clamped within a screen space rect.
+	public static Vector2 GetClampedAnchoredPositionInsideScreenRect(RectTransform rectTransform, Vector2 anchoredPosition, Rect screenRect, Camera camera) {
+		return GetClampedLocalPositionInsideScreenRect(rectTransform, anchoredPosition+rectTransform.GetAnchoredToLocalPositionOffset(), screenRect, camera)+rectTransform.GetLocalToAnchoredPositionOffset();
+	}
+	
+	
+	
+
+	// ------ OLD STUFF
+	// Everything under here was built for 80 Days, and may either not work or be unhelpful. If you find something good, comment it up and add it above this line.
+
+
+	/// <summary>
+	/// Find the size of the parent required to fit the child at a new size, given current anchoring.
+	/// When anchors are together, parent is the same as it currently is.
+	/// When anchors are at the parent corners, parent needs to grow 1:1 with child.
+	/// </summary>
+	/// <returns>The required size of the parent on the given axis.</returns>
+	/// <param name="size">The desired size of the target RectTransform.</param>
+	/// <param name="axis">The axis for the size calculation.</param>
+
+	public static float SizeOfParentToFitSize(this RectTransform thisRect, float size, RectTransform.Axis axis) {
+		
+		int axisIndex = (int)axis;
+		float currentSize = thisRect.rect.size[axisIndex];
+
+		float anchorSeparation = thisRect.anchorMax[axisIndex] - thisRect.anchorMin[axisIndex];
+
+		RectTransform parent = thisRect.parent.transform as RectTransform;
+		float parentSize = parent.rect.size[axisIndex];
+
+		float toParent = parentSize - currentSize;
+		float newParent = size + anchorSeparation * toParent;
+		
+		return newParent;
+	}
 	
 	/// <summary>
 	/// Returns the anchor of a RectTransform as a rect.

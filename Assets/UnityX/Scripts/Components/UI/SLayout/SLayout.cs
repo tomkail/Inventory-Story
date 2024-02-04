@@ -299,7 +299,8 @@ public partial class SLayout : UIBehaviour {
 	Canvas _rootCanvas;
 	public Canvas canvas {
 		get {
-			// if( _canvas == null )
+			_canvas = transform.GetComponent<Canvas>();
+			if(_canvas == null)
 				_canvas = transform.GetComponentInParent<Canvas>(true);
 			return _canvas;
 		}
@@ -764,15 +765,10 @@ public partial class SLayout : UIBehaviour {
 
 
     
-	// public Rect ScreenToSLayoutRect (Rect screenRect) {
-    //     return RectX.CreateEncapsulating(ScreenToSLayoutPosition(screenRect.min), ScreenToSLayoutPosition(screenRect.max));
-    // }
-    
 	// Converts a screen position to a local position in the layout space.
     public Vector2 ScreenToSLayoutPosition (Vector2 screenPoint) {
 		RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, screenPoint, canvas.rootCanvas.worldCamera, out Vector3 worldPoint);
 		return WorldToSLayoutPosition(worldPoint);
-        // return (Vector2)CanvasToSLayoutSpace(canvas.ScreenToCanvasPoint(screenPoint));
     }
 	
     public Vector2 ScreenToSLayoutVector (Vector2 screenVector) {
@@ -783,11 +779,7 @@ public partial class SLayout : UIBehaviour {
     public Rect ScreenToSLayoutRect (Rect screenRect) {
 		var min = ScreenToSLayoutPosition(screenRect.min);
 		var max = ScreenToSLayoutPosition(screenRect.max);
-        var layoutRect = RectX.CreateEncapsulating(min, max);
-		if(originTopLeft) {
-			layoutRect.y += layoutRect.height;
-		}
-		return layoutRect;
+        return RectX.CreateEncapsulating(min, max);
     }
 	
 	// This returns a coordinate to be applied to this object's position property
@@ -886,6 +878,10 @@ public partial class SLayout : UIBehaviour {
 		var worldPos = ConvertPositionToTarget(localPos, null);
 		Camera cam = canvas.renderMode == RenderMode.ScreenSpaceCamera || canvas.renderMode == RenderMode.WorldSpace ? canvas.worldCamera : null;
 		return RectTransformUtility.WorldToScreenPoint(cam, worldPos);
+	}
+	
+	public Vector2 LocalToScreenVector(Vector2 localPos) {
+		return LocalToScreenPosition(localPos) - LocalToScreenPosition(Vector2.zero);
 	}
 
 	/// <summary>

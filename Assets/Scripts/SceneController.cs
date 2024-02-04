@@ -95,7 +95,8 @@ public class SceneController : MonoBehaviour {
     }
 
     void SetVisibleLevel(LevelController levelController) {
-        swipeView.GoToPageSmooth(levelController.layout.rectTransform);
+        if(levels.Count == 1) swipeView.GoToPageImmediate(levelController.layout.rectTransform);
+        else swipeView.GoToPageSmooth(levelController.layout.rectTransform);
     }
 
     void LayoutLevels() {

@@ -68,8 +68,7 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	/// The maximum rotation of the from a drag.
 	/// </summary>
 	public float maxDragVelocityRotation = 30f;
-	
-	
+
 	
 	
 	/// <summary>
@@ -80,7 +79,8 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	/// <summary>
 	/// The drag start position.
 	/// </summary>
-	public Vector2 m_ContentStartPosition;
+	Vector2 m_ContentStartPosition;
+	public Vector2 positionAtLastDragStart => m_ContentStartPosition;
 	public Vector2 m_PointerStartLocalCursor;
 	
 	/// <summary>
@@ -101,7 +101,9 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 			_dragVelocity = value;
 		}
 	}
-	
+	Vector2 dragTargetDeltaOnStop;
+
+
 	public float distanceFromTarget => Vector2.Distance(rectTransform.anchoredPosition, dragTargetPosition);
 	/// <summary>
 	/// Updates the drag.
@@ -133,6 +135,7 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 		if(revert) {
 			dragTargetPosition = m_PointerStartLocalCursor;
 		}
+		dragTargetDeltaOnStop = rectTransform.anchoredPosition - dragTargetPosition;
 		if(OnStopDragging != null) OnStopDragging();
 	}
 	
@@ -168,13 +171,24 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 	}
 	
 	protected virtual void CalculateDragVelocity () {
-		if(dragVelocitySmoothTime == 0) {
-			SetPositionImmediate(dragTargetPosition);
-		} else {
-			var __dragVelocity = dragVelocity;
-			Vector2.SmoothDamp(rectTransform.anchoredPosition, dragTargetPosition, ref __dragVelocity, dragVelocitySmoothTime, maxDragVelocity, Time.unscaledDeltaTime);
-			dragVelocity = __dragVelocity;
-		}
+		var __dragVelocity = dragVelocity;
+		// if (dragging) {
+			if(dragVelocitySmoothTime == 0) {
+				SetPositionImmediate(dragTargetPosition);
+			} else {
+				Vector2.SmoothDamp(rectTransform.anchoredPosition, dragTargetPosition, ref __dragVelocity, dragVelocitySmoothTime, maxDragVelocity, Time.unscaledDeltaTime);
+				dragVelocity = __dragVelocity;
+			}
+		// }
+		// else {
+		// 	if(dragVelocitySmoothTime == 0) {
+		// 		SetPositionImmediate(dragTargetPosition);
+		// 	} else {
+		// 		dragTargetDeltaOnStop = Vector2.SmoothDamp(dragTargetDeltaOnStop, Vector2.zero, ref __dragVelocity, dragVelocitySmoothTime, maxDragVelocity, Time.unscaledDeltaTime);
+		// 		dragVelocity = __dragVelocity;
+		// 	}
+		// }
+		dragVelocity = __dragVelocity;
 	}
 	
 	protected virtual void TranslateWithDragVelocity (Vector2 _dragVelocity) {
@@ -201,7 +215,7 @@ public class Draggable : Selectable, IBeginDragHandler, IEndDragHandler, IDragHa
 		StopDragging();
 	}
 
-	protected virtual void LateUpdate () {
+	protected virtual void Update () {
 		if(!Application.isPlaying) return;
 		UpdateDrag();
 	}

@@ -216,6 +216,20 @@ public static class TextMeshProUtils {
         textComponent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, preferredSize.y);
     }
     
+    // Applies tight preferred values for the current text using GetTightPreferredValues
+    // Note this uses sizeDelta for sizing so won't work when using anchors.
+    public static void ApplyTightPreferredWidth (this TMP_Text textComponent, float maxWidth = veryLargeNumber, float maxHeight = veryLargeNumber) {
+        var preferredSize = textComponent.GetTightPreferredValues(maxWidth, maxHeight);
+        textComponent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, preferredSize.x);
+    }
+    
+    // Applies tight preferred values for the current text using GetTightPreferredValues
+    // Note this uses sizeDelta for sizing so won't work when using anchors.
+    public static void ApplyTightPreferredHeight (this TMP_Text textComponent, float maxWidth = veryLargeNumber, float maxHeight = veryLargeNumber) {
+        var preferredSize = textComponent.GetTightPreferredValues(maxWidth, maxHeight);
+        textComponent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, preferredSize.y);
+    }
+    
     // Width for GetPreferredValues always returns the length of the text as if it was on one line.
     // This function additionally clamps the returned width of GetPreferredValues to the input width.
     // It does this for both width and height, but probably doesn't need to (?) because this issue is specific to width.

@@ -1,8 +1,8 @@
 ﻿[System.Serializable]
 public struct SaveVersion {
-    public const int buildSaveVersion = 2;
+    public const int buildSaveVersion = 0;
     // INCLUSIVE!
-    public const int minCompatableSaveVersion = 1;
+    public const int minCompatableSaveVersion = 0;
 
     public int version;
     public SaveVersion (int version) {

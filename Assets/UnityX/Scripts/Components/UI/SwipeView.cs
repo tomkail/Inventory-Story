@@ -213,7 +213,7 @@ public class SwipeView : UIBehaviour, IPointerDownHandler, IPointerUpHandler, II
 		var matrix = Matrix4x4.TRS(content.position, content.rotation, content.parent.lossyScale);
 		var localPos = matrix.inverse.MultiplyPoint3x4(pos);
 		localPos -= (Vector3)content.GetLocalToAnchoredPositionOffset();
-		localPos += (Vector3)((rectTransform.pivot-pagePivot) * rectTransform.rect.size);
+		localPos += (Vector3)((rectTransform.pivot-pagePivot) * viewport.rect.size);
 		return -localPos;
 	}
 	
@@ -266,7 +266,7 @@ public class SwipeView : UIBehaviour, IPointerDownHandler, IPointerUpHandler, II
 			else routeToParent = false;
 		}
 
-		if (routeToParent) {
+		if (routeToParent && transform.parent != null) {
 			ExecuteEvents.ExecuteHierarchy(transform.parent.gameObject, eventData, ExecuteEvents.beginDragHandler);
 			return;
 		}
@@ -283,7 +283,7 @@ public class SwipeView : UIBehaviour, IPointerDownHandler, IPointerUpHandler, II
 	}
 
 	public void OnDrag(PointerEventData eventData) {
-		if (routeToParent) {
+		if (routeToParent && transform.parent != null) {
 			ExecuteEvents.ExecuteHierarchy(transform.parent.gameObject, eventData, ExecuteEvents.dragHandler);
 			return;
 		}
@@ -348,7 +348,7 @@ public class SwipeView : UIBehaviour, IPointerDownHandler, IPointerUpHandler, II
 	}
 
 	public void OnEndDrag(PointerEventData eventData) {
-		if (routeToParent) {
+		if (routeToParent && transform.parent != null) {
 			ExecuteEvents.ExecuteHierarchy(transform.parent.gameObject, eventData, ExecuteEvents.endDragHandler);
 			return;
 		}

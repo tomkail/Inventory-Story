@@ -9,8 +9,8 @@ public class StoryController : MonoSingleton<StoryController> {
 	public bool hasStory => story != null;
 	public bool begun { get; private set; }
 
-	public List<ScriptContent> contents = new List<ScriptContent>();
-	public List<ScriptChoice> choices = new List<ScriptChoice>();
+	[SerializeReference] public List<ScriptContent> contents = new List<ScriptContent>();
+	[SerializeReference] public List<ScriptChoice> choices = new List<ScriptChoice>();
 	public static event Action<Story> OnCreateStory;
 	public event Action OnParsedInstructions;
 

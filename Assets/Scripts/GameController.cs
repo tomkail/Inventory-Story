@@ -54,14 +54,14 @@ public class GameController : MonoSingleton<GameController> {
     void OnLoadGameSaveState(string saveStateJson) {
         Clear();
         var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
-        BeginGame(saveState);
+        BeginSavedGame(saveState);
     }
 
     void Start () {
         Clear();
         var saveStateJson = SaveLoadManager.ReadFromSaveFile();
         var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
-        BeginGame(saveState);
+        BeginSavedGame(saveState);
     }
 
     void Update() {
@@ -70,12 +70,27 @@ public class GameController : MonoSingleton<GameController> {
     }
 
 
-    void BeginGame(SaveState saveState) {
-        StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
-        StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
-        
-        
-        StoryController.Instance.Begin();
+    void BeginSavedGame(SaveState saveState) {
+        try {
+            StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
+            StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
+            
+            StoryController.Instance.Begin();
+        } catch (Exception e) {
+            Debug.LogError("Error loading saved game: " + e);
+            BeginNewGame();
+        }
+    }
+    
+    void BeginNewGame() {
+        try {
+            StoryController.Instance.InitStory(storyJson);
+            StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
+            
+            StoryController.Instance.Begin();
+        } catch (Exception e) {
+            Debug.LogError("Error starting new game: " + e);
+        }
     }
 
     void Restart() {
@@ -103,13 +118,24 @@ public class GameController : MonoSingleton<GameController> {
         return story.currentChoices.FirstOrDefault(x => x.text.Contains($"{inkListItem.itemName}", StringComparison.OrdinalIgnoreCase)) != null;
     }
 
-    public void InteractWithItem(InkListItem inkListItem) {
-        var choice = story.currentChoices.FirstOrDefault(x => x.text.Contains($"{inkListItem.itemName}", StringComparison.OrdinalIgnoreCase));
-        if(choice != null) StoryController.Instance.MakeChoice(choice.index);
+    public bool InteractWithItem(InkListItem inkListItem) {
+        foreach (var choice in StoryController.Instance.choices.OfType<ItemInteractChoiceInstruction>()) {
+            if (choice.MatchesItem(inkListItem)) {
+                StoryController.Instance.MakeChoice(choice.storyChoice.index);
+                return true;
+            }
+        }
+        return false;
     }
     
-    public void CombineItems(InkListItem inkListItemA, InkListItem inkListItemB) {
-        story.RunInkFunction<List<InkListItem>>("interact", InkListItemToInkList(inkListItemA), InkListItemToInkList(inkListItemB));
+    public bool CombineItems(InkListItem inkListItemA, InkListItem inkListItemB) {
+        foreach (var choice in StoryController.Instance.choices.OfType<CombineItemsChoiceInstruction>()) {
+            if (choice.MatchesItems(inkListItemA, inkListItemB)) {
+                StoryController.Instance.MakeChoice(choice.storyChoice.index);
+                return true;
+            }
+        }
+        return false;
     }
 
     public string GetItemName(InkListItem inkListItem) {

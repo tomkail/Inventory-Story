@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelTitleUIView : MonoBehaviour {
@@ -14,6 +15,10 @@ public class LevelTitleUIView : MonoBehaviour {
 
     void Init() {
         titleText.textMeshPro.text = levelController.levelState.titleText;
+        titleText.textMeshPro.ApplyTightPreferredSize(titleText.width);
         dateText.textMeshPro.text = levelController.levelState.dateText;
+        dateText.textMeshPro.ApplyTightPreferredSize(dateText.width);
+
+        SLayoutUtils.AutoLayoutYWithSpacing(layout, new List<SLayout>() {titleText, dateText}, 20);
     }
 }

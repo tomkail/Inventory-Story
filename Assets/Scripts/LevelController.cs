@@ -6,14 +6,17 @@ using Ink.Runtime;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(SLayout))]
 public class LevelController : MonoBehaviour {
     public Story story => GameController.Instance.story;
+    public GraphicRaycaster graphicRaycaster => GetComponent<GraphicRaycaster>();
     public SLayout layout => GetComponent<SLayout>();
-    public RectTransform itemContainer { get; private set; }
+    public RectTransform itemContainer => transform.Find("Item Container") as RectTransform;
+    public SLayout overlay => transform.Find("Overlay").GetComponent<SLayout>();
     public List<ItemView> itemViews = new List<ItemView>();
     public ItemView draggingItem => itemViews.FirstOrDefault(x => x.draggable.dragging);
     public LevelRequiredItemsSlotGroup slotGroup;
@@ -29,10 +32,6 @@ public class LevelController : MonoBehaviour {
     public Action OnUnsetVisibleLevel;
     
     public LevelState levelState;
-
-    void Awake() {
-        CreateItemContainer();
-    }
 
     public void Init(SceneInstruction sceneInstruction) {
         levelState = new LevelState() {
@@ -51,6 +50,8 @@ public class LevelController : MonoBehaviour {
         levelItemsObserver = new InkListChangeHandler("levelItems");
         levelItemsObserver.OnChange += OnChangeLevelItems;
         
+        graphicRaycaster.enabled = false;
+        
         this.levelState = new LevelState() {
             sceneId = levelLoadParams.sceneId.fullName,
             titleText = levelLoadParams.titleText,
@@ -66,12 +67,16 @@ public class LevelController : MonoBehaviour {
         slotGroup.Init((int)story.variablesState["levelSolutionItemCount"]);
         levelItemsObserver.RefreshValue(story, false);
         
+        graphicRaycaster.enabled = true;
+        
         OnSetAsCurrentLevel?.Invoke();
     }
 
     public void UnsetAsCurrentLevel() {
         levelItemsObserver.RemoveVariableObserver(story);
         story.RemoveVariableObserver(OnChangeSolutionItemCount);
+        
+        graphicRaycaster.enabled = false;
         
         OnUnsetAsCurrentLevel?.Invoke();
     }
@@ -82,6 +87,10 @@ public class LevelController : MonoBehaviour {
     
     public void UnsetAsVisibleLevel() {
         OnUnsetVisibleLevel?.Invoke();
+    }
+
+    void Update() {
+        overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.sceneController.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
     }
 
     public Vector3 GetWorldSpawnLocationForItem(InkListItem item) {
@@ -119,21 +128,21 @@ public class LevelController : MonoBehaviour {
         var itemWorldPosition = GetWorldSpawnLocationForItem(inkListItem);
         item.targetLocalPoint = item.layout.parentRectTransform.InverseTransformPoint(itemWorldPosition);
         var localSpawnPoint = item.targetLocalPoint + RandomX.onUnitCircle * Random.Range(100, 200);
-        localSpawnPoint = item.GetClampedAnchoredPositionInsideParent(localSpawnPoint);
+        localSpawnPoint = item.draggable.dragTargetPosition = RectTransformX.GetClampedLocalPositionInsideScreenRect(item.draggable.rectTransform, localSpawnPoint, item.draggable.viewRect.GetScreenRect(), layout.rootCanvas.worldCamera);
         item.SetWorldPosition(item.layout.parentRectTransform.TransformPoint(localSpawnPoint));
         
-        slotGroup.draggableGroup.draggables.Add(item.draggable);
+        // slotGroup.draggableGroup.draggables.Add(item.draggable);
     }
 
     void DestroyItemView(InkListItem inkListItem) {
         itemViews.Where(view => view.inkListItem.Equals(inkListItem)).ToList().ForEach(view => {
-            slotGroup.draggableGroup.draggables.Remove(view.draggable);
+            // slotGroup.draggableGroup.draggables.Remove(view.draggable);
             itemViews.Remove(view);
             Destroy(view.gameObject);
         });
     }
     
-    public void OnCompleteItemDrag(ItemView item) {
+    public void OnSlotItem(ItemView item) {
         /*
         if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
             foreach (var wrongItemList in wrongItems) {
@@ -165,9 +174,13 @@ public class LevelController : MonoBehaviour {
                 foreach (var itemList in (InkList)story.variablesState["currentItems"]) {
                     var itemView = itemViews.FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
                     if (itemView == null) continue;
-                    itemView.draggable.SetDragTargetPosition(itemView.layout.rectTransform.anchoredPosition + MathX.DegreesToVector2(Random.Range(-45, 45)) * 300, false);
-                    var slot = slotGroup.draggableGroup.slots.FirstOrDefault(x => x.slottedDraggable == itemView.draggable);
-                    slotGroup.draggableGroup.Unslot(slot);
+                    itemView.ExitSlot();
+
+                    // var newPosition = itemView.layout.rectTransform.anchoredPosition + MathX.DegreesToVector2(Random.Range(-45, 45)) * 300;
+                    itemView.draggable.SetDragTargetPosition(itemView.draggable.positionAtLastDragStart, false);
+                    // var slot = slotGroup.slots.FirstOrDefault(x => x.heldSlottable == (ISlottable)itemView);
+                    
+                    // slotGroup.draggableGroup.Unslot(slot);
                 }
             }
         }
@@ -178,15 +191,15 @@ public class LevelController : MonoBehaviour {
         // background.sprite = Resources.Load<Sprite>(backgroundInstruction.assetPath);
     }
     
-    void CreateItemContainer() {
-        itemContainer = new GameObject("Items").AddComponent<RectTransform>();
-        itemContainer.gameObject.AddComponent<SLayout>();
-        itemContainer.SetParent(transform, false);
-        itemContainer.SetAsLastSibling();
-        itemContainer.anchorMin = new Vector2(0, 0);
-        itemContainer.anchorMax = new Vector2(1,1);
-        itemContainer.sizeDelta = new Vector2(0,0);
-    }
+    // void CreateItemContainer() {
+    //     itemContainer = new GameObject("Items").AddComponent<RectTransform>();
+    //     itemContainer.gameObject.AddComponent<SLayout>();
+    //     itemContainer.SetParent(transform, false);
+    //     itemContainer.SetAsLastSibling();
+    //     itemContainer.anchorMin = new Vector2(0, 0);
+    //     itemContainer.anchorMax = new Vector2(1,1);
+    //     itemContainer.sizeDelta = new Vector2(0,0);
+    // }
     
     public void Clear() {
         foreach(var itemView in itemViews) Destroy(itemView.gameObject);
