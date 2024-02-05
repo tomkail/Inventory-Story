@@ -152,6 +152,8 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         containerSlot.OnSlottableSlottedStart(this);
         if (containerSlot is LevelRequiredItemsSlot levelSlot) {
             levelController.OnSlotItem(this);
+            ExitSlot();
+            draggable.SetDragTargetPosition(draggable.positionAtLastDragStart, false);
         } else if (containerSlot is ItemView slottedItem) {
             if (!GameController.Instance.CombineItems(inkListItem, slottedItem.inkListItem)) {
                 ExitSlot();
