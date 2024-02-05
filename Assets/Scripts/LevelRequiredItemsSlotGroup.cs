@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using EasyButtons;
-using Ink.Runtime;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LevelRequiredItemsSlotGroup : MonoBehaviour {
@@ -32,8 +29,31 @@ public class LevelRequiredItemsSlotGroup : MonoBehaviour {
     }
 
     [Button]
-    void Layout() {
-        SLayoutUtils.AutoLayoutWithSpacing(layout, slots.Select(x => x.layout).ToArray(), SLayoutUtils.Axis.X, 20, false, 0, 0, 0.5f);
+    public void Layout() {
+        // SLayoutUtils.AutoLayoutWithSpacing(layout, slots.Select(x => x.layout).ToArray(), SLayoutUtils.Axis.X, 20, false, 0, 0, 0.5f);
+        var layoutItems = new List<LayoutItemParams>();
+        var spacing = layout.LocalToScreenVector(new Vector2(20, 0)).x;
+        foreach (var slot in slots) {
+            float screenWidth = 0;
+            if (slot.hoveredSlottable is ItemView hoveredItemView) {
+                screenWidth = slot.GetSlotTriggerScreenRectWhenContainingItem(hoveredItemView).width;
+            } else if (slot.heldSlottable is ItemView heldItemView) {
+                screenWidth = slot.GetSlotTriggerScreenRectWhenContainingItem(heldItemView).width;
+            } else {
+                screenWidth = layout.LocalToScreenVector(new Vector2(80, 80)).x;
+            }
+            // slot.GetScreenRectSlotForSlottable(slot.hoveredSlottable)
+            layoutItems.Add(LayoutItemParams.Fixed(screenWidth));
+        }
+        var ranges = LayoutUtils.GetLayoutRanges(Screen.width, layoutItems, spacing, 0.5f);
+
+        for (var index = 0; index < slots.Count; index++) {
+            var slot = slots[index];
+            var targetRect = slot.layout.ScreenToSLayoutRect(Rect.MinMaxRect(ranges[index].x, 0, ranges[index].y, 0));
+            slot.layout.x = targetRect.x;
+            slot.layout.width = targetRect.width;
+            slot.layout.centerY = layout.height * 0.5f;
+        }
     }
 
     public void Clear() {

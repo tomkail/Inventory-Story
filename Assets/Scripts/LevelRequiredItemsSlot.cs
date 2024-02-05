@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public class LevelRequiredItemsSlot : MonoBehaviour, ISlot {
+    public LevelRequiredItemsSlotGroup group => GetComponentInParent<LevelRequiredItemsSlotGroup>();
     public SLayout layout => GetComponent<SLayout>();
     // public DraggableSlot slot => GetComponent<DraggableSlot>();
     public ISlottable hoveredSlottable;
@@ -30,23 +31,23 @@ public class LevelRequiredItemsSlot : MonoBehaviour, ISlot {
 
     public void OnSlottableHoverStart(ISlottable slottable) {
         hoveredSlottable = slottable;
-        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, Layout);
+        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, group.Layout);
     }
 
     public void OnSlottableHoverEnd(ISlottable slottable) {
         hoveredSlottable = null;
-        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, Layout);
+        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, group.Layout);
     }
     
     public void OnSlottableSlottedStart(ISlottable slottable) {
         heldSlottable = slottable;
-        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, Layout);
+        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, group.Layout);
         // GameController.Instance.sceneController.currentLevelController.OnSlotItem(slottable as ItemView);
     }
     
     public void OnSlottableSlottedEnd(ISlottable slottable) {
         heldSlottable = null;
-        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, Layout);
+        layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, group.Layout);
     }
 
     void Layout() {

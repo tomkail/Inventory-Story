@@ -76,6 +76,11 @@ public class ItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         UpdateDrag();
     }
     void LateUpdate() {
+        if (containerSlot != null) {
+            RectTransformX.ScreenRectToLocalRectInRectangle((RectTransform)layout.rectTransform.parent, containerSlot.GetScreenRectSlotForSlottable(this), Camera.main, out Rect localRect);
+            var centerOffset = (localRect.size - layout.rectTransform.rect.size)*0.5f;
+            draggable.SetPositionImmediate(layout.rectTransform.GetLocalToAnchoredPositionOffset() + localRect.GetPointFromNormalizedPoint(layout.rectTransform.pivot) + centerOffset);
+        }
         UpdateLine();
     }
 
