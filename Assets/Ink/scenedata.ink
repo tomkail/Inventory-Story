@@ -1,47 +1,5 @@
 
 
-LIST Scenes = 
-
-Pinboard, 
-
-Graveyard, 
-Mortuary, 
-MetroPlatform, 
-
-HotelKitchens,
-HotelBathroom,
-BackAlleyway,
-
-BackOfClub, 
-CardTableAtClub, 
-ParkingLot,
-
-Apartment, 
-AnnieGivesInnerDeviceToContact,
-
-ApartmentBeforeErnst,
-AnnieComesFromWork,
-
-NoteInCar,
-QGivesNoteToAide, 
-
-QGivesItemToErnst, 
-
-StealCardFromKingDiamonds,
-
-QGetsDevice,
-
-GamblersAnonymous,
-
-DriveAfterWedding,
-Wedding,
-GoThroughWithWedding,
-
-MonitoringStationMorning,
-DeviceOperated,
-OpeningSequence,
-__Template
-
 
 
 LIST SceneProps = Title, Time, ExitKnot, Knot
@@ -55,20 +13,65 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   10th May 1968, 4:32pm
     -   ExitKnot: ~ return -> opening_sequence_fn
     }
+- ContainerOpeningBeatScene:
+    { prop: 
+    -   Title:  Desktop
+    -   Time:    10th May 1968, 4:32pm 
+    -   Knot:   ~ return -> ContainerOpeningBeat  
+    -   ExitKnot: ~ return -> ContainerOpeningBeat_fn
+    }
+- AgentUnknownBeatScene:
+    { prop: 
+    -   Title:  Desktop
+    -   Time:    10th May 1968, 4:32pm 
+    -   Knot:   ~ return -> AgentUnknownBeat  
+    -   ExitKnot: ~ return -> AgentUnknownBeat_fn
+    }    
 - Pinboard:     
     { prop: 
-    -   Title: Desktop
-    -   Time:   10th May 1968, 4:32pm
+    -   Title: East Berlin
+    -   Time:   10th May 1968, 11:32pm
     -   Knot:   ~ return -> pinboard 
     -   ExitKnot: ~ return -> pinboard_exit
     }
+
+- BerlinDeadDropScene:
+    { prop: 
+    -   Title:  Mink Strasse, East Berlin
+    -   Time:   10th May 1968, 7:19pm 
+    -   Knot:   ~ return -> BerlinDeadDrop  
+    -   ExitKnot: ~ return -> BerlinDeadDrop_fn
+    }  
+- DroppingBerlinDeadDropScene:
+    { prop: 
+    -   Title:  Mink Strasse, East Berlin
+    -   Time:   10th May 1968, 2:34pm 
+    -   Knot:   ~ return -> DroppingBerlinDeadDrop  
+    -   ExitKnot: ~ return -> DroppingBerlinDeadDrop_fn
+    }
+- BorderCheckpointScene:
+    { prop: 
+    -   Title:  Checkpoint Ralph, West Berlin Side
+    -   Time:   10th May 1968, 4:31pm 
+    -   Knot:   ~ return -> BorderCheckpoint  
+    -   ExitKnot: ~ return -> BorderCheckpoint_fn
+    }        
+        
 - Graveyard: 
     { prop: 
-    -   Title:  Graveyard new Rue Clemins
+    -   Title:  Graveyard near Rue Clemins
     -   Time:      29th April 1968, 11:07am
     -   Knot:   ~ return -> graveyard 
     -   ExitKnot: ~ return -> graveyard_fn
     }
+
+- AnnieHearsOfDeathScene:
+    { prop: 
+    -   Title:  AnnieHearsOfDeathTtle
+    -   Time:   AnnieHearsOfDeathTime 
+    -   Knot:   ~ return -> AnnieHearsOfDeath  
+    -   ExitKnot: ~ return -> AnnieHearsOfDeath_fn
+    }    
 - Mortuary: 
     { prop: 
     -   Title: Mortuary, 4th Quartier 
@@ -85,11 +88,11 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     - ExitKnot: ~ return -> annie_gives_inner_device_fn
     }    
     
-- MetroPlatform: 
+- MetroPlatformScene: 
     { prop: 
     -   Title:  Metro Platform, Champ de Mars 
     -   Time:   23rd April 1968, 11:25pm
-    -   Knot:   ~ return -> metro_platform 
+    -   Knot:   ~ return -> MetroPlatform 
     -   ExitKnot: ~ return -> metro_platform_fn
     }
 - HotelKitchens:
@@ -186,13 +189,23 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> king_clubs_steal_card  
     -   ExitKnot: ~ return -> king_clubs_steal_card_fn
     }
-- QGetsDevice: 
+- QGetsDeviceScene: 
     { prop: 
     - Title:    Park, Mid-France
-    - Time:     TODO
-    - Knot: ~ return -> quentin_receives_metal_cylinder
+    - Time:      25th July, 1967
+    - Knot: ~ return -> QGetsDevice
     - ExitKnot: ~ return -> q_receives_cylinder_fn
     }
+    
+
+- QuentinGetsDeviceAnnieWatchingScene:
+    { prop: 
+    - Title:    Park, Mid-France
+    - Time:      25th July, 1967
+    -   Knot:   ~ return -> QuentinGetsDeviceAnnieWatching  
+    -   ExitKnot: ~ return -> QuentinGetsDeviceAnnieWatching_fn
+    }    
+    
 - GamblersAnonymous: 
     { prop: 
     -   Title:  Missionary Hall 
@@ -200,6 +213,25 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot: ~ return -> gamblers_anonymous 
     -   ExitKnot: ~ return -> gamblers_anonymous_fn 
     }
+
+
+- ErnDiesEarlyScene:
+    { prop: 
+    -   Title:  Graveyard near Rue Clemins
+    -   Time:   8th Oct, 1963, 11:21am 
+    -   Knot:   ~ return -> ErnDiesEarly  
+    -   ExitKnot: ~ return -> ErnDiesEarly_fn
+    }
+    
+- InBedWithErnstScene:
+    { prop: 
+    -   Title:  Bedroom, Apartment, Montpellier
+    -   Time:   4th Oct 1963, 2:32am
+    -   Knot:   ~ return -> InBedWithErnst  
+    -   ExitKnot: ~ return -> InBedWithErnst_fn
+    }
+    
+    
 - DriveAfterWedding:
     { prop: 
     -   Title:Leaving the Chapel St Jean 
@@ -223,25 +255,19 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     }  
 - MonitoringStationMorning: 
     { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
+    -   Title:  Earthquake Monitoring Station, Pasedena
+    -   Time:   18th Jan 1961, 6:27pm  
     -   Knot:   ~ return    -> monitoring_station  
     -   ExitKnot: ~ return  -> monitoring_station_fn
     }
 - DeviceOperated:
     { prop: 
     -   Title:  TemplateTtle
-    -   Time:   18th Jan 1961, 1:18pm 
+    -   Time:   18th Jan 1961, 1:18am 
     -   Knot:   ~ return -> device_operated  
     -   ExitKnot: ~ return -> device_operated_fn
     }
 
-- __Template:
-    { prop: 
-    -   Title:  TemplateTtle
-    -   Time:   TemplateTime 
-    -   Knot:   ~ return -> template  
-    -   ExitKnot: ~ return -> template_fn
-    }
+
 - else: [ ERROR: need scene data for {sceneID} ]
 }
