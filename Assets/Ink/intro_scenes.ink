@@ -23,14 +23,37 @@ VAR ReplayableScenes = OpeningSequence
     }
     ~ return () 
     
+=== function opening_sequence_gameplay(type, item) 
+    { type: 
+//    - Name:
+    - Tooltip:
+        { item: 
+        - Briefcase:    "Lloyds of London" 
+        }
+//    - Replacement:
+    - Requirement:
+        { item: 
+        - Briefcase: ~ return KeyOnWristChain
+        }
+    - Generation:
+        { item: 
+        - Agent: ~ return  (Briefcase, KeyOnWristChain)
+        - Briefcase: ~ return SealedMetalCylinder 
+        }
+    }
+    ~ return () 
+
+    
 === ContainerOpeningBeat 
     -> scene ( SealedMetalCylinder, SealedMetalCylinder, "The container itself is of no importance. The device within, however, is of the utmost significance.") 
+    
 === function ContainerOpeningBeat_fn(x) 
     { x: 
-    -   (): ~ return 1 
+    -   ():     ~ return 1 
     -   Device: ~ return OpeningSequence
     }
     ~ return () 
+
 
 
 === AgentUnknownBeat 

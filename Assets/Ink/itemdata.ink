@@ -1,8 +1,15 @@
 
+LIST ItemDataTypes = Name, Tooltip, Replacement, Requirement, Generation, PostAction
+
+
 VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst) 
 
 
 === function getItemName(item)
+    ~ temp specific = "{levelGameplayFunction(Name, item)}"
+    { specific != "": 
+        ~ return specific 
+    } 
     {item: 
     - LooseBrick:   hollow brick
     -   ManilaEnvelope:             manila envelope
@@ -26,16 +33,15 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     }
     
 === function getItemTooltip(item) 
+    ~ temp specific = "{levelGameplayFunction(Tooltip, item)}"
+    { specific != "": 
+        ~ return specific 
+    }
     {item: 
-    - EmptySideOfTheBed:   
-        { generatedItems ? PhonecallFromMortuary: 
-            "He's never coming home." 
-        - else:
-            "He's in so much trouble when he comes home."
-        }
-    - EmptyCoffeeCup:   "I'll get more later. Not now."
+    
+    
     - SmallPackage: "For Q. Keep safe. High enemy interest."
-- PhonecallFromMortuary: "I'm very sorry... but we need you to come in and identify your husband's body." 
+
      - BorderGuard:  "Papers." 
 - NoWeddingRing:    "I took it off." 
 
@@ -63,11 +69,8 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
         - else: 
             "Have a good night!"
         }
-    -   Analyst: 
-            "What's the big fuss, dude? Why'd you get me in here so early?" 
-    -   SurprisedAnalyst: 
-            "But a shockwave like that would have toppled a cityblock!"
-    -   WifesPromise:   "Let's stay together, forever."
+    
+    
     -   Kosakov:    "The device, please, Ana."
            
     -   Device:  "Property of the US Army"
@@ -82,8 +85,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
             - else:
                 "Go on, then!"
             }
-    -   Annie:      "I do." 
-    -   Wife:       "Kiss me, Ernie..."
+    
     -   Croupier:   
         {
         - is(StealCardFromKingDiamonds) &&  not got(PileOfChips):
@@ -96,7 +98,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     -   MetroTicket:    "CHAMP DE MARS to MONTPELLIER" 
     -   Gravestone:     "Ernst Richards. Died: 23rd April 1968"
     -   DeviceOperatedPhoto:    "Operation of device observed from California earthquake monitoring station, Jan '61"
-    -   CylinderInMortuaryPhoto: "Found amongst possessions of ER, murder victim."
+    
     -   DeviceRemovedFromCylinderPhoto: "Aug 15th, 1964. Device is removed from protective sheath."
     -   QuentinsAide: 
         { currentSceneID:
@@ -157,7 +159,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     - DeadDropNoteFromQuentin: "Handover at the Champs du Mars. Midnight tonight. Q."
   //  - DupontInstructions:   "Further instructions: outside kitchens, Hotel de Champs de Mars."
   //  - KoDStamp:     "KoD"
-    - LoyalAssurance:   "I'll get over to the UN right away, sir."
+    
     - KosakovCard: "Paris 15643. Ask for K."
  
      
@@ -175,7 +177,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     -   QuentinsRelief:     "You've made the right decision. I'm glad you've seen what's right here."
     - QuentinDead:  "Annie... why..."
     - Kosakov: "You are having second thoughts? You wish to be extracted?"
-    - LovingMumble: "I'm so lucky I found you..."
+    
     - NewInstructionsFromKosakov: 
         "You'll need to monitor Roch without him seeing you."  
     - ShadowyFigure: 
@@ -187,36 +189,52 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     
     }
     ~ return
+    
+=== function postItemInteraction(item) 
+    // called after item has been interacted with 
+    ~ levelGameplayFunction(PostAction, item) 
 
 === function itemReplacesItemWhenGenerated(items)    
     ~ temp item = pop(items) 
-    { not item: 
-        ~ return () 
+    { item: 
+        ~ temp replacement = _itemReplacesItemWhenGenerated(item)    
+        ~ return replacement + itemReplacesItemWhenGenerated(items)    
+    } 
+    ~ return () 
+    
+=== function _itemReplacesItemWhenGenerated(item)     
+    ~ temp specific = levelGameplayFunction(Replacement, item) 
+    { specific: 
+        ~ return specific
     }
     {item: 
-    - UnlitLamp:    
-            ~  item = ( RingingTelephone, Telephone ) 
-    -   Gun:        ~ item = HiddenGun 
-    -   HiddenGun:    ~ item =  Gun
-       - BorderGuardWaving: ~ item = BorderPapers
-    - PostboxWithHiddenEnvelope: ~ item = ManilaEnvelope 
-    - SurprisedAnalyst: 
-            ~ item = DeviceOperatedPhoto
-    -   StolenCard: 
-            ~ item = AceSpades 
-    -   QuentinDead: 
-            ~ item = Quentin  
-    -   HandCards: 
-            ~ item = PileOfChips 
-    -   HusbandsBody: 
-            ~ item = (SleepingErnst, LovingMumble) 
-    -  else:     
-            ~ item = ()
+        
+        -   Gun:        
+                ~ return HiddenGun 
+        -   HiddenGun:    
+                ~ return Gun
+           - BorderGuardWaving: 
+                ~ return BorderPapers
+        - PostboxWithHiddenEnvelope: 
+                ~ return  ManilaEnvelope 
+        - SurprisedAnalyst: 
+                ~ return DeviceOperatedPhoto
+        -   StolenCard: 
+                ~ return  AceSpades 
+        -   QuentinDead: 
+                ~ return Quentin  
+        -   HandCards: 
+                ~ return  PileOfChips 
+        
     }
-    ~ return item + itemReplacesItemWhenGenerated(items) 
+    ~ return ()
     
     
 === function itemRequiresItem(item) 
+    ~ temp specific = levelGameplayFunction(Requirement, item) 
+    { specific: 
+        ~ return specific
+    }
     { item: 
     - Wall: ~ return Hammer
     - ShadowyFigure : ~ return WeddingRing 
@@ -224,17 +242,14 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
         { got(Gun): 
             ~ return Gun 
         }
-    - SleepingErnst: 
-        { got(Gun):  // only if you've got it 
-            ~ return Gun 
-        }
+    
     - Valet: ~ return CarKey 
-    - Briefcase: ~ return KeyOnWristChain
-    - Analyst: ~ return DeviceOperatedPhoto
+    // - Briefcase: ~ return KeyOnWristChain
+    
     - Kosakov:
         ~ return (Device, WeddingRing)
     - Quentin: ~ return Device
-    - Annie: ~ return OtherWeddingRing
+    
  
     -   LockedDrawer:   ~ return KeyOnChain
     -   QuentinsAide: ~ return (ERNameBadge,  DeadDropNoteFromQuentin, DeskPlate)
@@ -271,6 +286,10 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     
     
 === function itemGeneratesItems(item) 
+    ~ temp specific = levelGameplayFunction(Generation, item) 
+    { specific: 
+        ~ return specific
+    }
     {item: 
     
 - BorderGuard: ~ return replaceAs(BorderGuardWaving)
@@ -285,24 +304,13 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
  
     - Postbox: ~ return ManilaEnvelope
 - Soldier: ~ return  replaceAs(SoldierWithGunPointed)
-    - RingingTelephone:    ~ return replaceAs((Telephone, PhonecallFromMortuary))
- - UnlitLamp: 
-    { got(PhonecallFromMortuary): 
-        ~ return replaceAs((LitLamp, Telephone))
-    - else: 
-        ~ return replaceAs((LitLamp, RingingTelephone))
-    }
- - LitLamp: ~ return replaceAs(UnlitLamp)
+    
+ 
+ 
     - Veil: ~ return EyesBrimmingWithTears
  
     - ShadowyFigure : ~ return (NewInstructionsFromKosakov)
-    - SleepingErnst:  
-        {not got(Gun) : 
-            ~ return LovingMumble
-        - else: 
-            
-            ~ return HusbandsBody
-        }
+    
     - Pillow:  
         {got(Gun): 
             ~ return HiddenGun
@@ -312,8 +320,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     
     - Circle: ~ return GroupSupport
     - Valet: ~ return ValetReceipt
-    -  Analyst: ~ return replaceAs(SurprisedAnalyst)
-    - LinePrinter: ~ return DeviceOperatedPhoto
+    
     - ParkBench: ~ return Kosakov
     - Kosakov: 
         { 
@@ -339,15 +346,14 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
         - else: 
             ~ return (Lipstick)
         }
-     - Hotline: ~ return Analyst
+     
      - Telephone: ~ return replaceAs( KosakovOnTelephone)
      - KosakovOnTelephone:  ~ return replaceAs( KosakovsDrop)
      
     - ManNearBlackCar: ~ return  ManEnteringCarOutsideUNPhoto
-    - Wife:     ~ return WifesPromise
+    
     -  Quentin: ~ return OtherWeddingRing
-    - Annie: ~ return replaceAs( Wife)
- 
+    
     - Croupier: 
         { is(StealCardFromKingDiamonds):
             ~ return HandCards
@@ -388,9 +394,7 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
         - QGivesItemToErnst: 
             ~ return Envelope 
         }
-    - ManilaEnvelope: 
-        ~ asReplacement = true
-        ~ return PhotosInOpeningEnvelope
+  
     - BunchOfFlowers:   ~ return EvenMoreFlowers
     - EvenMoreFlowers:  ~ return WeddingRing 
     - AnotherBunchOfFlowers:    ~ return MoreFlowers
@@ -446,8 +450,8 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
         ~ return replaceAs(  (EvenEvenMoreChips , ValetReceipt) )
     - ValetReceipt: 
         ~ return replaceAs( EvenEvenMoreChips)
-    - Agent: ~ return  (Briefcase, KeyOnWristChain)
-    - Briefcase: ~ return SealedMetalCylinder 
+    //- Agent: ~ return  (Briefcase, KeyOnWristChain)
+    //- Briefcase: ~ return SealedMetalCylinder 
 
     - Jacket:      
         { 

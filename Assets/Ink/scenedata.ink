@@ -2,7 +2,7 @@
 
 
 
-LIST SceneProps = Title, Time, ExitKnot, Knot
+LIST SceneProps = Title, Time, ExitKnot, Knot, GameplayKnot
 
 === function getSceneData(sceneID, prop) // Title, Time, Knot, Exit
 { sceneID: 
@@ -12,6 +12,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Knot:   ~ return -> opening_sequence 
     -   Time:   10th May 1968, 4:32pm
     -   ExitKnot: ~ return -> opening_sequence_fn
+    -   GameplayKnot: ~ return -> opening_sequence_gameplay
     }
 - ContainerOpeningBeatScene:
     { prop: 
@@ -26,6 +27,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:    10th May 1968, 4:32pm 
     -   Knot:   ~ return -> AgentUnknownBeat  
     -   ExitKnot: ~ return -> AgentUnknownBeat_fn
+    -   GameplayKnot: ~ return -> opening_sequence_gameplay
     }    
 - Pinboard:     
     { prop: 
@@ -33,6 +35,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   10th May 1968, 11:32pm
     -   Knot:   ~ return -> pinboard 
     -   ExitKnot: ~ return -> pinboard_exit
+    -   GameplayKnot: ~ return -> pinboard_gameplay
     }
 
 - BerlinDeadDropScene:
@@ -71,6 +74,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   AnnieHearsOfDeathTime 
     -   Knot:   ~ return -> AnnieHearsOfDeath  
     -   ExitKnot: ~ return -> AnnieHearsOfDeath_fn
+    - GameplayKnot: ~ return -> AnnieHearsOfDeath_gameplay
     }    
 - Mortuary: 
     { prop: 
@@ -174,6 +178,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   23rd April 1968, 2:29pm
     -   Knot:   ~ return -> quentin_gives_aide_money 
     -   ExitKnot: ~ return -> gives_aide_money_fn 
+    -   GameplayKnot: ~ return -> gives_aide_money_gameplay
     }
 - QGivesItemToErnst: 
     { prop: 
@@ -229,6 +234,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   4th Oct 1963, 2:32am
     -   Knot:   ~ return -> InBedWithErnst  
     -   ExitKnot: ~ return -> InBedWithErnst_fn
+    -   GameplayKnot: ~ return -> InBedWithErnst_gameplay
     }
     
     
@@ -245,6 +251,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   3rd Oct 1962, 1:18pm
     -   Knot:   ~ return -> wedding  
     -   ExitKnot: ~ return -> wedding_fn
+    - GameplayKnot: ~ return -> wedding_gameplay
     }
 - GoThroughWithWedding:
     { prop: 
@@ -259,6 +266,7 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
     -   Time:   18th Jan 1961, 6:27pm  
     -   Knot:   ~ return    -> monitoring_station  
     -   ExitKnot: ~ return  -> monitoring_station_fn
+    - GameplayKnot: ~ return -> monitoring_station_gameplay
     }
 - DeviceOperated:
     { prop: 
@@ -271,3 +279,8 @@ LIST SceneProps = Title, Time, ExitKnot, Knot
 
 - else: [ ERROR: need scene data for {sceneID} ]
 }
+// fallthrough  for optional paramenters 
+{ prop == GameplayKnot: 
+    ~ return -> twoParameterBlankList
+}
+// [ ERROR: no {prop} for {sceneID} ]

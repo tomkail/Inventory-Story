@@ -1,30 +1,38 @@
 
  /*
-    AgentUnknownBeat
+    QuestionScientist
  */
  
  
-=== AgentUnknownBeat 
-    LIST AgentUnknownBeatItems = (AgentUnknownBeatItem) 
-    VAR AgentUnknownBeatInteractables = (AgentUnknownBeatItem)
+=== QuestionScientist 
+    LIST QuestionScientistItems = (QuestionScientistItem) 
+    VAR QuestionScientistInteractables = (QuestionScientistItem)
     
-    -> scene ( AgentUnknownBeatItems, AgentUnknownBeatInteractables, "Remark") 
-=== function AgentUnknownBeat_fn(x) 
+    -> scene ( QuestionScientistItems, QuestionScientistInteractables, "Remark") 
+=== function QuestionScientist_fn(x) 
     { x: 
     -   (): ~ return 1 
-TODO: A solve 
+TODO: A solve t
+    }
+    ~ return () 
+
+=== function QuestionScientist_gameplay(act, item) 
+    {act: 
+    -   Tooltip: {item: 
+        }
     }
     ~ return () 
 
 /*
 
 
-- AgentUnknownBeatScene:
+- QuestionScientistScene:
     { prop: 
-    -   Title:  AgentUnknownBeatTtle
-    -   Time:   AgentUnknownBeatTime 
-    -   Knot:   ~ return -> AgentUnknownBeat  
-    -   ExitKnot: ~ return -> AgentUnknownBeat_fn
+    -   Title:  QuestionScientistTtle
+    -   Time:   QuestionScientistTime 
+    -   Knot:   ~ return -> QuestionScientist  
+    -   ExitKnot: ~ return -> QuestionScientist_fn
+    -   GameplayKnot: ~ return -> QuestionScientist_gameplay
     }
     
 */

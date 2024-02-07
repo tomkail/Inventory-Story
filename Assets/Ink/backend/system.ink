@@ -5,6 +5,9 @@ VAR currentItems = ()
 VAR levelInteractables = ()
 VAR levelSuccessFunction = -> FALSE_
 VAR generatedItems = ()
+VAR levelGameplayFunction = -> FALSE_
+
+VAR withItem = ()
 
 === use(item) 
     { levelItems !? item:
@@ -16,18 +19,18 @@ VAR generatedItems = ()
         -> DONE // need an item you don't have 
     }
 - (opts)
-    ~ temp withItem = pop(withItems) 
+    ~ withItem = pop(withItems) 
     VAR asReplacement = false 
     { levelItems ? withItem || not withItem: 
         ~ asReplacement = false  // default to false 
         ~ temp toGenerate = itemGeneratesItems(item) 
         
-        <- use_item(item, withItem, toGenerate, asReplacement)
+        <- use_item(item, toGenerate, asReplacement)
     } 
     { withItems:    // handle multiple solutions 
         -> opts 
     } 
-=  use_item(item, withItem, toGenerate, replacing)
+=  use_item(item, toGenerate, replacing)
     +   { not (levelItems ^ toGenerate) }
         [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
         ~ addItems(toGenerate) 
@@ -41,6 +44,7 @@ VAR generatedItems = ()
             ~ levelInteractables -= item
         }
         [ now {levelItems} ]
+        ~ postItemInteraction(item)
         ->-> 
 
 
@@ -48,6 +52,7 @@ VAR generatedItems = ()
     ~ generatedItems += items
     ~ levelItems += items
     ~ temp replacements = itemReplacesItemWhenGenerated(items) 
+    // [ adding {items} means removing {replacements} ... ]
     ~ removeItem(replacements) 
     
     
@@ -68,6 +73,7 @@ VAR generatedItems = ()
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSolutionItemCount = solnCount // returns an int
+    ~ levelGameplayFunction = getSceneData(currentSceneID, GameplayKnot)
     ~ currentItems = ()
     ~ generatedItems = ()
     VO: {VOLine}

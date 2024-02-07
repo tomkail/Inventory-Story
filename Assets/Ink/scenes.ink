@@ -49,6 +49,21 @@ TODO: reset at the end of run doesn't reset ink but just bounces.
     ~ PhotosInOpeningEnvelope += photo
 
 
+=== function pinboard_gameplay(type, item) 
+    { type: 
+    - Generation: 
+        { item : 
+          - ManilaEnvelope: 
+                ~ return replaceAs(PhotosInOpeningEnvelope) 
+        }
+    - Tooltip: 
+        {item: 
+        -   CylinderInMortuaryPhoto: "Found amongst possessions of ER, murder victim."
+        }
+        
+    }
+    ~ return () 
+
  
 /*
     BerlinDeadDrop
@@ -157,7 +172,36 @@ VAR GraveyardInteractables = (Gravestone, BunchOfFlowers, AnotherBunchOfFlowers,
     -   EmptySideOfTheBed:      ~ return Apartment
     }
     ~ return () 
-
+    
+=== function AnnieHearsOfDeath_gameplay(type, item) 
+    { type: 
+    -   Replacement: {item: 
+        - UnlitLamp:    
+            ~  return ( RingingTelephone, Telephone ) 
+        }
+    - Tooltip: 
+        {item: 
+        - EmptySideOfTheBed:   
+            { generatedItems ? PhonecallFromMortuary: 
+                "He's never coming home." 
+            - else:
+                "He's in so much trouble when he comes home."
+            }
+        - PhonecallFromMortuary: "I'm very sorry... but we need you to come in and identify your husband's body." 
+        }
+    -   Generation: {item: 
+        - LitLamp: ~ return replaceAs(UnlitLamp)
+        - UnlitLamp: 
+            { got(PhonecallFromMortuary): 
+                ~ return replaceAs((LitLamp, Telephone))
+            - else: 
+                ~ return replaceAs((LitLamp, RingingTelephone))
+            }
+        - RingingTelephone:    
+            ~ return replaceAs((Telephone, PhonecallFromMortuary))    
+        }
+    }
+    ~ return () 
 
 
 === mortuary 
@@ -476,6 +520,10 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     ~ return () 
     
     
+    
+    
+    
+    
 === apartment_after_ernst 
     LIST ApartmentWithoutErnstItems = KosakovCard , (Telephone), KosakovOnTelephone, KosakovsDrop, (BlackChanelBag), LipstickHidingDevice
     
@@ -551,7 +599,12 @@ LIST ApartmentItems = (WallSafe), (DeadDropNoteFromQuentin), (WeddingPhoto), (Ke
     }
     ~ return () 
     
-    
+=== function gives_aide_money_gameplay(act, item) 
+    {act: 
+    -   Tooltip: {item:
+        - LoyalAssurance:   "I'll get over to the UN right away, sir."
+        }
+    }
 
 
 
@@ -662,7 +715,31 @@ TODO: forwards?!
 
     }
     ~ return () 
-
+=== function InBedWithErnst_gameplay(act, item) 
+    {act: 
+    -   Tooltip: {item: 
+        - LovingMumble: "I'm so lucky I found you..."
+        }
+    -   Requirement: {item: 
+        - SleepingErnst: 
+            { got(Gun):  // only if you've got it 
+                ~ return Gun 
+            }
+        }
+    -   Generation: {item: 
+        - SleepingErnst:  
+            {not got(Gun) : 
+                ~ return LovingMumble
+            - else: 
+                ~ return replaceAs(HusbandsBody)
+            }
+        }
+    -   Replacement: {item: 
+        -   HusbandsBody: 
+                ~ return  (LovingMumble) 
+        }
+    }
+    ~ return ()
 
  
  
@@ -691,7 +768,22 @@ TODO: a solve
     }
     ~ return () 
  
- 
+=== function wedding_gameplay(act, item) 
+    { act: 
+    - Tooltip: {item: 
+        -   Annie:      "I do." 
+        -   Wife:       "Kiss me, Ernie..."
+        -   WifesPromise:   "Let's stay together, forever."
+        }
+    - Requirement: {item: 
+        - Annie: ~ return OtherWeddingRing
+        }
+    - Generation: {item: 
+        - Annie: ~ return replaceAs( Wife)
+        - Wife:     ~ return WifesPromise
+        }
+    }
+    ~ return ()
  
 === go_through_with_wedding 
     LIST GoThroughWithItems = (ParkBench) , Lipstick
@@ -718,7 +810,29 @@ TODO: A solve
     -   (): ~ return 1 
     -   SurprisedAnalyst: ~ return DeviceOperated
     }
-    ~ return ()    
+    ~ return ()   
+    
+=== function monitoring_station_gameplay(act, item) 
+    { act: 
+    -   Tooltip: {item: 
+        - EmptyCoffeeCup:   "I'll get more later. Not now."
+        -   Analyst: 
+            "What's the big fuss, dude? Why'd you get me in here so early?" 
+        -   SurprisedAnalyst: 
+            "But a shockwave like that would have toppled a cityblock!"
+        }
+    -   Generation: {item: 
+        -  Analyst: ~ return replaceAs(SurprisedAnalyst)
+        - LinePrinter: ~ return DeviceOperatedPhoto
+        - Hotline: ~ return Analyst
+        } 
+    -   Requirement: {item: 
+        - Analyst: ~ return DeviceOperatedPhoto
+        - Hotline: ~ return DeviceOperatedPhoto
+        }
+    }
+    
+    
 
  === device_operated 
     LIST DeviceOperatedItems =  Device, Warp 
