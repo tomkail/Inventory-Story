@@ -27,6 +27,13 @@ VAR OneUseOnlyItems = (LinePrinter, Hotline, Analyst)
     
 === function getItemTooltip(item) 
     {item: 
+    - EmptySideOfTheBed:   
+        { generatedItems ? PhonecallFromMortuary: 
+            "He's never coming home." 
+        - else:
+            "He's in so much trouble when he comes home."
+        }
+    - EmptyCoffeeCup:   "I'll get more later. Not now."
     - SmallPackage: "For Q. Keep safe. High enemy interest."
 - PhonecallFromMortuary: "I'm very sorry... but we need you to come in and identify your husband's body." 
      - BorderGuard:  "Papers." 
