@@ -681,12 +681,103 @@ TODO: forwards?!
  
  
     
+ /*
+    QuestionScientist
+ */
+ 
+ 
+=== QuestionScientist 
+    VAR answerCount = 0
+    ~ answerCount = 0 // reset at top of scene
+    LIST QuestionScientistItems = (TiedUpScientist) , (LiveWires), (Questions), TerrifiedScientist, Answer, (CellGuard), DeadScientist
+    VAR QuestionScientistInteractables = (TiedUpScientist, TerrifiedScientist) 
+    
+    -> scene ( QuestionScientistItems, QuestionScientistInteractables, "Remark") 
+=== function QuestionScientist_fn(x) 
+    { x: 
+    -   (): ~ return 1 
+TODO: A solve t
+    }
+    ~ return () 
 
 
-/*
+
+=== function QuestionScientist_gameplay(act, item) 
+    {act: 
+    -   PostAction: {item: 
+        - TerrifiedScientist: 
+            { withItem == Questions: 
+                ~ answerCount++ 
+            }
+        }
+    -   Tooltip: {item: 
+        - CellGuard: 
+            { got(DeadScientist): 
+                "You're in a lot of trouble, friend." 
+            - else: 
+                "You have all the time you need."
+            }
+        - DeadScientist: 
+            "..."
+        - TerrifiedScientist: 
+            { answerCount:
+            -   0: "Please. Please..."
+            -   1: "Stop. Don't... please..." 
+            }
+            
+        - TiedUpScientist: 
+            { answerCount:
+            -   0:  "You can't make me talk."
+            -   1:  "I won't say anything more." 
+            -   2:  "Please. No more." 
+            }
+        - Questions: 
+            { answerCount:
+            -   0:    "How does the device work?"
+            -   1:  "What kind of marker?" 
+            - 2:    "So explain."
+            }
+        - Answer: 
+            { answerCount: 
+            - 1:    "The device... it's hard to explain. Creates a signal. A marker."
+            - 2:    "A marker... that can be seen... from a later point. Traced and relocated... it's complicated."
+            - 3:    "Once activated, the device... provides... a floor... like the sea-bed... for a plumb-line..."
+            }
+            
+        }
+    -   Generation: {item: 
+        - LiveWires: ~ return TerrifiedScientist
+        - TerrifiedScientist: 
+            { withItem: 
+            - Questions: 
+                ~ return (TiedUpScientist, Answer)
+            - LiveWires: 
+                ~ return DeadScientist
+            }
+        - TiedUpScientist:  
+            { answerCount >= 3: 
+                ~ return DeadScientist
+            - else:
+                ~ return TerrifiedScientist
+            }
+        }
+    -   Requirement: {item: 
+        - TiedUpScientist:      ~ return LiveWires 
+        - TerrifiedScientist:   ~ return (LiveWires, Questions) 
+        }
+        
+    -   Replacement: {item: 
+        - DeadScientist:    
+            ~ return (TerrifiedScientist, TiedUpScientist, Questions, Answer)
+        - TiedUpScientist:      
+            ~ return TerrifiedScientist
+        - TerrifiedScientist:   
+            ~ return (TiedUpScientist, Answer)
+        }
+    }
+    ~ return () 
 
 
-*/ 
 
  /*
     InBedWithErnst

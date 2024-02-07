@@ -38,13 +38,18 @@ QuentinGetsDeviceAnnieWatchingScene,
 
 GamblersAnonymous,
 
+QuestionScientistScene,
+
 ErnDiesEarlyScene,
+
 
 InBedWithErnstScene,
 
 DriveAfterWedding,
 Wedding,
 GoThroughWithWedding,
+
+
 
 MonitoringStationMorning,
 DeviceOperated,

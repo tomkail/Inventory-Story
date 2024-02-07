@@ -219,6 +219,15 @@ LIST SceneProps = Title, Time, ExitKnot, Knot, GameplayKnot
     -   ExitKnot: ~ return -> gamblers_anonymous_fn 
     }
 
+- QuestionScientistScene:
+    { prop: 
+    -   Title:  QuestionScientistTtle
+    -   Time:   QuestionScientistTime 
+    -   Knot:   ~ return -> QuestionScientist  
+    -   ExitKnot: ~ return -> QuestionScientist_fn
+    -   GameplayKnot: ~ return -> QuestionScientist_gameplay
+    }
+    
 
 - ErnDiesEarlyScene:
     { prop: 
