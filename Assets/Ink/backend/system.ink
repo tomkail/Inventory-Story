@@ -3,7 +3,7 @@ VAR levelItems = ()
 VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
-VAR levelSuccessFunction = -> FALSE_
+
 VAR generatedItems = ()
 VAR levelGameplayFunction = -> FALSE_
 
@@ -66,14 +66,14 @@ VAR withItem = ()
 === scene(items, interactables, VOLine)
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
-    ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
-    ~ temp solnCount = levelSuccessFunction(())
+    ~ levelGameplayFunction = getSceneData(currentSceneID, GameplayKnot)
+    ~ temp solnCount = levelGameplayFunction(Sequence, ())
     ~ StartScene (currentSceneID, title, date, solnCount, items)
 // only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSolutionItemCount = solnCount // returns an int
-    ~ levelGameplayFunction = getSceneData(currentSceneID, GameplayKnot)
+    
     ~ currentItems = ()
     ~ generatedItems = ()
     VO: {VOLine}
@@ -120,7 +120,7 @@ VAR withItem = ()
 = ingame 
     +   (solved) [ SOLVED ] 
         >>> SAVE
-        -> proceedTo(levelSuccessFunction(currentItems))
+        -> proceedTo(levelGameplayFunction(Sequence, currentItems))
     
 = slot(item, freeSlots) 
     +   { currentItems  ? item } 
@@ -145,10 +145,11 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
-        ~ temp result = levelSuccessFunction(currentItems)
+    
+        ~ temp result = levelGameplayFunction(Sequence, currentItems)
          
         { previousSceneID ? result && ReplayableScenes !? result:
-            // can't repeat a scene
+            // can't repeat a scene (!) 
             ~ return false 
         }
         

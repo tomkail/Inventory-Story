@@ -11,6 +11,8 @@ Graveyard,
 AnnieHearsOfDeathScene,
 Mortuary, 
 MetroPlatformScene, 
+OnPlatformWaitingForQScene,
+   
 
 HotelKitchens,
 HotelBathroom,

@@ -1,23 +1,22 @@
 
  /*
-    QuestionScientist
+    template
  */
  
  
-=== QuestionScientist 
-    LIST QuestionScientistItems = (QuestionScientistItem) 
-    VAR QuestionScientistInteractables = (QuestionScientistItem)
+=== template_knot 
+    LIST templateItems = (templateItem) 
+    VAR templateInteractables = (templateItem)
     
-    -> scene ( QuestionScientistItems, QuestionScientistInteractables, "Remark") 
-=== function QuestionScientist_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-TODO: A solve t
-    }
-    ~ return () 
+    -> scene ( templateItems, templateInteractables, "Remark") 
 
-=== function QuestionScientist_gameplay(act, item) 
+
+=== function template_gameplay(act, item) 
     {act: 
+    -   Sequence: {item: 
+        - (): ~ return 1 
+        TODO: A solve 
+        }
     -   Tooltip: {item: 
         }
     }
@@ -26,13 +25,12 @@ TODO: A solve t
 /*
 
 
-- QuestionScientistScene:
+- templateScene:
     { prop: 
-    -   Title:  QuestionScientistTtle
-    -   Time:   QuestionScientistTime 
-    -   Knot:   ~ return -> QuestionScientist  
-    -   ExitKnot: ~ return -> QuestionScientist_fn
-    -   GameplayKnot: ~ return -> QuestionScientist_gameplay
+    -   Title:  templateTtle
+    -   Time:   templateTime 
+    -   Knot:   ~ return -> template_knot 
+    -   GameplayKnot: ~ return -> template_gameplay
     }
     
 */
