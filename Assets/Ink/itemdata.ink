@@ -24,6 +24,8 @@ VAR OneUseOnlyItems = (SealedMetalCylinder, LinePrinter, Hotline, Analyst)
 === function  defaultItemTooltip(item)
     {item: 
     - NoWeddingRing:    "I took it off." 
+    
+    - SwissTrainTicket: "Berne to Paris. 1st Class."
 
     -   SealedMetalCylinder:    \*WARNING\*
     
@@ -116,7 +118,7 @@ VAR OneUseOnlyItems = (SealedMetalCylinder, LinePrinter, Hotline, Analyst)
 
 === function  defaultItemReplacesItem(item)
     {item:
-        - Nothing: ~ return Nothing
+        - Nothing: ~ return Nothing + withItem // ?
     }
     ~ return ()
     
@@ -217,6 +219,7 @@ VAR OneUseOnlyItems = (SealedMetalCylinder, LinePrinter, Hotline, Analyst)
     
     - Jacket:   ~ return (Wallet)
     }
-    ERROR: {item} has no generator list 
+//    ERROR: {item} has no generator list 
+    ~ return () 
     
     

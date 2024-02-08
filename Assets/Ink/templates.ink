@@ -8,7 +8,7 @@
     LIST templateItems = (templateItem) 
     VAR templateInteractables = (templateItem)
     
-    -> scene ( templateItems, templateInteractables, "Remark") 
+    -> scene ( templateItems, template_gameplay(Interactables, ()), "Remark") 
 
 
 === function template_gameplay(act, item) 
@@ -23,6 +23,9 @@
     ~ return () 
 
 /*
+
+
+templateScene,
 
 
 - templateScene:

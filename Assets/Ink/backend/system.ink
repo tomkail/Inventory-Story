@@ -24,15 +24,17 @@ VAR withItem = ()
     { levelItems ? withItem || not withItem: 
         ~ asReplacement = false  // default to false 
         ~ temp toGenerate = itemGeneratesItems(item) 
-        
-        <- use_item(item, toGenerate, asReplacement)
+        {  toGenerate:
+            <- use_item(item, toGenerate, withItem, asReplacement)
+        }
     } 
     { withItems:    // handle multiple solutions 
         -> opts 
     } 
-=  use_item(item, toGenerate, replacing)
+=  use_item(item, toGenerate, _withItem, replacing)
     +   { not (levelItems ^ toGenerate) }
-        [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
+        [ {DEBUG:USE} {item}  {_withItem: {DEBUG:WITH|-} {_withItem} } ]
+        ~ withItem = _withItem
         ~ addItems(toGenerate) 
         { 
         - levelItems ? Warp:
@@ -162,13 +164,23 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
         ~ return false 
     }
     
+
+=== function generateOnce(item) 
+    { generatedItems !? item: 
+        ~ return item 
+    } 
+    ~ return () 
     
 === function replaceAs(item) 
     ~ asReplacement = true
     ~ return item     
 
+=== function noLongerGot(item) 
+    ~ return not got_any(item)  && generatedItems ? item 
 === function got(item) 
     ~ return levelItems ? item
+=== function got_any(item) 
+    ~ return levelItems ^ item
 
 === proceedTo(nextSceneIDToHit)
     ~ previousSceneID += currentSceneID

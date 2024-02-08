@@ -204,10 +204,11 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     { prop: 
     - Title:    Park, Mid-France
     - Time:      25th July, 1967
-    - Knot: ~ return -> QGetsDevice
+    - Knot: ~ return -> QGetsDevice_knot
     - GameplayKnot: ~ return -> q_receives_cylinder_fn
     }
-    
+
+
 
 - QuentinGetsDeviceAnnieWatchingScene:
     { prop: 
@@ -215,7 +216,16 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     - Time:      25th July, 1967
     -   Knot:   ~ return -> QuentinGetsDeviceAnnieWatching  
     -   GameplayKnot: ~ return -> QuentinGetsDeviceAnnieWatching_fn
-    }    
+    } 
+    
+
+- RavensNestScene:
+    { prop: 
+    -   Title:  RavensNestTtle
+    -   Time:   RavensNestTime 
+    -   Knot:   ~ return -> RavensNest_knot 
+    -   GameplayKnot: ~ return -> RavensNest_gameplay
+    }
     
 - GamblersAnonymous: 
     { prop: 

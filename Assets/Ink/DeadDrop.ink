@@ -22,7 +22,7 @@ VAR currentSceneID = ()
 VAR TopSceneID = Pinboard
 
 
-//-> proceedTo(Pinboard)
+-> proceedTo(RavensNestScene)
 
 -> proceedTo(OpeningSequence)
 

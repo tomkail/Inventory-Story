@@ -40,6 +40,10 @@ QuentinGetsDeviceAnnieWatchingScene,
 
 GamblersAnonymous,
 
+RavensNestScene,
+AgentThrownIntoSeineScene,
+
+
 QuestionScientistScene,
 
 ErnDiesEarlyScene,

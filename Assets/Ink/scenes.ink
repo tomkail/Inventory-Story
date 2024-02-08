@@ -323,7 +323,7 @@ LIST MortuaryTrayItems =  (PoliceNotes), SealedMetalCylinder, (Wallet), Business
                 ~ return Wedding
                 
         - (QsBusinessCard, SealedMetalCylinder):     
-                ~ return QGetsDevice
+                ~ return QGetsDeviceScene
         }
     - Tooltip: {item: 
         -   PoliceNotes: 
@@ -945,7 +945,7 @@ LIST ApartmentItems = (WallSafe), (MapOfParisMetro), (WeddingPhoto), (KeyHook), 
     - Sequence: {item: 
         -   ():     ~ return 2
         -   (SealedMetalCylinder, NoteFromQuentin):  
-                    ~ return QGetsDevice
+                    ~ return QGetsDeviceScene
         }
     - Tooltip: {item: 
         -   DeskPlate:  "Ernst Richards. Clerk."
@@ -1012,14 +1012,15 @@ LIST ApartmentItems = (WallSafe), (MapOfParisMetro), (WeddingPhoto), (KeyHook), 
  
  
  
- === QGetsDevice 
-    LIST QuentinReceivesCylinderItems = (Wall), LooseBrick, SmallPackage, (Toolbox), (ParkAttendantUniform), Screwdriver, Hammer, Pliers
+ === QGetsDevice_knot 
+    LIST QuentinReceivesCylinderItems = (Wall), LooseBrick, SmallPackage, (Toolbox), (ParkAttendantUniform), Screwdriver, Hammer, PocketKnife, ReplacedBrick, RavensFeather
     VAR QuentinReceivesCylinderInteracts = (Wall, SmallPackage,LooseBrick, SealedMetalCylinder, Toolbox)
     -> scene ( QuentinReceivesCylinderItems, QuentinReceivesCylinderInteracts, "The device was passed to an American agent by means of a dead drop.") 
 === function q_receives_cylinder_fn(act, item)
     {act: 
     - Sequence: {item: 
         -   (): ~ return 1 
+        -   RavensFeather:  ~ return RavensNestScene
         -   Device: ~ return DeviceOperated
         -   Warp:   ~ return TopSceneID 
         }
@@ -1027,21 +1028,54 @@ LIST ApartmentItems = (WallSafe), (MapOfParisMetro), (WeddingPhoto), (KeyHook), 
         - LooseBrick:   hollow brick
         }
     - Tooltip: {item: 
+        - ParkAttendantUniform: "Small Parks Maintenance"
+        - Toolbox: "Property of Small Parks Maintenance"
         - SmallPackage: "For Q. Keep safe. High enemy interest."
         }
     - Requirement: {item: 
-        -   LooseBrick: ~ return  Screwdriver
-        -   Wall: ~ return Hammer
+        -   LooseBrick:     ~ return  Screwdriver
+        -   Wall:   
+                { 
+                - got(LooseBrick) && got(SmallPackage):
+                    ~ return LooseBrick 
+                - generatedItems !? LooseBrick : 
+                    ~ return Hammer
+                }
+        - SmallPackage:     ~ return PocketKnife
+        - Toolbox: 
+            { got_any((Screwdriver, Hammer, PocketKnife, SealedMetalCylinder)):
+                ~ return  (Screwdriver, Hammer, PocketKnife, SealedMetalCylinder)
+            }
         }
     - Generation: {item: 
-        - Wall: ~ return LooseBrick
-         - LooseBrick: ~ return SmallPackage
-         - SmallPackage: ~ return SealedMetalCylinder
-         - Toolbox: ~ return (Screwdriver, Hammer, Pliers)
+        -   Wall: 
+                { 
+                - not got(LooseBrick):
+                    ~ return LooseBrick
+                - got(SmallPackage): 
+                    ~ return Nothing
+                }
+        
+         - LooseBrick: 
+                ~ return SmallPackage
+         - SmallPackage: 
+                ~ return replaceAs((SealedMetalCylinder, RavensFeather))
+         - Toolbox: 
+                { 
+                - withItem && got(withItem): 
+                    ~ return Nothing 
+                - not got(SealedMetalCylinder) && generatedItems ? SealedMetalCylinder: 
+                    ~ return (Screwdriver, Hammer, PocketKnife, SealedMetalCylinder)
+                - else: 
+                    ~ return (Screwdriver, Hammer, PocketKnife)
+                }
         
         }
+    
+   
     }
       ~ return ()   
+      
       TODO: how did quentin find out? 
  
  
@@ -1073,6 +1107,78 @@ LIST ApartmentItems = (WallSafe), (MapOfParisMetro), (WeddingPhoto), (KeyHook), 
     }
     ~ return () 
  
+ 
+ 
+ 
+ /*
+    RavensNest
+ */
+ 
+ 
+=== RavensNest_knot 
+    LIST RavensNestItems = (Perch), Raven, (DrownedBody), (Intercom), Assistant, (EdgeOverlookingCanal), DistantSplash, SwissTrainTicket
+    
+    -> scene ( RavensNestItems, RavensNest_gameplay(Interactables, ()), "Remark") 
+
+
+=== function RavensNest_gameplay(act, item) 
+    {act: 
+    -   Sequence: {item: 
+        - (): ~ return 1 
+        - DrownedBody:          ~ return AgentThrownIntoSeineScene
+        - SwissTrainTicket:     ~ return AgentThrownIntoSeineScene
+        }
+    - Interactables: ~ return (Perch, Raven, DrownedBody, Briefcase, Intercom, Assistant, EdgeOverlookingCanal)
+    - Name: {item: 
+        - Briefcase: torn briefcase 
+        }
+    -   Tooltip: {item: 
+        - Briefcase:    "L...d's ... don..."
+        - Assistant:
+            { noLongerGot(SealedMetalCylinder): 
+                "I'll see that one of our operatives receives it, Ma'am."
+            - else: 
+                "Ma'am?" 
+            }
+        
+        }
+    -   Requirement: {item: 
+        -   Assistant: 
+                { noLongerGot(SealedMetalCylinder): 
+                    ~ return RavensFeather 
+                - else: 
+                     ~ return (SealedMetalCylinder) 
+                    
+                }
+        -   EdgeOverlookingCanal: ~ return DrownedBody
+        }
+    - PostAction: 
+            { noLongerGot((SealedMetalCylinder, RavensFeather)) : 
+                ~ removeItem(Assistant) 
+            }
+    -   Generation: {item: 
+            - EdgeOverlookingCanal:     
+                { generatedItems ? Briefcase:
+                    ~ return DistantSplash 
+                }
+            - Assistant: 
+                ~ return Nothing
+            - Intercom: 
+                ~ return generateOnce(Assistant)
+                
+            - Briefcase: 
+                ~ return generateOnce(SealedMetalCylinder)
+                
+            - DrownedBody: ~ return (Briefcase , SwissTrainTicket)
+            - Perch: ~ return Raven
+            - Raven: ~ return generateOnce(RavensFeather)
+        }
+    - Replacement:  {item:
+        - DistantSplash: ~ return DrownedBody
+        }
+    }
+    ~ return () 
+
  
  
     
@@ -1314,7 +1420,7 @@ TODO: A proper solve , this doens't quite make sense
 
    
 === monitoring_station 
-    LIST MonitoringItems = (LinePrinter) , (Hotline), (EmptyCoffeeCup), Analyst, SurprisedAnalyst
+    LIST MonitoringItems = (LinePrinter) , (Hotline), (EmptyCoffeeCup), Analyst, CoffeeCup,SmashedCoffeeCup
     VAR MonitoringInteractables = (LinePrinter, Analyst, Hotline)
     -> scene ( MonitoringItems , MonitoringInteractables, "Its location remains unknown, but our best evidence suggests the device has indeed been activated.") 
 
@@ -1322,28 +1428,34 @@ TODO: A proper solve , this doens't quite make sense
     { act: 
     -   Sequence: {item: 
         -   (): ~ return 1 
-        -   SurprisedAnalyst: ~ return DeviceOperated
+        -   Analyst: 
+            { got(SmashedCoffeeCup):
+                ~ return DeviceOperated  
+            }
         }
     -   Tooltip: {item: 
-        - EmptyCoffeeCup:   "I'll get more later. Not now."
+        -   EmptyCoffeeCup:   "I'll get more later. Not now."
+        
         -   Analyst: 
-            "What's the big fuss, dude? Why'd you get me in here so early?" 
-        -   SurprisedAnalyst: 
-            "But a shockwave like that would have toppled a cityblock!"
+            { generatedItems ? SmashedCoffeeCup: 
+                "But a shockwave like that would have toppled a cityblock!"
+            - else: 
+                "What's the big fuss, dude? Why'd you get me in here so early?" 
+            }
+        
         }
     -   Generation: {item: 
-        -  Analyst: ~ return replaceAs(SurprisedAnalyst)
+        - Analyst: ~ return SmashedCoffeeCup // replaceAs(SurprisedAnalyst)
         - LinePrinter: ~ return DeviceOperatedPhoto
-        - Hotline: ~ return Analyst
+        - Hotline: ~ return (Analyst, CoffeeCup)
         } 
     -   Requirement: {item: 
         - Analyst: ~ return DeviceOperatedPhoto
         - Hotline: ~ return DeviceOperatedPhoto
         }
-        Replacement: {item: 
-        
-        - SurprisedAnalyst: 
-                ~ return DeviceOperatedPhoto
+    -   Replacement: {item: 
+        - SmashedCoffeeCup: ~ return CoffeeCup
+       
         }
     }
     
