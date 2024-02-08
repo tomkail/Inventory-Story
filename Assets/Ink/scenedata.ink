@@ -186,13 +186,9 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     -   Knot:   ~ return -> quentin_gives_aide_money 
     -   GameplayKnot: ~ return -> gives_aide_money_gameplay
     }
-- QGivesItemToErnst: 
-    { prop: 
-    -   Title:The UN Building  
-    -   Time:   7th August 1967, 11:45pm
-    -   Knot:   ~ return -> QGivesItemToErnst_knot  
-    -   GameplayKnot: ~ return -> QGivesItemToErnst_gameplay
-    }
+    
+    
+
 - StealCardFromKingDiamonds: 
     { prop: 
     -   Title:  Card Table, King of Diamonds Club
@@ -200,10 +196,30 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     -   Knot:   ~ return -> king_clubs_steal_card  
     -   GameplayKnot: ~ return -> king_clubs_steal_card_fn
     }
+  
+        
+    
+- QGivesItemToErnst: 
+    { prop: 
+    -   Title:The UN Building  
+    -   Time:   7th August 1966, 11:45pm
+    -   Knot:   ~ return -> QGivesItemToErnst_knot  
+    -   GameplayKnot: ~ return -> QGivesItemToErnst_gameplay
+    }
+    
+- GamblersAnonymous: 
+    { prop: 
+    -   Title:  Missionary Hall 
+    -   Time:   5th May, 1966
+    -   Knot: ~ return -> gamblers_anonymous 
+    -   GameplayKnot: ~ return -> gamblers_anonymous_fn 
+    }    
+    
+    
 - QGetsDeviceScene: 
     { prop: 
     - Title:    Park, Mid-France
-    - Time:      25th July, 1967
+    - Time:      25th April, 1966
     - Knot: ~ return -> QGetsDevice_knot
     - GameplayKnot: ~ return -> q_receives_cylinder_fn
     }
@@ -213,7 +229,7 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
 - QuentinGetsDeviceAnnieWatchingScene:
     { prop: 
     - Title:    Park, Mid-France
-    - Time:      25th July, 1967
+    - Time:      25th April, 1966
     -   Knot:   ~ return -> QuentinGetsDeviceAnnieWatching  
     -   GameplayKnot: ~ return -> QuentinGetsDeviceAnnieWatching_fn
     } 
@@ -221,19 +237,13 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
 
 - RavensNestScene:
     { prop: 
-    -   Title:  RavensNestTtle
-    -   Time:   RavensNestTime 
+    -   Title:  Rooftop Terrace
+    -   Time:   19th April, 1966
     -   Knot:   ~ return -> RavensNest_knot 
     -   GameplayKnot: ~ return -> RavensNest_gameplay
     }
     
-- GamblersAnonymous: 
-    { prop: 
-    -   Title:  Missionary Hall 
-    -   Time:   5th May, 1964 
-    -   Knot: ~ return -> gamblers_anonymous 
-    -   GameplayKnot: ~ return -> gamblers_anonymous_fn 
-    }
+  
 
 - QuestionScientistScene:
     { prop: 
@@ -268,6 +278,7 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     -   Knot:   ~ return -> wedding_drive_away 
     -   GameplayKnot: ~ return -> wedding_car_fn 
     }
+    
 - Wedding:
     { prop: 
     -   Title:  The Chapel St Jean, Montpellier 
@@ -275,6 +286,7 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     -   Knot:   ~ return -> wedding  
     - GameplayKnot: ~ return -> wedding_gameplay
     }
+    
 - GoThroughWithWedding:
     { prop: 
     -   Title:  TemplateTtle
@@ -282,6 +294,7 @@ LIST SceneProps = Title, Time, Knot, GameplayKnot
     -   Knot:   ~ return -> go_through_with_wedding  
     -   GameplayKnot: ~ return -> go_through_with_wedding_fn
     }  
+    
 - MonitoringStationMorning: 
     { prop: 
     -   Title:  Earthquake Monitoring Station, Pasedena

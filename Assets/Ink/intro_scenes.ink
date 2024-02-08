@@ -1,5 +1,5 @@
 
-VAR ReplayableScenes = OpeningSequence
+VAR ReplayableScenes = (OpeningSequence, Pinboard)
 
 // OpeningSequence
 === opening_sequence
