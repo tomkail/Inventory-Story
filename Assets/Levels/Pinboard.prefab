@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 14.5, y: 60}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 150.48, y: 162.09}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &636859531007456567
 MonoBehaviour:
@@ -106,8 +106,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 451.5, y: 185}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 367, y: 84}
+  m_SizeDelta: {x: 100, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5643593514085701595
 MonoBehaviour:
@@ -179,7 +179,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 459.5, y: 271}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6840897497574754665
 MonoBehaviour:
@@ -318,7 +318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3093251342870131511, guid: 7b6e1ba203be245afb52630635d1b115, type: 3}
       propertyPath: m_Name
-      value: ParkingLot
+      value: Pinboard
       objectReference: {fileID: 0}
     - target: {fileID: 4059943409677544486, guid: 7b6e1ba203be245afb52630635d1b115, type: 3}
       propertyPath: m_AnchorMax.x

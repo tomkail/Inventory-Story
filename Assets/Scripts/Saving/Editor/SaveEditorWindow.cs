@@ -23,31 +23,10 @@ public class SaveEditorWindow : EditorWindow {
         public string selectedFile;
         public string manualSaveDirectory;
     }
-
-    static SaveFolder _gameSave;
-    static SaveFolder gameSave {
-        get {
-            return _gameSave;
-        } set {
-            _gameSave = value;
-        }
-    }
-    static SaveFolder _autoDev;
-    static SaveFolder autoDev {
-        get {
-            return _autoDev;
-        } set {
-            _autoDev = value;
-        }
-    }
-    static SaveFolder _manualDev;
-    static SaveFolder manualDev {
-        get {
-            return _manualDev;
-        } set {
-            _manualDev = value;
-        }
-    }
+    
+    static SaveFolder gameSave;
+    static SaveFolder autoDev;
+    static SaveFolder manualDev;
     
     class SaveFolder {
         public string directoryPath;
@@ -62,15 +41,13 @@ public class SaveEditorWindow : EditorWindow {
             this.directoryPath = directoryPath;
             directoryInfo = new DirectoryInfo(directoryPath);
             RefreshFiles();
-            this.watcher = new FileSystemWatcher(directoryPath);
+            watcher = new FileSystemWatcher(directoryPath);
             watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = searchPattern;
             watcher.Changed += OnChanged;
             watcher.Created += OnChanged;
             watcher.Deleted += OnChanged;
             watcher.Renamed += OnRenamed;
-            #if !UNITY_EDITOR_OSX
-            #endif
             watcher.EnableRaisingEvents = true;
         }
 
@@ -94,14 +71,15 @@ public class SaveEditorWindow : EditorWindow {
             watcher.Created -= OnChanged;
             watcher.Deleted -= OnChanged;
             watcher.Renamed -= OnRenamed;
-            this.watcher.Dispose();
+            watcher.Dispose();
+            watcher = null;
         }
     }
 
     public static string selectedFileJSON;
     public static SaveState selectedFileSaveState;
 
-	private const string windowTitle = "Saves";
+    const string windowTitle = "Saves";
 	
 	[MenuItem(GameEditorUtils.menuItemPath+"/Saves", false, 2400)]
 	static void Init () {
@@ -109,13 +87,15 @@ public class SaveEditorWindow : EditorWindow {
 		window.titleContent = new GUIContent(windowTitle);
 	}
 
-    #if UNITY_EDITOR_OSX
-    void OnFocus () {
-        if(gameSave != null) gameSave.RefreshFiles();
-        if(autoDev != null) autoDev.RefreshFiles();
-        if(manualDev != null) manualDev.RefreshFiles();
+    SaveEditorWindow () {
+        EditorApplication.delayCall += () => {
+            OnSetSelectedFile();
+        };
     }
-    #endif
+
+    void OnEnable() {
+        CreateFolderTrackersIfMissing();
+    }
 
     void CreateFolderTrackersIfMissing () {
         if(gameSave == null && Directory.Exists(SaveLoadManager.saveDirectory)) {
@@ -131,32 +111,32 @@ public class SaveEditorWindow : EditorWindow {
             manualDev.OnChange += Repaint;
         }    
     }
+    private object _lock = new object();
+    void OnDisable () {
+        lock (_lock) {
+            if (gameSave != null) {
+                gameSave.OnChange -= Repaint;
+                gameSave.Dispose();
+                gameSave = null;
+            }
 
-    SaveEditorWindow () {
-        EditorApplication.delayCall += () => {
-            OnSetSelectedFile();
-        };
-    }
+            if (autoDev != null) {
+                autoDev.OnChange -= Repaint;
+                autoDev.Dispose();
+                autoDev = null;
+            }
 
-    void OnDestroy () {
-        if(gameSave != null) {
-            gameSave.Dispose();
-            gameSave = null;
-        }
-        if(autoDev != null) {
-            autoDev.Dispose();
-            autoDev = null;
-        }
-        if(manualDev != null) {
-            manualDev.Dispose();
-            manualDev = null;
+            if (manualDev != null) {
+                manualDev.OnChange -= Repaint;
+                manualDev.Dispose();
+                manualDev = null;
+            }
         }
     }
     static DateTime dateTimeNow;
             
 	void OnGUI () {
         dateTimeNow = System.DateTime.Now;
-        CreateFolderTrackersIfMissing();
         Repaint();
         
 		EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));

@@ -17,12 +17,14 @@ public class LevelController : MonoBehaviour {
     public SLayout layout => GetComponent<SLayout>();
     public RectTransform itemContainer => transform.Find("Item Container") as RectTransform;
     public SLayout overlay => transform.Find("Overlay").GetComponent<SLayout>();
-    public List<ItemView> itemViews = new List<ItemView>();
-    public ItemView draggingItem => itemViews.FirstOrDefault(x => x.draggable.dragging);
+    
+    public List<ItemView> itemViews = new();
+    public ItemLabelView draggingItemLabel => itemViews.Select(x => x.labelView).FirstOrDefault(x => x.draggable.dragging);
+    
     public LevelRequiredItemsSlotGroup slotGroup;
-    public ItemSpawnLocation[] itemSpawnLocations => GetComponentsInChildren<ItemSpawnLocation>();
-
-
+    
+    public ItemSpawnLocationManager itemSpawnLocationManager => GetComponentInChildren<ItemSpawnLocationManager>();
+    
     public InkListChangeHandler levelItemsObserver;
     
     public Action OnInit;
@@ -93,13 +95,16 @@ public class LevelController : MonoBehaviour {
         overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.sceneController.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
     }
 
-    public Vector3 GetWorldSpawnLocationForItem(InkListItem item) {
-        var spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.fullName, StringComparison.OrdinalIgnoreCase));
-        if(spawnLocation == null) spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.itemName, StringComparison.OrdinalIgnoreCase));
-        if(spawnLocation != null) return spawnLocation.transform.position;
-        Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.fullName}");
-        var randomLocalPos = new Vector2(Random.Range(itemContainer.rect.xMin, itemContainer.rect.xMax), Random.Range(itemContainer.rect.yMin, itemContainer.rect.yMax));
-        return itemContainer.TransformPoint(randomLocalPos);
+    public ItemSpawnLocation GetSpawnPointLocationForItem(InkListItem item) {
+        var spawnLocation = itemSpawnLocationManager.FindForItem(item);
+        if (spawnLocation == null) {
+            Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.fullName}. Creating temporary.");
+            spawnLocation = itemSpawnLocationManager.CreateSpawnLocation(item.fullName);    
+            //
+            // spawnLocation.rectTransform.anchoredPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(spawnLocation.rectTransform, spawnLocation.rectTransform.anchoredPosition, spawnLocationsRectTransform.GetScreenRect(), layout.rootCanvas.worldCamera);
+        }
+
+        return spawnLocation;
     }
 
     public void OnChangeLevelItems(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
@@ -120,18 +125,12 @@ public class LevelController : MonoBehaviour {
     public void OnChangeCurrentLevelAnswerSet(int newSlotCount) {// IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
         slotGroup.Init(newSlotCount);
     }
-
+    
     void CreateItemView(InkListItem inkListItem) {
         var item = Instantiate(PrefabDatabase.Instance.itemViewPrefab, itemContainer);
         itemViews.Add(item);
-        item.Init(inkListItem);
-        var itemWorldPosition = GetWorldSpawnLocationForItem(inkListItem);
-        item.targetLocalPoint = item.layout.parentRectTransform.InverseTransformPoint(itemWorldPosition);
-        var localSpawnPoint = item.targetLocalPoint + RandomX.onUnitCircle * Random.Range(100, 200);
-        localSpawnPoint = item.draggable.dragTargetPosition = RectTransformX.GetClampedLocalPositionInsideScreenRect(item.draggable.rectTransform, localSpawnPoint, item.draggable.viewRect.GetScreenRect(), layout.rootCanvas.worldCamera);
-        item.SetWorldPosition(item.layout.parentRectTransform.TransformPoint(localSpawnPoint));
-        
-        // slotGroup.draggableGroup.draggables.Add(item.draggable);
+        var itemSpawnLocation = GetSpawnPointLocationForItem(inkListItem);
+        item.Init(inkListItem, itemSpawnLocation);
     }
 
     void DestroyItemView(InkListItem inkListItem) {
@@ -142,7 +141,7 @@ public class LevelController : MonoBehaviour {
         });
     }
     
-    public void OnSlotItem(ItemView item) {
+    public void OnSlotItem(ItemLabelView itemLabel) {
         /*
         if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
             foreach (var wrongItemList in wrongItems) {
@@ -172,7 +171,7 @@ public class LevelController : MonoBehaviour {
                     StoryController.Instance.MakeChoice(choice.index);
             } else {
                 foreach (var itemList in (InkList)story.variablesState["currentItems"]) {
-                    var itemView = itemViews.FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
+                    var itemView = itemViews.Select(x => x.labelView).FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
                     if (itemView == null) continue;
                     itemView.ExitSlot();
 

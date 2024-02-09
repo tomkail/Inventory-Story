@@ -40,7 +40,10 @@ public class GameController : MonoSingleton<GameController> {
             foreach (var item in level.itemViews) {
                 levelItemStates.Add(new LevelItemState() {
                     inkListItem = item.inkListItem,
-                    position = item.layout.position,
+                    state = item.state,
+                    labelText = item.labelText,
+                    tooltipText = item.tooltipText,
+                    labelPosition = item.labelView.layout.position,
                 });
             }
             saveState.levelStates.Add(new LevelState() {

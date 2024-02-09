@@ -9,6 +9,7 @@ using UnityEditor;
 public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
     public LevelController levelPrefab;
     public ItemView itemViewPrefab;
+    public ItemLabelView itemLabelViewPrefab;
 
     public AssetDictionary<LevelController> levels;
     public AssetDictionary<AudioClip> musicTracks;

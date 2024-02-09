@@ -51,9 +51,9 @@ public class LevelRequiredItemsSlot : MonoBehaviour, ISlot {
     }
 
     void Layout() {
-        if (hoveredSlottable is ItemView hoveredItemView) {
+        if (hoveredSlottable is ItemLabelView hoveredItemView) {
             layout.rect = layout.ScreenToSLayoutRect(GetSlotTriggerScreenRectWhenContainingItem(hoveredItemView));
-        } else if (heldSlottable is ItemView heldItemView) {
+        } else if (heldSlottable is ItemLabelView heldItemView) {
             layout.rect = layout.ScreenToSLayoutRect(GetSlotTriggerScreenRectWhenContainingItem(heldItemView));
         } else {
             layout.size = new Vector2(80,80);
