@@ -3,8 +3,11 @@ VAR levelItems = ()
 VAR levelSolutionItemCount = 0
 VAR currentItems = () 
 VAR levelInteractables = ()
-VAR levelSuccessFunction = -> FALSE_
+
 VAR generatedItems = ()
+VAR levelGameplayFunction = -> FALSE_
+
+VAR withItem = ()
 
 === use(item) 
     { levelItems !? item:
@@ -16,20 +19,22 @@ VAR generatedItems = ()
         -> DONE // need an item you don't have 
     }
 - (opts)
-    ~ temp withItem = pop(withItems) 
+    ~ withItem = pop(withItems) 
     VAR asReplacement = false 
     { levelItems ? withItem || not withItem: 
         ~ asReplacement = false  // default to false 
         ~ temp toGenerate = itemGeneratesItems(item) 
-        
-        <- use_item(item, withItem, toGenerate, asReplacement)
+        {  toGenerate:
+            <- use_item(item, toGenerate, withItem, asReplacement)
+        }
     } 
     { withItems:    // handle multiple solutions 
         -> opts 
     } 
-=  use_item(item, withItem, toGenerate, replacing)
+=  use_item(item, toGenerate, _withItem, replacing)
     +   { not (levelItems ^ toGenerate) }
-        [ {DEBUG:USE} {item}  {withItem: {DEBUG:WITH|-} {withItem} } ]
+        [ {DEBUG:USE} {item}  {_withItem: {DEBUG:WITH|-} {_withItem} } ]
+        ~ withItem = _withItem
         ~ addItems(toGenerate) 
         { 
         - levelItems ? Warp:
@@ -41,6 +46,7 @@ VAR generatedItems = ()
             ~ levelInteractables -= item
         }
         [ now {levelItems} ]
+        ~ postItemInteraction(item)
         ->-> 
 
 
@@ -48,6 +54,7 @@ VAR generatedItems = ()
     ~ generatedItems += items
     ~ levelItems += items
     ~ temp replacements = itemReplacesItemWhenGenerated(items) 
+    // [ adding {items} means removing {replacements} ... ]
     ~ removeItem(replacements) 
     
     
@@ -59,17 +66,18 @@ VAR generatedItems = ()
 
 
 === scene(items, interactables, VOLine)
-    // Tom notes that he'd have preferred to use the Save() external ink function, but it seems like ink is still in the middle of processing the line when the save occurs, which means that it loads from the line before the Save() function, causing it to save immediately on load. This approach forces ink to complete the line before it's processed.
+// Tom notes that he'd have preferred to use the Save() external ink function, but it seems like ink is still in the middle of processing the line when the save occurs, which means that it loads from the line before the Save() function, causing it to save immediately on load. This approach forces ink to complete the line before it's processed.
     >>> SAVE
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
-    ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
-    ~ temp solnCount = levelSuccessFunction(())
+    ~ levelGameplayFunction = getSceneData(currentSceneID, GameplayKnot)
+    ~ temp solnCount = levelGameplayFunction(Sequence, ())
     ~ StartScene (currentSceneID, title, date, solnCount, items)
 // only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
     ~ levelInteractables = interactables
     ~ levelSolutionItemCount = solnCount // returns an int
+    
     ~ currentItems = ()
     ~ generatedItems = ()
     VO: {VOLine}
@@ -115,7 +123,8 @@ VAR generatedItems = ()
     -> DONE
 = ingame 
     +   (solved) [ SOLVED ] 
-        -> proceedTo(levelSuccessFunction(currentItems))
+        >>> SAVE
+        -> proceedTo(levelGameplayFunction(Sequence, currentItems))
     
 = slot(item, freeSlots) 
     +   { currentItems  ? item } 
@@ -140,10 +149,11 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
 === function checkForSolution() 
     // don't bother unless the count is right, covers the 0-slotted case
     { LIST_COUNT(currentItems) == levelSolutionItemCount: 
-        ~ temp result = levelSuccessFunction(currentItems)
+    
+        ~ temp result = levelGameplayFunction(Sequence, currentItems)
          
         { previousSceneID ? result && ReplayableScenes !? result:
-            // can't repeat a scene
+            // can't repeat a scene (!) 
             ~ return false 
         }
         
@@ -156,13 +166,23 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)
         ~ return false 
     }
     
+
+=== function generateOnce(item) 
+    { generatedItems !? item: 
+        ~ return item 
+    } 
+    ~ return () 
     
 === function replaceAs(item) 
     ~ asReplacement = true
     ~ return item     
 
+=== function noLongerGot(item) 
+    ~ return not got_any(item)  && generatedItems ? item 
 === function got(item) 
     ~ return levelItems ? item
+=== function got_any(item) 
+    ~ return levelItems ^ item
 
 === proceedTo(nextSceneIDToHit)
     ~ previousSceneID += currentSceneID

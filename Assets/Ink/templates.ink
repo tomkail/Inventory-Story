@@ -1,30 +1,39 @@
 
  /*
-    AgentUnknownBeat
+    template
  */
  
  
-=== AgentUnknownBeat 
-    LIST AgentUnknownBeatItems = (AgentUnknownBeatItem) 
-    VAR AgentUnknownBeatInteractables = (AgentUnknownBeatItem)
+=== template_knot 
+    LIST templateItems = (templateItem) 
+    VAR templateInteractables = (templateItem)
     
-    -> scene ( AgentUnknownBeatItems, AgentUnknownBeatInteractables, "Remark") 
-=== function AgentUnknownBeat_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-TODO: A solve 
+    -> scene ( templateItems, template_gameplay(Interactables, ()), "Remark") 
+
+
+=== function template_gameplay(act, item) 
+    {act: 
+    -   Sequence: {item: 
+        - (): ~ return 1 
+        TODO: A solve 
+        }
+    -   Tooltip: {item: 
+        }
     }
     ~ return () 
 
 /*
 
 
-- AgentUnknownBeatScene:
+templateScene,
+
+
+- templateScene:
     { prop: 
-    -   Title:  AgentUnknownBeatTtle
-    -   Time:   AgentUnknownBeatTime 
-    -   Knot:   ~ return -> AgentUnknownBeat  
-    -   ExitKnot: ~ return -> AgentUnknownBeat_fn
+    -   Title:  templateTtle
+    -   Time:   templateTime 
+    -   Knot:   ~ return -> template_knot 
+    -   GameplayKnot: ~ return -> template_gameplay
     }
     
 */

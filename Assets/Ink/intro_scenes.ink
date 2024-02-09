@@ -1,5 +1,5 @@
 
-VAR ReplayableScenes = OpeningSequence
+VAR ReplayableScenes = (OpeningSequence, Pinboard)
 
 // OpeningSequence
 === opening_sequence
@@ -12,33 +12,43 @@ VAR ReplayableScenes = OpeningSequence
     -   -> proceedTo(MonitoringStationMorning)
     }
     
-=== function opening_sequence_fn (x)
-    {x:
+=== function opening_sequence_gameplay(type, item) 
+    { type: 
+    - Sequence: {item:
     -   ():         ~ return 1 
     -   Device:     ~ return OpeningSequence 
     -   SealedMetalCylinder: ~ return ContainerOpeningBeatScene 
-    -   Agent:  ~ return AgentUnknownBeatScene
+    -   Agent:  
+        { previousSceneID !? AgentUnknownBeatScene:
+            ~ return AgentUnknownBeatScene
+        }
     -   Briefcase:  ~ return AgentUnknownBeatScene
-    
+     }
+//    - Name:
+    - Tooltip:
+        { item: 
+        - Briefcase:    "Lloyds of London" 
+        }
+//    - Replacement:
+    - Requirement:
+        { item: 
+        - Briefcase: ~ return KeyOnWristChain
+        }
+    - Generation:
+        { item: 
+        - Agent: ~ return  (Briefcase, KeyOnWristChain)
+        - Briefcase: ~ return SealedMetalCylinder 
+        }
     }
     ~ return () 
+
     
 === ContainerOpeningBeat 
     -> scene ( SealedMetalCylinder, SealedMetalCylinder, "The container itself is of no importance. The device within, however, is of the utmost significance.") 
-=== function ContainerOpeningBeat_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   Device: ~ return OpeningSequence
-    }
-    ~ return () 
+    
 
 
 === AgentUnknownBeat 
     
     -> scene (Agent, (Agent, Briefcase, SealedMetalCylinder), "The identity of the agent is still unknown, except for one thing: he didn't work for us.") 
-=== function AgentUnknownBeat_fn(x) 
-    { x: 
-    -   (): ~ return 1 
-    -   Device:     ~  return OpeningSequence
-    }
-    ~ return () 
+

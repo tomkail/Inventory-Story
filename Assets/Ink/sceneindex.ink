@@ -11,6 +11,8 @@ Graveyard,
 AnnieHearsOfDeathScene,
 Mortuary, 
 MetroPlatformScene, 
+OnPlatformWaitingForQScene,
+   
 
 HotelKitchens,
 HotelBathroom,
@@ -38,13 +40,22 @@ QuentinGetsDeviceAnnieWatchingScene,
 
 GamblersAnonymous,
 
+RavensNestScene,
+AgentThrownIntoSeineScene,
+
+
+QuestionScientistScene,
+
 ErnDiesEarlyScene,
+
 
 InBedWithErnstScene,
 
 DriveAfterWedding,
 Wedding,
 GoThroughWithWedding,
+
+
 
 MonitoringStationMorning,
 DeviceOperated,

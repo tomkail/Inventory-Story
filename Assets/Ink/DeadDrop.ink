@@ -7,6 +7,8 @@ INCLUDE backend/aux.ink
 INCLUDE scenedata.ink
 INCLUDE sceneindex.ink
 INCLUDE scenes_timeline2.ink
+INCLUDE backend/itemdatabase.ink
+
 
 
 
@@ -20,7 +22,7 @@ VAR currentSceneID = ()
 VAR TopSceneID = Pinboard
 
 
-//-> proceedTo(Pinboard)
+-> proceedTo(RavensNestScene)
 
 -> proceedTo(OpeningSequence)
 

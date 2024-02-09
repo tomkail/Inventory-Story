@@ -19,6 +19,8 @@
 === function FALSE 
     ~ return false 
 
+=== function twoParameterBlankList(x, y) 
+    ~ return () 
 
 === function seen_more_recently_than(-> link, -> marker)
 	{ TURNS_SINCE(link) >= 0: 
