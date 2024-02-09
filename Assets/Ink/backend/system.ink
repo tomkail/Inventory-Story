@@ -59,6 +59,8 @@ VAR generatedItems = ()
 
 
 === scene(items, interactables, VOLine)
+    // Tom notes that he'd have preferred to use the Save() external ink function, but it seems like ink is still in the middle of processing the line when the save occurs, which means that it loads from the line before the Save() function, causing it to save immediately on load. This approach forces ink to complete the line before it's processed.
+    >>> SAVE
     ~ temp title = "{getSceneData(currentSceneID, Title)}"
     ~ temp date = "{getSceneData(currentSceneID, Time)}"
     ~ levelSuccessFunction = getSceneData(currentSceneID, ExitKnot)
@@ -113,7 +115,6 @@ VAR generatedItems = ()
     -> DONE
 = ingame 
     +   (solved) [ SOLVED ] 
-        >>> SAVE
         -> proceedTo(levelSuccessFunction(currentItems))
     
 = slot(item, freeSlots) 

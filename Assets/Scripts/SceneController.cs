@@ -70,7 +70,6 @@ public class SceneController : MonoBehaviour {
     }
 
     public void StartScene(LevelLoadParams levelLoadParams) {
-        SaveLoadManager.Save();
 
         var newLevelController = Instantiate(PrefabDatabase.Instance.levelPrefab, levelsContainer.transform);
         newLevelController.Init(levelLoadParams);

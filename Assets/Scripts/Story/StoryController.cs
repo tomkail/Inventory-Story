@@ -18,6 +18,7 @@ public class StoryController : MonoSingleton<StoryController> {
 		if(hasStory) DebugX.LogError("InitStory called but hasStory is true! This should never occur."); 
 		
 		story = new Story(storyJSONAsset.text);
+		BindExternalFunctions();
 		
 		if(storyStateJSON != null) {
 			try {
@@ -31,7 +32,6 @@ public class StoryController : MonoSingleton<StoryController> {
 				story.ResetState();
 			}
 		}
-		BindExternalFunctions();
 		if(OnCreateStory != null) OnCreateStory(story);
 	}
 	
@@ -110,7 +110,7 @@ public class StoryController : MonoSingleton<StoryController> {
 	void BindExternalFunctions () {
 		story.onError += OnStoryError;
 		story.variablesState["DEBUG"] = false;
-		story.BindExternalFunction ("Save", SaveLoadManager.Save);
+		story.BindExternalFunction ("Save", SaveLoadManager.Save, false);
 		story.BindExternalFunctionGeneral("StartScene", (args) => {
 			var levelLoadParams = new LevelLoadParams();
 			levelLoadParams.sceneId = ((InkList)TryCoerce<InkList>(args[0])).FirstOrDefault().Key; 
@@ -121,7 +121,7 @@ public class StoryController : MonoSingleton<StoryController> {
 	
 			GameController.Instance.sceneController.StartScene(levelLoadParams);
 			return null;
-		});
+		}, false);
 		// story.BindExternalFunction("StartScene", (InkListItem sceneId, string titleText, string dataText, int slotCount, InkList startingItems) => {
 		// 	GameController.Instance.sceneController.StartScene(sceneId, titleText, dataText, slotCount, startingItems);
 		// });

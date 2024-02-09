@@ -16,10 +16,10 @@ public class GameController : MonoSingleton<GameController> {
     protected override void Awake() {
         base.Awake();
         SaveLoadManager.OnLoadGameSaveState += OnLoadGameSaveState;
-        SaveLoadManager.RequestGameSaveJSON += RequestGameSaveJSON;
+        SaveLoadManager.RequestGameSave += RequestGameSave;
     }
 
-    string RequestGameSaveJSON() {
+    SaveState RequestGameSave() {
         SaveState saveState = new SaveState();
     
         System.Text.StringBuilder saveDescriptionSB = new System.Text.StringBuilder();
@@ -47,13 +47,12 @@ public class GameController : MonoSingleton<GameController> {
                 itemStates = levelItemStates
             });
         }
-    
-        return JsonUtility.ToJson(saveState);
+
+        return saveState;
     }
 
-    void OnLoadGameSaveState(string saveStateJson) {
+    void OnLoadGameSaveState(SaveState saveState) {
         Clear();
-        var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
         BeginSavedGame(saveState);
     }
 
@@ -61,7 +60,11 @@ public class GameController : MonoSingleton<GameController> {
         Clear();
         var saveStateJson = SaveLoadManager.ReadFromSaveFile();
         var saveState = JsonUtility.FromJson<SaveState>(saveStateJson);
-        BeginSavedGame(saveState);
+        if (saveState != null) {
+            BeginSavedGame(saveState);
+        } else {
+            BeginNewGame();
+        }
     }
 
     void Update() {
@@ -71,6 +74,7 @@ public class GameController : MonoSingleton<GameController> {
 
 
     void BeginSavedGame(SaveState saveState) {
+        DebugX.Log("<color=#337DFF>Begin Saved Game</color>");
         try {
             StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
             StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
@@ -78,11 +82,13 @@ public class GameController : MonoSingleton<GameController> {
             StoryController.Instance.Begin();
         } catch (Exception e) {
             Debug.LogError("Error loading saved game: " + e);
+            StoryController.Instance.EndStory();
             BeginNewGame();
         }
     }
     
     void BeginNewGame() {
+        DebugX.Log("<color=#337DFF>Begin New Game</color>");
         try {
             StoryController.Instance.InitStory(storyJson);
             StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
@@ -94,8 +100,9 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     void Restart() {
+        DebugX.Log("<color=#337DFF>Restart</color>");
         Clear();
-        Start();
+        BeginNewGame();
     }
 
     void Backstep()

@@ -26,8 +26,8 @@ public static class SaveLoadManager {
 
 	public static string defaultManualDevSaveDirectory => Path.GetFullPath(Path.Combine(ApplicationX.projectPath, "Manual Dev Saves"));
 
-	public static Func<string> RequestGameSaveJSON;
-	public static Action<string> OnLoadGameSaveState;
+	public static Func<SaveState> RequestGameSave;
+	public static Action<SaveState> OnLoadGameSaveState;
 
     // public static event Action onTrySaveState;
 	// public static event Action onWillSaveState;
@@ -41,7 +41,7 @@ public static class SaveLoadManager {
         #if UNITY_EDITOR
         WriteToDevSaves(saveStateJSON);
         #endif
-        Debug.Log("SAVED GAME");
+	    DebugX.Log("<color=#33FFDD>Game Saved</color>");
     }
 
     static void WriteToSaveFile (string saveStateJSON) {
@@ -70,7 +70,8 @@ public static class SaveLoadManager {
     }
 
     public static string GetSaveStateJSON () {
-        return JsonUtility.ToJson(RequestGameSaveJSON());
+	    var saveState = RequestGameSave();
+        return JsonUtility.ToJson(saveState, true);
     }
 
     public static void LoadSaveState (string saveStateJSON) {
@@ -83,7 +84,7 @@ public static class SaveLoadManager {
 	        throw new InvalidSaveException("Can't load save because save version "+saveState.saveMetaInfo.saveVersion.version+" is less than minimum compatible version "+SaveVersion.minCompatableSaveVersion);
         }
         
-        OnLoadGameSaveState(saveState.storySaveJson);
+        OnLoadGameSaveState(saveState);
     }
     
     public class InvalidSaveException : Exception
