@@ -32,6 +32,7 @@ public class RenderTextureCreatorEditor : Editor {
     
     public override void OnPreviewSettings() {
 	    var rt = _renderTextureProperty.objectReferenceValue as RenderTexture;
+	    if (rt == null) return;
 	    EditorGUI.BeginDisabledGroup(true);
 	    EditorGUILayout.LabelField(new GUIContent("Size"), GUILayout.Width(40));
 	    EditorGUILayout.Vector2IntField(GUIContent.none, new Vector2Int(rt.width, rt.height), GUILayout.Width(120));
