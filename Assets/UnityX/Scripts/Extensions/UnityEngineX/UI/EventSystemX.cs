@@ -145,15 +145,50 @@ public static class EventSystemX {
         }
 	}
 	
-	// This allows you to manually begin a drag on a given object. It should implement the draggable interfaces, obviously.
-	// Pointer event allows you to make use of the existing event, if this is triggered from a pointer event.
-	public static void ForceStartDrag(GameObject gameObject, PointerEventData pointerEvent = null) {
-		EventSystem.current.SetSelectedGameObject(gameObject);
-		ExecuteEvents.Execute(pointerEvent.selectedObject, pointerEvent, ExecuteEvents.pointerDownHandler);
-		pointerEvent.pointerDrag = gameObject;
-		ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.initializePotentialDrag);
-		ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.beginDragHandler);
-		ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.dragHandler);
-		pointerEvent.dragging = true;
+	
+    
+	// Takes a potential drag from one object and forces it on another.
+	// This allows you to (for example) click a button to create a new UI object that is immediately in a drag state.
+	// Must be called from IInitializePotentialDragHandler.OnInitializePotentialDrag
+	public static void RedirectPotentialDrag(PointerEventData eventData, GameObject targetGameObject) {
+		var changedPress = eventData.pointerPress != targetGameObject;
+		// (Optional) Fire the pointerUp handler on the object that recieved the potential drag event, since setting it to a different object means we're not going to recieve it when the pointer is released
+		if(changedPress)
+			ExecuteEvents.Execute(eventData.pointerDrag, eventData, ExecuteEvents.pointerUpHandler);
+        
+		EventSystem.current.SetSelectedGameObject(targetGameObject);
+        
+		// Set the pointer press/click, and trigger PointerDown (which has already been fired on this object)
+		eventData.pointerClick = eventData.selectedObject;
+		if (changedPress) {
+			eventData.pointerPress = eventData.selectedObject;
+			ExecuteEvents.Execute(eventData.selectedObject, eventData, ExecuteEvents.pointerDownHandler);
+		}
+        
+		// If the target object can be dragged, initialize a potential drag
+		eventData.pointerDrag = ExecuteEvents.GetEventHandler<IDragHandler>(eventData.selectedObject);
+		if (eventData.pointerDrag != null) {
+			ExecuteEvents.Execute(eventData.pointerDrag, eventData, ExecuteEvents.initializePotentialDrag);
+			ExecuteEvents.Execute(eventData.pointerDrag, eventData, ExecuteEvents.beginDragHandler);
+		}
+        
+		// (Optional) Force the drag to start immediately, rather than waiting for pointer movement to trigger it
+		eventData.dragging = true;
+		// You can also force a drag event this frame
+		ExecuteEvents.Execute(eventData.pointerDrag, eventData, ExecuteEvents.dragHandler);
 	}
+	
+	// THIS IS LEGACY, REPLACED WITH THE ABOVE. KEPT FOR POSTERITY
+	// // This allows you to manually begin a drag on a given object. It should implement the draggable interfaces, obviously.
+	// // Pointer event allows you to make use of the existing event, if this is triggered from a pointer event.
+	// public static void ForceStartDrag(GameObject gameObject, PointerEventData pointerEvent = null) {
+	// 	EventSystem.current.SetSelectedGameObject(gameObject);
+	// 	if(pointerEvent.pointerPress != pointerEvent.selectedObject)
+	// 		ExecuteEvents.Execute(pointerEvent.selectedObject, pointerEvent, ExecuteEvents.pointerDownHandler);
+	// 	pointerEvent.pointerDrag = gameObject;
+	// 	ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.initializePotentialDrag);
+	// 	ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.beginDragHandler);
+	// 	ExecuteEvents.Execute(pointerEvent.pointerDrag, pointerEvent, ExecuteEvents.dragHandler);
+	// 	pointerEvent.dragging = true;
+	// }
 }

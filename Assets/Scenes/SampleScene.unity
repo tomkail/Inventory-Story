@@ -1568,7 +1568,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelPrefab: {fileID: 1898717753558037997, guid: 7b6e1ba203be245afb52630635d1b115, type: 3}
   itemViewPrefab: {fileID: 4156104198230702190, guid: c520682bad6e04ce6a40f91621f51b03, type: 3}
-  itemLabelViewPrefab: {fileID: 9046512949398434011, guid: ccfbc364370a84e4ea48165eced53c40, type: 3}
+  itemDraggableGhostViewPrefab: {fileID: 9046512949398434011, guid: ccfbc364370a84e4ea48165eced53c40, type: 3}
   levels:
     m_Data:
     - key: ParkingLot

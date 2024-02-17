@@ -3,9 +3,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class LevelItemState {
-    public InkListItem inkListItem;
+    public string inkListItemFullName;
     public Vector2 labelPosition;
-    public ItemView.State state;
+    public ItemModel.State state;
     public string labelText;
     public string tooltipText;
 }

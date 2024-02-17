@@ -39,11 +39,11 @@ public class GameController : MonoSingleton<GameController> {
             var levelItemStates = new List<LevelItemState>();
             foreach (var item in level.itemViews) {
                 levelItemStates.Add(new LevelItemState() {
-                    inkListItem = item.inkListItem,
-                    state = item.state,
-                    labelText = item.labelText,
-                    tooltipText = item.tooltipText,
-                    labelPosition = item.labelView.layout.position,
+                    inkListItemFullName = item.itemModel.inkListItemFullName,
+                    state = item.itemModel.state,
+                    labelText = item.itemModel.labelText,
+                    tooltipText = item.itemModel.tooltipText,
+                    // labelPosition = item.labelView.layout.position,
                 });
             }
             saveState.levelStates.Add(new LevelState() {
@@ -124,13 +124,13 @@ public class GameController : MonoSingleton<GameController> {
         foreach (var content in StoryController.Instance.contents) sceneController.PerformContent(content);
     }
 
-    public bool CanInteractWithItem(InkListItem inkListItem) {
-        return story.currentChoices.FirstOrDefault(x => x.text.Contains($"{inkListItem.itemName}", StringComparison.OrdinalIgnoreCase)) != null;
+    public bool CanInteractWithItem(ItemModel itemModel) {
+        return story.currentChoices.FirstOrDefault(x => x.text.Contains($"{itemModel.inkListItemName}", StringComparison.OrdinalIgnoreCase)) != null;
     }
 
-    public bool InteractWithItem(InkListItem inkListItem) {
+    public bool InteractWithItem(ItemModel itemModel) {
         foreach (var choice in StoryController.Instance.choices.OfType<ItemInteractChoiceInstruction>()) {
-            if (choice.MatchesItem(inkListItem)) {
+            if (choice.MatchesItem(itemModel.inkListItem)) {
                 StoryController.Instance.MakeChoice(choice.storyChoice.index);
                 return true;
             }

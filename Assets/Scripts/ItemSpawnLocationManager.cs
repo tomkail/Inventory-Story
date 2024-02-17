@@ -25,9 +25,9 @@ public class ItemSpawnLocationManager : MonoBehaviour {
         return spawnLocation;
     }
 
-    public ItemSpawnLocation FindForItem(InkListItem item) {
-        var spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.fullName, StringComparison.OrdinalIgnoreCase));
-        if(spawnLocation == null) spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.itemName, StringComparison.OrdinalIgnoreCase));
+    public ItemSpawnLocation FindForItem(ItemModel item) {
+        var spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.inkListItemFullName, StringComparison.OrdinalIgnoreCase));
+        if(spawnLocation == null) spawnLocation = itemSpawnLocations.FirstOrDefault(x => string.Equals(x.gameObject.name, item.inkListItemName, StringComparison.OrdinalIgnoreCase));
         return spawnLocation;
     }
 }

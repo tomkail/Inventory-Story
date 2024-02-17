@@ -5,10 +5,10 @@ using UnityEngine;
 public class LevelRequiredItemsSlotGroup : MonoBehaviour {
     public SLayout layout => GetComponent<SLayout>();
     // public DraggableGroup draggableGroup => GetComponent<DraggableGroup>();
-    public IEnumerable<ItemLabelView> slottedItems {
+    public IEnumerable<ItemDraggableGhostView> slottedItems {
         get {
             foreach (var slot in slots) {
-                if(slot.heldSlottable != null && slot.heldSlottable is ItemLabelView heldItem)
+                if(slot.heldSlottable != null && slot.heldSlottable is ItemDraggableGhostView heldItem)
                     yield return heldItem;
             }
         }
@@ -35,9 +35,9 @@ public class LevelRequiredItemsSlotGroup : MonoBehaviour {
         var spacing = layout.LocalToScreenVector(new Vector2(20, 0)).x;
         foreach (var slot in slots) {
             float screenWidth = 0;
-            if (slot.hoveredSlottable is ItemLabelView hoveredItemView) {
+            if (slot.hoveredSlottable is ItemDraggableGhostView hoveredItemView) {
                 screenWidth = slot.GetSlotTriggerScreenRectWhenContainingItem(hoveredItemView).width;
-            } else if (slot.heldSlottable is ItemLabelView heldItemView) {
+            } else if (slot.heldSlottable is ItemDraggableGhostView heldItemView) {
                 screenWidth = slot.GetSlotTriggerScreenRectWhenContainingItem(heldItemView).width;
             } else {
                 screenWidth = layout.LocalToScreenVector(new Vector2(80, 80)).x;

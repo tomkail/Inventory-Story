@@ -2,37 +2,32 @@ using System.Collections.Generic;
 using System.Linq;
 using EasyButtons;
 using Ink.Runtime;
-using ThisOtherThing.UI.ShapeUtils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISlot, ISlottable {
+public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISlot, ISlottable {
     public const float minWidth = 160;
     public const float maxWidth = 340;
     public static readonly Vector2 margin = new Vector2(16,8);
     
     public LevelController levelController => GetComponentInParent<LevelController>(true);
-    public ItemView itemView => GetComponentInParent<ItemView>(true);
+    // public ItemView itemView;
     public SLayout layout => GetComponent<SLayout>();
     public SLayout background;
     public Draggable draggable => GetComponent<Draggable>();
-    public HoverTooltip tooltip => GetComponent<HoverTooltip>();
-    public ThisOtherThing.UI.Shapes.Line lineRenderer => GetComponentInChildren<ThisOtherThing.UI.Shapes.Line>();
-
-    public InkListItem inkListItem;
+    
+    public ItemModel itemModel;
     public SLayout labelLayout;
     
     bool hovered;
     public SelectionState selectionState;
+    public static ItemDraggableGhostView currentlyDraggingItem;
+
     public enum SelectionState {
         Normal,
         Hovered,
         Dragging,
     }
-    
-
-    // The target that the line points to
-    public ItemSpawnLocation itemSpawnLocation;
 
     // ISlot
     public ISlottable hoveredSlottable { get; private set; }
@@ -42,7 +37,8 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public ISlot containerSlot { get; private set; }
 
     public IEnumerable<ISlot> GetEnterableSlots() {
-        return GameController.Instance.sceneController.currentLevelController.itemViews.Select(x => x.labelView).Where(x => x != this).Concat(GameController.Instance.sceneController.currentLevelController.slotGroup.slots.Cast<ISlot>());
+        var itemSlots = GameController.Instance.sceneController.currentLevelController.itemViews.Where(targetItemView => targetItemView.itemModel.state == ItemModel.State.Showing && !targetItemView.itemModel.Equals(itemModel)).Select(x => x.boxView);
+        return itemSlots.Concat(GameController.Instance.sceneController.currentLevelController.slotGroup.slots.Cast<ISlot>());
     }
 
     public Vector2 draggableScreenPoint => draggable.lastPointerEventData.position;
@@ -55,10 +51,10 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         draggable.OnClicked += OnClicked;
     }
 
-    public void Start() {
-        gameObject.name = $"Item Label View: {this.inkListItem.itemName}";
-        labelLayout.textMeshPro.text = itemView.labelText;
-        tooltip.tooltipText = itemView.tooltipText;
+    public void Init(ItemModel itemModel) {
+        this.itemModel = itemModel;
+        gameObject.name = $"Draggable Ghost Item View: {this.itemModel.inkListItemFullName}";
+        labelLayout.textMeshPro.text = itemModel.labelText;
         Layout();
         UpdateSelectionState();
     }
@@ -70,27 +66,22 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     void Update() {
-        tooltip.enabled = levelController.draggingItemLabel == null;
         UpdateDrag();
     }
     void LateUpdate() {
-        if (containerSlot != null) {
-            RectTransformX.ScreenRectToLocalRectInRectangle((RectTransform)layout.rectTransform.parent, containerSlot.GetScreenRectSlotForSlottable(this), Camera.main, out Rect localRect);
-            var centerOffset = (localRect.size - layout.rectTransform.rect.size)*0.5f;
-            draggable.SetPositionImmediate(layout.rectTransform.GetLocalToAnchoredPositionOffset() + localRect.GetPointFromNormalizedPoint(layout.rectTransform.pivot) + centerOffset);
-        }
-        UpdateLine();
+        if (containerSlot != null) 
+            draggable.SetPositionImmediate(GetDraggableTargetPositionInSlot(containerSlot));
     }
 
-    // void OnGUI() {
-    //     if (draggable.dragging) {
-    //         foreach(var slot in GetEnterableSlots()) {
-    //             OnGUIX.BeginColor(slot == hoveredSlot ? Color.cyan.WithAlpha(0.2f) : Color.gray.WithAlpha(0.2f));
-    //             GUI.DrawTexture(OnGUIX.ScreenToGUIRect(slot.GetSlotTriggerScreenRectWhenContainingItem(this)), Texture2D.whiteTexture);
-    //             OnGUIX.EndColor();
-    //         }
-    //     }
-    // }
+    void OnGUI() {
+        if (draggable.dragging) {
+            foreach(var slot in GetEnterableSlots()) {
+                OnGUIX.BeginColor(slot == hoveredSlot ? Color.cyan.WithAlpha(0.2f) : Color.gray.WithAlpha(0.2f));
+                GUI.DrawTexture(OnGUIX.ScreenToGUIRect(slot.GetSlotTriggerScreenRectWhenContainingItem(this)), Texture2D.whiteTexture);
+                OnGUIX.EndColor();
+            }
+        }
+    }
     
     [Button]
     public void Layout() {
@@ -120,13 +111,13 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
 
     void OnClicked(Draggable arg1, PointerEventData arg2) {
-        if (GameController.Instance.CanInteractWithItem(inkListItem)) {
-            GameController.Instance.InteractWithItem(inkListItem);
-            tooltip.HideTooltip();
+        if (GameController.Instance.CanInteractWithItem(itemModel)) {
+            GameController.Instance.InteractWithItem(itemModel);
         }
     }
     
     void OnStartDragging() {
+        currentlyDraggingItem = this;
         transform.SetAsLastSibling();
         UpdateSelectionState();
         if (containerSlot != null) {
@@ -139,7 +130,10 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (hoveredSlot != null) {
             hoveredSlot.OnSlottableHoverEnd(this);
             EnterSlot(hoveredSlot);
+        } else {
+            Destroy(gameObject);
         }
+        currentlyDraggingItem = null;
     }
 
     public void EnterSlot(ISlot slot) {
@@ -151,13 +145,14 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         containerSlot.OnSlottableSlottedStart(this);
         if (containerSlot is LevelRequiredItemsSlot levelSlot) {
             levelController.OnSlotItem(this);
-            ExitSlot();
-            draggable.SetDragTargetPosition(draggable.positionAtLastDragStart, false);
-        } else if (containerSlot is ItemLabelView slottedItem) {
-            if (!GameController.Instance.CombineItems(inkListItem, slottedItem.inkListItem)) {
-                ExitSlot();
-                draggable.SetDragTargetPosition(draggable.positionAtLastDragStart, false);
+        } else if (containerSlot is ItemDraggableGhostView slottedItem) {
+            if (!GameController.Instance.CombineItems(itemModel.inkListItem, slottedItem.itemModel.inkListItem)) {
+                // ExitSlot();
+                // draggable.SetDragTargetPosition(draggable.positionAtLastDragStart, false);
             }
+            Destroy(gameObject);
+        } else {
+            Destroy(gameObject);
         }
     }
 
@@ -173,14 +168,19 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     void OnDragged(Draggable draggable, PointerEventData e) {
         draggable.dragTargetPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(draggable.rectTransform, draggable.dragTargetPosition, levelController.itemContainer.GetScreenRect(), layout.rootCanvas.worldCamera);
         if (hoveredSlot != null) {
-            RectTransformX.ScreenRectToLocalRectInRectangle((RectTransform)layout.rectTransform.parent, hoveredSlot.GetScreenRectSlotForSlottable(this), Camera.main, out Rect localRect);
-            var centerOffset = (localRect.size - layout.rectTransform.rect.size)*0.5f;
-            draggable.dragTargetPosition = layout.rectTransform.GetLocalToAnchoredPositionOffset() + localRect.GetPointFromNormalizedPoint(layout.rectTransform.pivot) + centerOffset;
+            draggable.dragTargetPosition = GetDraggableTargetPositionInSlot(hoveredSlot);
         }
+    }
+    
+    Vector2 GetDraggableTargetPositionInSlot(ISlot slot) {
+        RectTransformX.ScreenRectToLocalRectInRectangle((RectTransform)layout.rectTransform.parent, hoveredSlot.GetScreenRectSlotForSlottable(this), Camera.main, out Rect localRect);
+        var centerOffset = (localRect.size - layout.rectTransform.rect.size)*0.5f;
+        centerOffset.y = -centerOffset.y;
+        return layout.rectTransform.GetLocalToAnchoredPositionOffset() + localRect.GetPointFromNormalizedPoint(layout.rectTransform.pivot) + centerOffset;
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if (levelController.draggingItemLabel != this) return;
+        if (levelController.draggingItemDraggableGhost != this) return;
         transform.SetAsLastSibling();
         hovered = true;
         UpdateSelectionState();
@@ -211,41 +211,6 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             }
         }
     }
-    
-    
-    void UpdateLine() {
-        Vector3 targetWorldPos = itemSpawnLocation.rectTransform.TransformPoint(itemSpawnLocation.rectTransform.rect.center);
-            
-        var endLocalPos = (Vector2)lineRenderer.transform.InverseTransformPoint(targetWorldPos);
-        var targetScreenPos = RectTransformUtility.WorldToScreenPoint(layout.rootCanvas.worldCamera, targetWorldPos);
-        
-        
-        var labelScreenRect = layout.GetScreenRect();
-        var itemCenterScreenPos = RectTransformUtility.WorldToScreenPoint(layout.rootCanvas.worldCamera, layout.rectTransform.TransformPoint(layout.rectTransform.rect.center));
-        var startScreenPos = RectX.SplatVector(labelScreenRect, targetScreenPos-itemCenterScreenPos);
-        
-        var screenLineLength = Vector2.Distance(startScreenPos, targetScreenPos) * (labelScreenRect.Contains(targetScreenPos) ? -1 : 1);
-        lineRenderer.GetComponent<SLayout>().groupAlpha = Mathf.InverseLerp(10, 40, screenLineLength);
-        
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(lineRenderer.rectTransform, startScreenPos, layout.rootCanvas.worldCamera, out var startLocalPos);
-
-        if (startLocalPos != endLocalPos) {
-            var lineProperties = new PointsList.PointListProperties();
-            lineProperties.Positions = new Vector2[2];
-            lineProperties.Positions[0] = startLocalPos;
-            lineProperties.Positions[1] = (Vector2)endLocalPos;
-            lineProperties.SetPoints();
-            
-            lineRenderer.PointListsProperties.PointListProperties = new PointsList.PointListProperties[1];
-            lineRenderer.PointListsProperties.PointListProperties[0] = lineProperties;
-        } 
-        
-        lineRenderer.ForceMeshUpdate();
-    }
-
-
-
-
 
 
 
@@ -286,14 +251,14 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public Rect slotTriggerScreenRect => layout.rectTransform.GetScreenRect();
     public Rect GetSlotTriggerScreenRectWhenContainingItem(ISlottable slottable) {
-        if (!(slottable is ItemLabelView slottableItem)) return default;
+        if (!(slottable is ItemDraggableGhostView slottableItem)) return default;
         var regularSize = GetRegularSize();
         var localRect = new Rect(0,0,regularSize.x,regularSize.y+10+slottableItem.layout.targetHeight+10);
         return layout.LocalToScreenRect(localRect);
     }
 
     public Rect GetScreenRectSlotForSlottable(ISlottable slottable) {
-        if (!(slottable is ItemLabelView slottableItem)) return default;
+        if (!(slottable is ItemDraggableGhostView slottableItem)) return default;
         var regularSize = GetRegularSize();
         var localRect = new Rect(0,regularSize.y+10,regularSize.x,slottableItem.layout.targetHeight);
         return layout.LocalToScreenRect(localRect);
@@ -315,16 +280,5 @@ public class ItemLabelView : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnSlottableSlottedEnd(ISlottable slottable) {
         layout.Animate(Styling.StandardAnimationTime, EasingFunction.Ease.EaseInOutQuad, Layout);
-    }
-    
-    
-    
-    void OnDrawGizmos() {
-        UpdateLine();
-        // draggable.SetPositionImmediate(draggable.rectTransform.anchoredPosition);
-        // var rect = draggable.viewRect.rect; 
-        // rect = rect.WithSize(rect.size - layout.size);
-        // draggable.dragTargetPosition = rect.ClosestPoint(draggable.dragTargetPosition);
-        // draggable.SetPositionImmediate(rect.ClosestPoint(draggable.dragTargetPosition));
     }
 }

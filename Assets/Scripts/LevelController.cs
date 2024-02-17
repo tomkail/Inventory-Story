@@ -19,7 +19,7 @@ public class LevelController : MonoBehaviour {
     public SLayout overlay => transform.Find("Overlay").GetComponent<SLayout>();
     
     public List<ItemView> itemViews = new();
-    public ItemLabelView draggingItemLabel => itemViews.Select(x => x.labelView).FirstOrDefault(x => x.draggable.dragging);
+    public ItemDraggableGhostView draggingItemDraggableGhost => ItemDraggableGhostView.currentlyDraggingItem;
     
     public LevelRequiredItemsSlotGroup slotGroup;
     
@@ -95,11 +95,11 @@ public class LevelController : MonoBehaviour {
         overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.sceneController.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
     }
 
-    public ItemSpawnLocation GetSpawnPointLocationForItem(InkListItem item) {
+    public ItemSpawnLocation GetSpawnPointLocationForItem(ItemModel item) {
         var spawnLocation = itemSpawnLocationManager.FindForItem(item);
         if (spawnLocation == null) {
-            Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.fullName}. Creating temporary.");
-            spawnLocation = itemSpawnLocationManager.CreateSpawnLocation(item.fullName);    
+            Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.inkListItemFullName}. Creating temporary.");
+            spawnLocation = itemSpawnLocationManager.CreateSpawnLocation(item.inkListItemFullName);    
             //
             // spawnLocation.rectTransform.anchoredPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(spawnLocation.rectTransform, spawnLocation.rectTransform.anchoredPosition, spawnLocationsRectTransform.GetScreenRect(), layout.rootCanvas.worldCamera);
         }
@@ -114,8 +114,18 @@ public class LevelController : MonoBehaviour {
         }
         foreach(var item in itemsadded) {
             Debug.Log("Added item: " + item);
-            CreateItemView(item);
+            CreateItemView(TryGetOrCreateItemModel(item));
         }
+    }
+
+    public List<ItemModel> itemModels = new List<ItemModel>();
+    ItemModel TryGetOrCreateItemModel(InkListItem item) {
+        var itemModel = itemModels.FirstOrDefault(x => x.inkListItemFullName == item.fullName);
+        if(itemModel == null) {
+            itemModel = new ItemModel(item);
+            itemModels.Add(itemModel);
+        }
+        return itemModel;
     }
 
     void OnChangeSolutionItemCount(string variablename, object newValue) {
@@ -126,22 +136,27 @@ public class LevelController : MonoBehaviour {
         slotGroup.Init(newSlotCount);
     }
     
-    void CreateItemView(InkListItem inkListItem) {
-        var item = Instantiate(PrefabDatabase.Instance.itemViewPrefab, itemContainer);
-        itemViews.Add(item);
-        var itemSpawnLocation = GetSpawnPointLocationForItem(inkListItem);
-        item.Init(inkListItem, itemSpawnLocation);
+    void CreateItemView(ItemModel item) {
+        var itemView = Instantiate(PrefabDatabase.Instance.itemViewPrefab, itemContainer);
+        itemViews.Add(itemView);
+        var itemSpawnLocation = GetSpawnPointLocationForItem(item);
+        itemView.Init(item, itemSpawnLocation);
     }
 
     void DestroyItemView(InkListItem inkListItem) {
-        itemViews.Where(view => view.inkListItem.Equals(inkListItem)).ToList().ForEach(view => {
-            // slotGroup.draggableGroup.draggables.Remove(view.draggable);
+        itemViews.Where(view => view.itemModel.inkListItemFullName.Equals(inkListItem.fullName)).ToList().ForEach(view => {
             itemViews.Remove(view);
             Destroy(view.gameObject);
         });
     }
     
-    public void OnSlotItem(ItemLabelView itemLabel) {
+    public ItemDraggableGhostView CreateDraggableGhostItemView(ItemModel itemModel) {
+        var item = Instantiate(PrefabDatabase.Instance.itemDraggableGhostViewPrefab, itemContainer);
+        item.Init(itemModel);
+        return item;
+    }
+    
+    public void OnSlotItem(ItemDraggableGhostView itemDraggableGhost) {
         /*
         if (IEnumerableX.GetChanges(currentAnswerSet.currentListItems, slotGroup.slottedItems.Select(x => x.inkListItem), out var missingItems, out var wrongItems)) {
             foreach (var wrongItemList in wrongItems) {
@@ -156,7 +171,7 @@ public class LevelController : MonoBehaviour {
 
         // Set the ink state for "slotted items"
         var inkList = new InkList();
-        var slottedItemLists = slotGroup.slottedItems.Select(itemView => InkList.FromString(itemView.inkListItem.fullName, StoryController.Instance.story)).ToList();
+        var slottedItemLists = slotGroup.slottedItems.Select(itemView => InkList.FromString(itemView.itemModel.inkListItemFullName, StoryController.Instance.story)).ToList();
         foreach (var slottedItem in slottedItemLists)
             inkList = inkList.Union(slottedItem);
         story.variablesState["currentItems"] = inkList;
@@ -171,15 +186,12 @@ public class LevelController : MonoBehaviour {
                     StoryController.Instance.MakeChoice(choice.index);
             } else {
                 foreach (var itemList in (InkList)story.variablesState["currentItems"]) {
-                    var itemView = itemViews.Select(x => x.labelView).FirstOrDefault(x => x.inkListItem.Equals(itemList.Key));
-                    if (itemView == null) continue;
-                    itemView.ExitSlot();
-
-                    // var newPosition = itemView.layout.rectTransform.anchoredPosition + MathX.DegreesToVector2(Random.Range(-45, 45)) * 300;
-                    itemView.draggable.SetDragTargetPosition(itemView.draggable.positionAtLastDragStart, false);
-                    // var slot = slotGroup.slots.FirstOrDefault(x => x.heldSlottable == (ISlottable)itemView);
+                    var slottedGhostItemView = slotGroup.slottedItems.FirstOrDefault(x => x.itemModel.inkListItem.Equals(itemList.Key));
+                    if (slottedGhostItemView == null) continue;
+                    slottedGhostItemView.ExitSlot();
+                    slottedGhostItemView.draggable.SetDragTargetPosition(slottedGhostItemView.draggable.positionAtLastDragStart, false);
                     
-                    // slotGroup.draggableGroup.Unslot(slot);
+                    Destroy(slottedGhostItemView.gameObject);
                 }
             }
         }

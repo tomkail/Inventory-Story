@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandler {
-    public TooltipView tooltip;
+    [Disable] public TooltipView tooltip;
     public new Camera camera => GetComponentInParent<Canvas>().rootCanvas.worldCamera;
     public RectTransform rectTransform => (RectTransform)transform;
     public string tooltipText;
