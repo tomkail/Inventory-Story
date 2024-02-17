@@ -48,7 +48,6 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
         draggable.OnStartDragging += OnStartDragging;
         draggable.OnStopDragging += OnStopDragging;
         draggable.OnDragged += OnDragged;
-        draggable.OnClicked += OnClicked;
     }
 
     public void Init(ItemModel itemModel) {
@@ -108,12 +107,6 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
         var width = SLayoutUtils.AutoLayoutWithDynamicSizing(layout, new List<LayoutItem>() {new (LayoutItemParams.Fixed(Mathf.Clamp(labelSize.x, minContentWidth, maxContentWidth)))}, SLayoutUtils.Axis.X, 0, margin.x, margin.x, 0);
         var height = SLayoutUtils.AutoLayoutWithDynamicSizing(layout, new List<LayoutItem>() {new (LayoutItemParams.Fixed(labelSize.y))}, SLayoutUtils.Axis.Y, 0, margin.y, margin.y, 0);
         return new Vector2(width, height);
-    }
-
-    void OnClicked(Draggable arg1, PointerEventData arg2) {
-        if (GameController.Instance.CanInteractWithItem(itemModel)) {
-            GameController.Instance.InteractWithItem(itemModel);
-        }
     }
     
     void OnStartDragging() {
