@@ -412,7 +412,7 @@ LIST MetroPlatformItems =  Jacket, WhiteFabricScrap, Scarf, PianoWire, (FaceDown
     
     -   Tooltip: {item: 
         -   LoiteringFigure:    "Hmph."
-        -   ShakingHead:        "You got the wrong guy, Ernst."
+        -   ShakingHead:        "You got the wrong guy. Ernst."
         }
     -   Requirement: {item: 
         -   LoiteringFigure:  
