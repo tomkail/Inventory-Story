@@ -8,6 +8,8 @@ INCLUDE scenedata.ink
 INCLUDE sceneindex.ink
 INCLUDE scenes_timeline2.ink
 INCLUDE backend/itemdatabase.ink
+INCLUDE backend/relations.ink
+
 
 
 
@@ -15,6 +17,7 @@ INCLUDE backend/itemdatabase.ink
 VAR LoopCount = 0
 
 VAR DEBUG = true 
+VAR DEBUG_BEAT_BY_BEAT = true
 
 VAR previousSceneID = ()
 VAR currentSceneID = ()

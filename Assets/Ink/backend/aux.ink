@@ -34,3 +34,21 @@
    
 === function BOOL(x) 
     ~ return not not x
+    
+
+
+=== function list_with_commas(list, -> nm)
+	{ list:
+		{_list_with_commas(list, LIST_COUNT(list), nm)}
+	}
+
+=== function _list_with_commas(list, n, -> nm)
+	{nm(pop(list))}{ n > 1:{n == 2: and |, }{_list_with_commas(list, n-1, nm)}}
+
+	
+
+
+
+=== function list_item_is_member_of(k, list) 
+   	~ return k && LIST_ALL(list) ? k
+    

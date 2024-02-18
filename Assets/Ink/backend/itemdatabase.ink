@@ -1,5 +1,5 @@
 
-LIST ItemDataTypes = Name, Tooltip, Replacement, Requirement, Generation, PostAction, Sequence, Interactables
+LIST ItemDataTypes = Name, Tooltip, Replacement, Requirement, Generation, PostAction, Sequence, Interactables, Parent
 
 === function getItemName(item)
     ~ temp specific = "{levelGameplayFunction(Name, item)}"

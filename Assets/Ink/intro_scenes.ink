@@ -24,9 +24,14 @@ VAR ReplayableScenes = (OpeningSequence, Pinboard)
         }
     -   Briefcase:  ~ return AgentUnknownBeatScene
      }
-//    - Name:
+    - Name:
+        { item: 
+        -   Briefcase:  {levelItems ? SealedMetalCylinder:open} briefcase 
+        }
     - Tooltip:
         { item: 
+        - Agent: "Plane lands in three hours."
+        - KeyOnWristChain:  "L731"
         - Briefcase:    "Lloyds of London" 
         }
 //    - Replacement:

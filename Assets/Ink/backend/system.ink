@@ -1,3 +1,4 @@
+LIST Container = SceneTop
 
 VAR levelItems = ()
 VAR levelSolutionItemCount = 0
@@ -8,6 +9,7 @@ VAR generatedItems = ()
 VAR levelGameplayFunction = -> FALSE_
 
 VAR withItem = ()
+VAR usedItems = ()
 
 === use(item) 
     { levelItems !? item:
@@ -75,13 +77,122 @@ VAR withItem = ()
     ~ StartScene (currentSceneID, title, date, solnCount, items)
 // only set globals after scene instruction in case the observer fires
     ~ levelItems = items 
+    ~ relate(SceneTop, ItemHoldsItem, items)
     ~ levelInteractables = interactables
     ~ levelSolutionItemCount = solnCount // returns an int
     
     ~ currentItems = ()
     ~ generatedItems = ()
+    ~ usedItems = ()
+    ~ inside = (SceneTop)
+    ~ carrying = ()
+    ~ unrelateEverything() 
+    
+    ~ relate(SceneTop, ItemHoldsItem, levelItems)
     VO: {VOLine}
-    -> play 
+    {not DEBUG || not DEBUG_BEAT_BY_BEAT:  -> play } 
+- (loop)
+    -> detailed_play -> loop
+
+    
+VAR carrying = () 
+VAR inside = (SceneTop) 
+=== detailed_play
+    <- specific
+    <- overview
+    -> DONE 
+    
+= overview
+    ~ temp freeSlots = levelSolutionItemCount - LIST_COUNT(currentItems)
+    [carrying: {carrying} ]
+    +   { inside == SceneTop && carrying } 
+        [ SLOT {carrying} ] 
+        ~ currentItems += carrying 
+        {
+        - checkForSolution():
+            ->-> solved
+        - freeSlots == 1: 
+            [ UNSLOTTING ] 
+            ~ currentItems = ()
+        }
+    +   {inside != SceneTop} [ ZOOM OUT ] 
+        ~ inside = parent(inside)
+        
+    +   { carrying } [ DROP {carrying} ]
+        ~ carrying = ()
+        
+    -   ->->
+= specific
+    ~ temp interactables = whatIs(inside, ItemHoldsItem) ^ levelItems
+   [{inside} > {list_with_commas(interactables, -> getItemName)}]
+   
+- (looptop)
+    ~ temp item = pop(interactables) 
+    
+    { item: 
+        +   { not carrying } [ PICK UP {item} ]
+            {getItemTooltip(item)} 
+            ~ carrying = item 
+            ->-> 
+    }
+        
+    { levelInteractables ? item: 
+        ~ temp toGenerate = itemGeneratesItems(item)
+        ~ temp withItems = itemRequiresItem(item)
+        ~ temp childItems = whatIs(item, ItemHoldsItem)
+        
+        {  withItems ^ levelItems && toGenerate:
+            <- useWithItems(item, withItems)
+        }
+    
+        +   { (not withItems && toGenerate) || childItems } 
+            { carrying != item } { not carrying || childItems }
+            [ ZOOM INTO {item} ]
+            ~ inside = item 
+            -> generateFrom(item)
+    }
+    { interactables: -> looptop }
+    -> DONE  
+    
+= useWithItems (item, withItems) 
+- (withloop) 
+    ~ temp _withItem = pop(withItems) 
+    
+    +   {carrying == _withItem} 
+        { usedItems !? item || OneUseOnlyItems !? item }
+        [ USE {item} - {_withItem} ] 
+        ~ carrying = ()
+        -> generateFrom(item)
+        
+    
+= generateFrom(item)
+    ~ asReplacement = false     // default to false 
+    ~ temp toGenerate = itemGeneratesItems(item)
+    ~ addItems(toGenerate) 
+    ~ usedItems += item
+    { asReplacement:
+        ~ removeItem(item) 
+        -> applyItemAtLevel(toGenerate, parent(item)) -> 
+    - else: 
+        -> applyItemAtLevel(toGenerate, item) ->
+    }
+    
+    ->->  
+    
+= applyItemAtLevel(toGenerate, parentItem)
+    ~ temp newItem = pop(toGenerate) 
+    { newItem: 
+        ~ temp specificParent = levelGameplayFunction(Parent, newItem) 
+        {specificParent:
+            ~ relate(specificParent, ItemHoldsItem, newItem)  
+        - else: 
+            ~ relate(parentItem, ItemHoldsItem, newItem)  
+        }
+        -> applyItemAtLevel(toGenerate, parentItem)
+    } 
+    ->-> 
+  
+    
     
 === play
     {previousSceneID && currentSceneID > previousSceneID: 
@@ -122,9 +233,8 @@ VAR withItem = ()
     }
     -> DONE
 = ingame 
-    +   (solved) [ SOLVED ] 
-        >>> SAVE
-        -> proceedTo(levelGameplayFunction(Sequence, currentItems))
+    +   [ SOLVED ] 
+        -> solved 
     
 = slot(item, freeSlots) 
     +   { currentItems  ? item } 
@@ -141,6 +251,11 @@ VAR withItem = ()
             ~ currentItems = ()
         }
     -   ->->
+    
+=== solved
+    >>> SAVE
+    -> proceedTo(levelGameplayFunction(Sequence, currentItems))
+    
     
 EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount, startingItems)     
 === function StartScene  (sceneID, titleText, dateText, slotCount, startingItems) 
