@@ -123,7 +123,6 @@ VAR withItem = ()
     -> DONE
 = ingame 
     +   (solved) [ SOLVED ] 
-        >>> SAVE
         -> proceedTo(levelGameplayFunction(Sequence, currentItems))
     
 = slot(item, freeSlots) 
