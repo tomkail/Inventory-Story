@@ -412,7 +412,7 @@ LIST MetroPlatformItems =  Jacket, WhiteFabricScrap, Scarf, PianoWire, (FaceDown
     
     -   Tooltip: {item: 
         -   LoiteringFigure:    "Hmph."
-        -   ShakingHead:        "You got the wrong guy, Ernst."
+        -   ShakingHead:        "You got the wrong guy. Ernst."
         }
     -   Requirement: {item: 
         -   LoiteringFigure:  
@@ -1444,21 +1444,27 @@ TODO: A proper solve , this doens't quite make sense
             }
         
         }
+TODO: currently you can't "go into" something and also "use" something on a thing. eg. the analyst can't hold coffee AND be given  a printout. It's sorta a shame
     -   Generation: {item: 
         - Analyst: ~ return SmashedCoffeeCup // replaceAs(SurprisedAnalyst)
         - LinePrinter: ~ return DeviceOperatedPhoto
         - Hotline: ~ return (Analyst, CoffeeCup)
         } 
+    -   Parent: {item: 
+        - Analyst:   ~ return SceneTop
+        - CoffeeCup: ~ return SceneTop
+        - SmashedCoffeeCup: ~ return SceneTop
+        }
     -   Requirement: {item: 
         - Analyst: ~ return DeviceOperatedPhoto
-        - Hotline: ~ return DeviceOperatedPhoto
+       // - Hotline: ~ return DeviceOperatedPhoto
         }
     -   Replacement: {item: 
         - SmashedCoffeeCup: ~ return CoffeeCup
        
         }
     }
-    
+    ~ return ()
     
 
  === device_operated 
