@@ -2,13 +2,20 @@ using UnityEngine;
 
 [System.Serializable]
 public struct UIImposterOutputParams {
+    // Determines the size of the output RenderTexture.
     public SizeMode sizeMode;
     public enum SizeMode {
+        // Match the size of the target's in the canvas.
         OriginalCanvasSize,
+        // Match the size of the target's size on screen.
         OriginalScreenSize,
+        // Use a custom size
         CustomSize,
     }
+    
+    // When using a custom size, this is the size of the output RenderTexture.
     public Vector2 customContainerSize;
+    // When using a custom size, this is how the content should scale to fit in the RenderTexture.
     public ScalingMode containerScalingMode;
 
     public enum ScalingMode {
@@ -28,34 +35,40 @@ public struct UIImposterOutputParams {
 // Renders a UI element/hierarchy to a rendertexture. This is handy for when you want to render the same element multiple times without the overhead of duplicating the object.
 // Works by moving the target into a new canvas, setting up the camera to frame the target, and rendering it.
 public class UIImposterRenderer {
-    [SerializeField]
     static Camera camera;
-    [SerializeField]
     static Canvas canvas;
 
     static Vector3[] worldCorners = new Vector3[4];
     static Vector3[] canvasRelativeCorners = new Vector3[4];
 
+
     // Creates an imposter from a RectTransform, returning a newly created RenderTexture.
-    public static RenderTexture Render (RectTransform target, UIImposterOutputParams outputParams) {
+    public static RenderTexture Render(RectTransform target, UIImposterOutputParams outputParams) {
+        return Render(target, outputParams, new RenderTextureDescriptor(0, 0, RenderTextureFormat.Default, 0));
+    }
+    public static RenderTexture Render (RectTransform target, UIImposterOutputParams outputParams, RenderTextureDescriptor renderTextureDescriptor) {
         RenderTexture renderTexture = null;
         Render(target, outputParams, ref renderTexture);
         return renderTexture;
     }
 
+    public static void Render(RectTransform target, UIImposterOutputParams outputParams, ref RenderTexture renderTexture) {
+        Render(target, outputParams, ref renderTexture, new RenderTextureDescriptor(0, 0, RenderTextureFormat.Default, 0));
+    }
+
     // Creates an imposter from a RectTransform, using an existing RenderTexture or setting the instance to a newly created one if null.
-    public static void Render (RectTransform target, UIImposterOutputParams outputParams, ref RenderTexture renderTexture) {
+    public static void Render (RectTransform target, UIImposterOutputParams outputParams, ref RenderTexture renderTexture, RenderTextureDescriptor renderTextureDescriptor) {
         if(target == null) return;
         // We currently delete these once we're done rendering, but we might just as happily keep them around.
         if(camera == null) {
             camera = new GameObject("UI Imposter Camera").AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.Depth;
-            camera.hideFlags = HideFlags.HideAndDontSave;
+            camera.hideFlags = HideFlags.DontSave;
             camera.orthographic = true;
         }
         if(canvas == null) {
             canvas = new GameObject("UI Imposter Canvas").AddComponent<Canvas>();
-            canvas.hideFlags = HideFlags.HideAndDontSave;
+            canvas.hideFlags = HideFlags.DontSave;
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = camera;
         }
@@ -67,7 +80,8 @@ public class UIImposterRenderer {
         // Cache the bits we're changing so we can restore them once we're done.
         var originalParent = target.parent;
         var originalIndex = target.GetSiblingIndex();
-        var originalPos = target.position;
+        var originalPos = target.localPosition;
+        var originalScale = target.localScale;
 
 
         // Get the world bounds of the target
@@ -88,7 +102,7 @@ public class UIImposterRenderer {
         canvas.transform.position = targetCanvas.transform.position;
         canvas.transform.rotation = targetCanvas.transform.rotation;
         canvas.transform.localScale = targetCanvas.transform.localScale;
-        ((RectTransform)canvas.transform).sizeDelta = ((RectTransform)targetCanvas.transform).sizeDelta;
+        ((RectTransform)canvas.transform).sizeDelta = ((RectTransform)targetCanvas.transform).rect.size;
 
         // Set the size of the output RenderTexture
         Vector2Int renderTextureSize = Vector2Int.zero;
@@ -113,26 +127,31 @@ public class UIImposterRenderer {
         target.anchoredPosition += pivotOffset;
 
         // Set the camera to only render around our target
+        // Note that this means that only flat UI will be renderered. We'll need to edit this to support UI that uses the Z axis.
         camera.nearClipPlane = epsilon;
         camera.farClipPlane = (Mathf.Max(epsilon*2, worldBounds.extents.z)*2)+epsilon;
         
-        // Create a render texture.
-        bool needsCreateRenderTexture = renderTexture == null;
-        // Potential upgrade: take RenderTextureDescriptor as a parameter and use those settings if the RenderTexture is null, rather than prescribing a 24 bit, ARGB32, bilinear sampled RT.
-        int rtDepth = 24;
-        RenderTextureFormat rtFormat = RenderTextureFormat.ARGB32;
-        FilterMode rtFilterMode = FilterMode.Bilinear;
-        if(renderTexture != null && (renderTexture.width != renderTextureSize.x || renderTexture.height != renderTextureSize.y || renderTexture.depth != rtDepth || renderTexture.format != rtFormat)) {
-            rtDepth = renderTexture.depth;
-            rtFormat = renderTexture.format;
-            rtFilterMode = renderTexture.filterMode;
-            if(RenderTexture.active == renderTexture) RenderTexture.active = null;
-            renderTexture.Release();
-            needsCreateRenderTexture = true;
-        }
-        if(needsCreateRenderTexture && renderTextureSize.x > 0 && renderTextureSize.y > 0) {
-            renderTexture = new RenderTexture (renderTextureSize.x, renderTextureSize.y, rtDepth, rtFormat);
-            renderTexture.filterMode = rtFilterMode;
+        if (renderTextureSize.x <= 0 || renderTextureSize.y <= 0) {
+            Debug.LogWarning($"UIImposterRenderer: Target size is {renderTextureSize}, so not creating RenderTexture.");
+        } else {
+            FilterMode rtFilterMode = FilterMode.Bilinear;
+            
+            renderTextureDescriptor.width = renderTextureSize.x;
+            renderTextureDescriptor.height = renderTextureSize.y;
+            
+            if (renderTexture == null) {
+                renderTexture = new RenderTexture (renderTextureDescriptor);
+                renderTexture.filterMode = rtFilterMode;
+            } else if(!RenderTextureDescriptorsMatch(renderTexture.descriptor, renderTextureDescriptor)) {
+                rtFilterMode = renderTexture.filterMode;
+                
+                if(RenderTexture.active == renderTexture) RenderTexture.active = null;
+                renderTexture.Release();
+
+                renderTexture.descriptor = renderTextureDescriptor;
+                renderTexture.Create();
+                renderTexture.filterMode = rtFilterMode;
+            }
         }
 
 
@@ -144,9 +163,10 @@ public class UIImposterRenderer {
         // Restore to original position
         target.SetParent(originalParent);
         target.SetSiblingIndex(originalIndex);
-        target.position = originalPos;
+        target.localScale = originalScale;
+        target.localPosition = originalPos;
 
-        // Destroy renderer
+        // Destroy renderer. This is optional, but it's a good idea to do this if you're not going to be using the renderer again.
         if(Application.isPlaying) {
             Object.Destroy(camera.gameObject);
             camera = null;
@@ -232,7 +252,7 @@ public class UIImposterRenderer {
         return new Bounds(center, size);
     }
     
-    public static Rect CreateEncapsulating (params Vector2[] vectors) {
+    static Rect CreateEncapsulating (params Vector2[] vectors) {
         float xMin = vectors[0].x;
         float xMax = vectors[0].x;
         float yMin = vectors[0].y;
@@ -245,5 +265,16 @@ public class UIImposterRenderer {
             yMax = Mathf.Max (yMax, vector.y);
         }
         return Rect.MinMaxRect (xMin, yMin, xMax, yMax);
+    }
+            
+    static bool RenderTextureDescriptorsMatch(RenderTextureDescriptor descriptorA, RenderTextureDescriptor descriptorB) {
+        if (descriptorA.depthBufferBits != descriptorB.depthBufferBits) return false;
+        if (descriptorA.width != descriptorB.width) return false;
+        if (descriptorA.height != descriptorB.height) return false;
+        if (descriptorA.depthStencilFormat != descriptorB.depthStencilFormat) return false;
+        if (descriptorA.enableRandomWrite != descriptorB.enableRandomWrite) return false;
+        if (descriptorA.colorFormat != descriptorB.colorFormat) return false;
+        if (descriptorA.dimension != descriptorB.dimension) return false;
+        return true;
     }
 }

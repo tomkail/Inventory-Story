@@ -63,21 +63,11 @@ namespace UnityEngine.UI {
 
 			public Vector2 margin => isXAxis ? new Vector2(gridLayout.padding.left, gridLayout.padding.right) : new Vector2(gridLayout.padding.bottom, gridLayout.padding.top);
 
-			public void SetTargetCellCount(int newCellCount) {
-				_cellCount = newCellCount;
-			}
+			public void SetTargetCellCount(int newCellCount) => _cellCount = newCellCount;
+			public void SetTargetAspectRatio(float newAspectRatio) => _aspectRatio = newAspectRatio;
+			public void SetTargetItemSize(float newItemSize) => _itemSize = newItemSize;
 
-			public void SetTargetAspectRatio(float newAspectRatio) {
-				_aspectRatio = newAspectRatio;
-			}
-
-			public void SetTargetItemSize(float newItemSize) {
-				_itemSize = newItemSize;
-			}
-
-			public void ApplySizeToRectTransform() {
-				gridLayout.rectTransform.SetSizeWithCurrentAnchors(isXAxis ? RectTransform.Axis.Horizontal : RectTransform.Axis.Vertical, GetTotalSize());
-			}
+			public void ApplySizeToRectTransform() => gridLayout.rectTransform.SetSizeWithCurrentAnchors(isXAxis ? RectTransform.Axis.Horizontal : RectTransform.Axis.Vertical, GetTotalSize());
 
 			public float GetTotalSize() {
 				if (_sizeMode == CellSizeMode.FillContainer) return containerSize;
@@ -103,29 +93,25 @@ namespace UnityEngine.UI {
 				// else if(_axisMode == Calculation.CellSize || _axisMode == Calculation.AspectRatio) return Mathf.FloorToInt(containerSize / (GetItemSize() + _spacing));
 				return 0;
 			}
-
-			public float GetLocalPositionForGridCoord(float index, float otherAxisIndex) {
+			
+			public float GetPositionForGridCoord(float index, float otherAxisIndex, float pivot) {
 				if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
-				return CalculatePositionForGridCoord(index, otherAxisIndex, GetItemSize(), _spacing, margin, _offset, otherAxis.GetCellCount());
+				return CalculatePositionForGridCoord(index, otherAxisIndex, GetItemSize(), _spacing, margin, _offset, otherAxis.GetCellCount(), pivot);
 			}
+			public float GetPositionForGridCoord(float index, float otherAxisIndex) => GetPositionForGridCoord(index, otherAxisIndex, 0);
+			public float GetCenterPositionForGridCoord(float index, float otherAxisIndex) => GetPositionForGridCoord(index, otherAxisIndex, 0.5f);
 
-			public float GetLocalPositionForGridCoord(float index) {
-				if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
-				return CalculatePositionForGridCoord(index, GetItemSize(), _spacing, margin);
-			}
+			// public float GetPositionForGridCoord(float index) {
+			// 	if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
+			// 	return CalculatePositionForGridCoord(index, GetItemSize(), _spacing, margin, 0);
+			// }
+			// public float GetCenterPositionForGridCoord(float index) {
+			// 	if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
+			// 	return CalculatePositionForGridCoord(index, GetItemSize(), _spacing, margin, 0.5f);
+			// }
 
-			public float GetLocalCenterPositionForGridCoord(float index, float otherAxisIndex) {
-				if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
-				return CalculateCenterPositionForGridCoord(index, otherAxisIndex, GetItemSize(), _spacing, margin, _offset, otherAxis.GetCellCount());
-			}
-
-			public float GetLocalCenterPositionForGridCoord(float index) {
-				if (_flip) index = Mathf.Max(0, GetCellCount() - 1) - index;
-				return CalculateCenterPositionForGridCoord(index, GetItemSize(), _spacing, margin);
-			}
-
-			public float GetOffsetPositionForGridCoord(float otherAxisIndex) {
-				return CalculateOffsetForGridCoord(otherAxisIndex, _offset, otherAxis.GetCellCount());
+			public float GetPositionOffsetForGridCoord(float otherAxisIndex) {
+				return CalculatePositionOffsetForGridCoord(otherAxisIndex, _offset, otherAxis.GetCellCount());
 			}
 
 			public override string ToString() {
@@ -168,47 +154,21 @@ namespace UnityEngine.UI {
 			AspectRatio,
 			FillContainer,
 		}
-
-
+		
 
 		public Vector2Int gridSize => new(xAxis.GetCellCount(), yAxis.GetCellCount());
 		public Vector2 itemSize => new(xAxis.GetItemSize(), yAxis.GetItemSize());
 
-		public virtual void CalculateLayoutInputHorizontal() {
-			m_Width = xAxis.GetTotalSize();
-		}
+		public virtual void CalculateLayoutInputHorizontal() => m_Width = xAxis.GetTotalSize();
+		public virtual void CalculateLayoutInputVertical() => m_Height = yAxis.GetTotalSize();
 
-		public virtual void CalculateLayoutInputVertical() {
-			m_Height = yAxis.GetTotalSize();
-		}
-
-		public virtual float minWidth {
-			get { return m_Width; }
-		}
-
-		public virtual float minHeight {
-			get { return m_Height; }
-		}
-
-		public virtual float preferredWidth {
-			get { return m_Width; }
-		}
-
-		public virtual float preferredHeight {
-			get { return m_Height; }
-		}
-
-		public virtual float flexibleWidth {
-			get { return -1; }
-		}
-
-		public virtual float flexibleHeight {
-			get { return -1; }
-		}
-
-		public virtual int layoutPriority {
-			get { return 1; }
-		}
+		public virtual float minWidth => m_Width;
+		public virtual float minHeight => m_Height;
+		public virtual float preferredWidth => m_Width;
+		public virtual float preferredHeight => m_Height;
+		public virtual float flexibleWidth => -1;
+		public virtual float flexibleHeight => -1;
+		public virtual int layoutPriority => 1;
 
 		float m_Width;
 		float m_Height;
@@ -250,36 +210,33 @@ namespace UnityEngine.UI {
 			CalculateLayoutInputVertical();
 		}
 
-		public Vector2 GetLocalPositionForGridCoord(Vector2 coord) {
-			return new Vector2(xAxis.GetLocalPositionForGridCoord(coord.x, coord.y), yAxis.GetLocalPositionForGridCoord(coord.y, coord.x));
+		#region Public Grid Functions
+		// Positions are calculated such that a regular grid at 0,0 will be at position 0,0. X extends rightwards, Y extends upwards.
+		public Vector2 GetPositionForGridCoord(Vector2 coord) => new (xAxis.GetPositionForGridCoord(coord.x, coord.y), yAxis.GetPositionForGridCoord(coord.y, coord.x));
+		public Vector2 GetPositionForGridCoord(Vector2 coord, Vector2 pivot) => new (xAxis.GetPositionForGridCoord(coord.x, coord.y, pivot.x), yAxis.GetPositionForGridCoord(coord.y, coord.x, pivot.y));
+		public Vector2 GetCenterPositionForGridCoord(Vector2 coord) => new (xAxis.GetCenterPositionForGridCoord(coord.x, coord.y), yAxis.GetCenterPositionForGridCoord(coord.y, coord.x));
+		public Rect GetRectForGridCoord(Vector2Int coord) {
+			var localPosition = GetPositionForGridCoord(coord);
+			return new Rect(localPosition.x, localPosition.y, xAxis.GetItemSize(), yAxis.GetItemSize());
 		}
-
-		public Vector2 GetLocalCenterPositionForGridCoord(Vector2 coord) {
-			return new Vector2(xAxis.GetLocalCenterPositionForGridCoord(coord.x, coord.y), yAxis.GetLocalCenterPositionForGridCoord(coord.y, coord.x));
-		}
-
+		
+		// Local positions use the RectTransform local space
+		public Vector2 GetLocalPositionForGridCoord(Vector2 coord) => GetPositionForGridCoord(coord) + rectTransform.rect.position;
+		public Vector2 GetLocalPositionForGridCoord(Vector2 coord, Vector2 pivot) => GetPositionForGridCoord(coord, pivot) + rectTransform.rect.position;
+		public Vector2 GetLocalCenterPositionForGridCoord(Vector2 coord) => GetCenterPositionForGridCoord(coord) + rectTransform.rect.position;
 		public Rect GetLocalRectForGridCoord(Vector2Int coord) {
 			var localPosition = GetLocalPositionForGridCoord(coord);
-			return new Rect(
-				localPosition.x,
-				localPosition.y,
-				xAxis.GetItemSize(),
-				yAxis.GetItemSize()
-			);
+			return new Rect(localPosition.x, localPosition.y, xAxis.GetItemSize(), yAxis.GetItemSize());
 		}
-
-		public Vector2 GetWorldPositionForGridCoord(Vector2 coord) {
-			return transform.TransformPoint(rectTransform.rect.position + GetLocalPositionForGridCoord(coord));
-		}
-
-		public Vector2 GetWorldCenterPositionForGridCoord(Vector2 coord) {
-			return transform.TransformPoint(rectTransform.rect.position + GetLocalCenterPositionForGridCoord(coord));
-		}
-
+		
+		// World space
+		public Vector2 GetWorldPositionForGridCoord(Vector2 coord) => transform.TransformPoint(GetLocalPositionForGridCoord(coord));
+		public Vector2 GetWorldPositionForGridCoord(Vector2 coord, Vector2 pivot) => transform.TransformPoint(GetLocalPositionForGridCoord(coord, pivot));
+		public Vector2 GetWorldCenterPositionForGridCoord(Vector2 coord) => transform.TransformPoint(GetLocalCenterPositionForGridCoord(coord));
 		public Rect GetWorldRectForGridCoord(Vector2Int coord) {
 			var localRect = GetLocalRectForGridCoord(coord);
-			var min = transform.TransformPoint(rectTransform.rect.position + localRect.min);
-			var max = transform.TransformPoint(rectTransform.rect.position + localRect.max);
+			var min = transform.TransformPoint(localRect.min);
+			var max = transform.TransformPoint(localRect.max);
 			return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
 		}
 
@@ -290,39 +247,31 @@ namespace UnityEngine.UI {
 		public Vector2 GetTotalSize() {
 			return new Vector2(xAxis.GetTotalSize(), yAxis.GetTotalSize());
 		}
+		#endregion
 
-		public override string ToString() {
-			return string.Format("[GridLayout: X={0}, Y={1}]", xAxis.ToString(), yAxis.ToString());
-		}
+		public override string ToString() => $"[GridLayout: X={xAxis.ToString()}, Y={yAxis.ToString()}]";
 
 
-		public static int GridCoordToArrayIndex(Vector2Int coord, int numCellsX) {
-			return coord.y * numCellsX + coord.x;
-		}
+
+
+
+		#region Static Grid Functions
+		public static int GridCoordToArrayIndex(Vector2Int coord, int numCellsX) => coord.y * numCellsX + coord.x;
 
 		public static Vector2Int ArrayIndexToGridCoord(int arrayIndex, int numCellsX) {
 			if (numCellsX == 0) return new Vector2Int(arrayIndex, 0);
 			else return new Vector2Int(arrayIndex % numCellsX, Mathf.FloorToInt((float) arrayIndex / numCellsX));
 		}
 
-
-		public static float CalculatePositionForGridCoord(float coord, float otherAxisCoord, float itemSize, float spacing, Vector2 margin, float offset, int otherAxisCellCount) {
-			return CalculatePositionForGridCoord(coord, itemSize, spacing, margin) + CalculateOffsetForGridCoord(otherAxisCoord, offset, otherAxisCellCount);
+		public static float CalculatePositionForGridCoord(float coord, float otherAxisCoord, float itemSize, float spacing, Vector2 margin, float offset, int otherAxisCellCount, float pivot) {
+			return CalculatePositionForGridCoord(coord, itemSize, spacing, margin, pivot) + CalculatePositionOffsetForGridCoord(otherAxisCoord, offset, otherAxisCellCount);
 		}
-
-		public static float CalculateCenterPositionForGridCoord(float coord, float otherAxisCoord, float itemSize, float spacing, Vector2 margin, float offset, int otherAxisCellCount) {
-			return CalculateCenterPositionForGridCoord(coord, itemSize, spacing, margin) + CalculateOffsetForGridCoord(otherAxisCoord, offset, otherAxisCellCount);
-		}
-
-		public static float CalculatePositionForGridCoord(float coord, float itemSize, float spacing, Vector2 margin) {
+		
+		public static float CalculatePositionForGridCoord(float coord, float itemSize, float spacing, Vector2 margin, float pivot) {
 			return margin.x + (spacing * coord) + (itemSize * coord);
 		}
-
-		public static float CalculateCenterPositionForGridCoord(float coord, float itemSize, float spacing, Vector2 margin) {
-			return CalculatePositionForGridCoord(coord, itemSize, spacing, margin) + (itemSize / 2);
-		}
-
-		public static float CalculateOffsetForGridCoord(float otherAxisIndex, float offset, int otherAxisCellCount) {
+		
+		public static float CalculatePositionOffsetForGridCoord(float otherAxisIndex, float offset, int otherAxisCellCount) {
 			var calculatedOffset = offset * otherAxisIndex;
 			if (offset < 0) return calculatedOffset - (offset * (otherAxisCellCount - 1));
 			else return calculatedOffset;
@@ -361,5 +310,6 @@ namespace UnityEngine.UI {
 			var blockSize = (itemSize * numItems) + (spacing * (numItems - 1));
 			return blockSize + Mathf.Abs(totalOffset) + (margin.x + margin.y);
 		}
+		#endregion
 	}
 }

@@ -18,7 +18,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: -24
+    value: -14.9
   intensityX:
     overrideState: 0
     value: 1
@@ -105,7 +105,7 @@ MonoBehaviour:
     value: 0
   postExposure:
     overrideState: 1
-    value: 1
+    value: 0.6
   contrast:
     overrideState: 1
     value: 11.4
@@ -1384,10 +1384,10 @@ MonoBehaviour:
     value: 0
   intensity:
     overrideState: 1
-    value: 0.625
+    value: 0.268
   size:
     overrideState: 1
-    value: 2.24
+    value: 3
   lumContrib:
     overrideState: 1
     value: 1
@@ -1413,7 +1413,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.363
+    value: 0.16
   fastMode:
     overrideState: 0
     value: 0
@@ -1444,7 +1444,7 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.717
+    value: 0.665
   smoothness:
     overrideState: 1
     value: 0.348

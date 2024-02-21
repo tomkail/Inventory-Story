@@ -35,6 +35,13 @@ public static class FlagsX {
 		return flagsValue & (~flagValue);
 	}
 	
+	public static int SetFlag(int flags, int flagToSet, bool isOn) {
+		if (isOn) flags |= flagToSet;
+		else flags &= ~flagToSet;
+		return flags;
+	}
+
+	
 
 	/// <summary>
 	/// Creates a new Flag including the values provided

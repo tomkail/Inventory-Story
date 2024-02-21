@@ -10,7 +10,8 @@ public class GameController : MonoSingleton<GameController> {
     public TextAsset storyJson;
     public Story story => StoryController.Instance.story;
 
-    public SceneController sceneController;
+    public LevelsManager levelsManager;
+    public CameraToRawImage projectorPostProcessor;
     // public Button confirmButton;
 
     protected override void Awake() {
@@ -35,20 +36,9 @@ public class GameController : MonoSingleton<GameController> {
 
         saveState.storySaveJson = story.state.ToJson();
 
-        foreach (var level in sceneController.levels) {
-            var levelItemStates = new List<LevelItemState>();
-            foreach (var item in level.itemViews) {
-                levelItemStates.Add(new LevelItemState() {
-                    inkListItemFullName = item.itemModel.inkListItemFullName,
-                    state = item.itemModel.state,
-                    labelText = item.itemModel.labelText,
-                    tooltipText = item.itemModel.tooltipText,
-                    // labelPosition = item.labelView.layout.position,
-                });
-            }
-            saveState.levelStates.Add(new LevelState() {
-                itemStates = levelItemStates
-            });
+        foreach (var level in levelsManager.levels) {
+            level.UpdateLevelState();
+            saveState.levelStates.Add(level.levelState);
         }
 
         return saveState;
@@ -79,6 +69,7 @@ public class GameController : MonoSingleton<GameController> {
     void BeginSavedGame(SaveState saveState) {
         DebugX.Log("<color=#337DFF>Begin Saved Game</color>");
         try {
+            levelsManager.LoadSavedLevels(saveState.levelStates);
             StoryController.Instance.InitStory(storyJson, saveState.storySaveJson);
             StoryController.Instance.OnParsedInstructions += OnParsedStoryInstructions;
             
@@ -115,28 +106,28 @@ public class GameController : MonoSingleton<GameController> {
     }
 
     void Clear() {
-        sceneController.Clear();
+        levelsManager.Clear();
         StoryController.Instance.OnParsedInstructions -= OnParsedStoryInstructions;
         StoryController.Instance.EndStory();
     }
 
     void OnParsedStoryInstructions() {
-        foreach (var content in StoryController.Instance.contents) sceneController.PerformContent(content);
+        foreach (var content in StoryController.Instance.contents) levelsManager.PerformContent(content);
     }
 
-    public bool CanInteractWithItem(ItemModel itemModel) {
-        return story.currentChoices.FirstOrDefault(x => x.text.Contains($"{itemModel.inkListItemName}", StringComparison.OrdinalIgnoreCase)) != null;
-    }
+    // public bool CanInteractWithItem(ItemModel itemModel) {
+    //     return story.currentChoices.FirstOrDefault(x => x.text.Contains($"{itemModel.inkListItemName}", StringComparison.OrdinalIgnoreCase)) != null;
+    // }
 
-    public bool InteractWithItem(ItemModel itemModel) {
-        foreach (var choice in StoryController.Instance.choices.OfType<ItemInteractChoiceInstruction>()) {
-            if (choice.MatchesItem(itemModel.inkListItem)) {
-                StoryController.Instance.MakeChoice(choice.storyChoice.index);
-                return true;
-            }
-        }
-        return false;
-    }
+    // public bool InteractWithItem(ItemModel itemModel) {
+    //     foreach (var choice in StoryController.Instance.choices.OfType<ItemInteractChoiceInstruction>()) {
+    //         if (choice.MatchesItem(itemModel.inkListItem)) {
+    //             StoryController.Instance.MakeChoice(choice.storyChoice.index);
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
     
     public bool CombineItems(InkListItem inkListItemA, InkListItem inkListItemB) {
         foreach (var choice in StoryController.Instance.choices.OfType<CombineItemsChoiceInstruction>()) {

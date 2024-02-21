@@ -4,19 +4,19 @@ using EasyButtons;
 using UnityEngine;
 
 public class LevelTitleUIView : MonoBehaviour {
-    LevelController levelController => GetComponentInParent<LevelController>();
+    Level Level => GetComponentInParent<Level>();
     
     SLayout layout => GetComponent<SLayout>();
     [SerializeField] SLayout titleText;
     [SerializeField] SLayout dateText;
 
     void Awake() {
-        levelController.OnInit += Init;
+        Level.OnInit += Init;
     }
 
     void Init() {
-        titleText.textMeshPro.text = levelController.levelState.titleText;
-        dateText.textMeshPro.text = levelController.levelState.dateText;
+        titleText.textMeshPro.text = Level.levelState.titleText;
+        dateText.textMeshPro.text = Level.levelState.dateText;
         
         Layout();
     }

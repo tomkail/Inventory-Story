@@ -3,6 +3,16 @@
 public static class RectTransformX {
 	static Vector3[] corners = new Vector3[4];
 
+	
+
+	public static Camera GetCanvasEventCamera(this RectTransform rectTransform) {
+		var canvas = rectTransform.GetComponentInParent<Canvas>(true).rootCanvas;
+		var renderMode = canvas.renderMode;
+		if (renderMode == RenderMode.ScreenSpaceOverlay || (renderMode == RenderMode.ScreenSpaceCamera && canvas.worldCamera == null))
+			return null;
+		return canvas.worldCamera ? canvas.worldCamera : Camera.main;
+	}
+	
 	// Gets the distance between two rect transforms, in the space of the first rect transform.
     public static float GetClosestDistanceBetweenRectTransforms (RectTransform rectTransform, RectTransform otherRectTransform) {
         var canvas = rectTransform.GetComponentInParent<Canvas>(true).rootCanvas;

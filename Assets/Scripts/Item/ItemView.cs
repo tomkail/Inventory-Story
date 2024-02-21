@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(SLayout))]
 public class ItemView : MonoBehaviour {
-    public LevelController levelController => GetComponentInParent<LevelController>();
+    public Level Level => GetComponentInParent<Level>();
     public SLayout layout => GetComponent<SLayout>();
     
     public ItemModel itemModel;
@@ -26,7 +26,7 @@ public class ItemView : MonoBehaviour {
         var screenRect = itemSpawnLocation.rectTransform.GetScreenRect();
         layout.rect = layout.ScreenToSLayoutRect(screenRect);
 
-        itemModel.state = ItemModel.State.Hint;
+        SetState(itemModel.state);
         Layout();
     }
 
@@ -56,9 +56,9 @@ public class ItemView : MonoBehaviour {
         if (itemModel.state == ItemModel.State.Hidden) {
             boxView.gameObject.SetActive(false);
             hintView.gameObject.SetActive(false);
-        } else if (itemModel.state == ItemModel.State.Hint) {
+        } else if (itemModel.state == ItemModel.State.Searchable) {
             boxView.gameObject.SetActive(false);
-            hintView.gameObject.SetActive(true);
+            // hintView.gameObject.SetActive(true);
         } else if (itemModel.state == ItemModel.State.Showing) {
             boxView.gameObject.SetActive(true);
             hintView.gameObject.SetActive(false);

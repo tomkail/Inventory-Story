@@ -51,12 +51,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc02f2ce7f714353b9372c0905e99321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labelText: 
-  tooltipText: 
+  itemModel:
+    _inkListItemName: 
+    _inkListItemFullName: 
+    _labelText: 
+    _tooltipText: 
+    _state: 0
   itemSpawnLocation: {fileID: 0}
   hintView: {fileID: 7830359261618451073}
   boxView: {fileID: 790912210618819883}
-  state: 0
 --- !u!114 &4985623323321507355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,6 +104,10 @@ PrefabInstance:
     - target: {fileID: 1328434263625950169, guid: 17cb51a8a269c418ca7af0f4b8a5eb45, type: 3}
       propertyPath: m_Name
       value: Item Hint View
+      objectReference: {fileID: 0}
+    - target: {fileID: 1328434263625950169, guid: 17cb51a8a269c418ca7af0f4b8a5eb45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

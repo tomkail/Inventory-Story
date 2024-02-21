@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using GridLayout = UnityEngine.UI.GridLayout;
 
 namespace UnityEditor.UI {
@@ -169,7 +170,7 @@ namespace UnityEditor.UI {
 				EditorGUI.DrawRect(gridRect, new Color(0, 0, 0, 0.2f));
 				for (int y = 0; y < Mathf.Min(50, data.yAxis.GetCellCount()); y++) {
 					for (int x = 0; x < Mathf.Min(50, data.xAxis.GetCellCount()); x++) {
-						var gridCellRect = data.GetLocalRectForGridCoord(new Vector2Int(x, y));
+						var gridCellRect = data.GetRectForGridCoord(new Vector2Int(x, y));
 						// Flip it because GUI is drawn upside down compared to world space (y top)
 						gridCellRect.center = new Vector2(gridCellRect.center.x, gridSize.y - gridCellRect.center.y);
 						gridCellRect = new Rect(gridRect.position + gridCellRect.position * scaleFactor, gridCellRect.size * scaleFactor);

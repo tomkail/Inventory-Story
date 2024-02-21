@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(SLayout))]
 public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerClickHandler, IInitializePotentialDragHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler, ISlot {
-    public LevelController levelController => GetComponentInParent<LevelController>(true);
+    public Level Level => GetComponentInParent<Level>(true);
     ItemView itemView;
     public SLayout layout => GetComponent<SLayout>();
     public SLayout background ;
@@ -26,7 +26,7 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
 
     void Update() {
-        tooltip.enabled = levelController.draggingItemDraggableGhost == null;
+        tooltip.enabled = Level.draggingItemDraggableGhost == null;
     }
     
     public void OnPointerEnter(PointerEventData eventData) {
@@ -43,9 +43,9 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (GameController.Instance.CanInteractWithItem(itemView.itemModel)) {
-            GameController.Instance.InteractWithItem(itemView.itemModel);
-        }
+        // if (GameController.Instance.CanInteractWithItem(itemView.itemModel)) {
+        //     GameController.Instance.InteractWithItem(itemView.itemModel);
+        // }
     }
     
     // This is fired after OnPointerDown, after the eventData has been set up sufficiently that the drag (and other events like clicks) can be re-directed
@@ -58,7 +58,7 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
     
     public void OnBeginDrag(PointerEventData eventData) {
-        draggableGhostItemView = levelController.CreateDraggableGhostItemView(itemView.itemModel);
+        draggableGhostItemView = Level.CreateDraggableGhostItemView(itemView.itemModel);
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)draggableGhostItemView.draggable.rectTransform.parent, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
         draggableGhostItemView.draggable.SetPositionImmediate(localPoint + draggableGhostItemView.draggable.rectTransform.GetLocalToAnchoredPositionOffset() + new Vector2(-draggableGhostItemView.draggable.rectTransform.rect.width * 0.5f, draggableGhostItemView.draggable.rectTransform.rect.height * 0.5f));
 

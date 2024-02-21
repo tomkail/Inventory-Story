@@ -252,7 +252,7 @@ public class SwipeView : UIBehaviour, IPointerDownHandler, IPointerUpHandler, II
 	public void OnPointerUp(PointerEventData eventData) {}
 	
 	public void OnInitializePotentialDrag(PointerEventData eventData) {
-		if (!interactable || eventData.button != PointerEventData.InputButton.Left || !IsActive()) {
+		if ((!interactable || eventData.button != PointerEventData.InputButton.Left || !IsActive()) && transform.parent != null) {
 			ExecuteEvents.ExecuteHierarchy(transform.parent.gameObject, eventData, ExecuteEvents.initializePotentialDrag);
 		}
 		// Judging by how ScrollRect works, we should stop the springs when this occurs.

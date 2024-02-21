@@ -58,7 +58,7 @@ public class ItemModel {
     public Action<State> onChangeState;
     public enum State {
         Hidden,
-        Hint,
+        Searchable,
         Showing
     }
     
@@ -66,6 +66,7 @@ public class ItemModel {
         this.inkListItem = inkListItem;
         inkListItemName = inkListItem.itemName;
         inkListItemFullName = inkListItem.itemName;
+        state = State.Searchable;
         RefreshInkVariables();
     }
     

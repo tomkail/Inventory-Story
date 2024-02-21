@@ -253,7 +253,6 @@ VAR inside = (SceneTop)
     -   ->->
     
 === solved
-    >>> SAVE
     -> proceedTo(levelGameplayFunction(Sequence, currentItems))
     
     

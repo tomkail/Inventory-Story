@@ -7,11 +7,11 @@ using UnityEditor;
 #endif   
 
 public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
-    public LevelController levelPrefab;
+    public Level levelPrefab;
     public ItemView itemViewPrefab;
     public ItemDraggableGhostView itemDraggableGhostViewPrefab;
 
-    public AssetDictionary<LevelController> levels;
+    public AssetDictionary<Level> levels;
     public AssetDictionary<AudioClip> musicTracks;
     #if UNITY_EDITOR
     [InitializeOnLoadMethod]
@@ -21,7 +21,7 @@ public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
 
     [ContextMenu("Populate")]
     void AutoPopulate() {
-        Instance.levels = CreatePrefabDictionaryFromLabel<LevelController>("level");
+        Instance.levels = CreatePrefabDictionaryFromLabel<Level>("level");
         Instance.musicTracks = CreatePrefabDictionaryFromLabel<AudioClip>("Music");
     }
 

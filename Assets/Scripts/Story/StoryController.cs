@@ -113,13 +113,13 @@ public class StoryController : MonoSingleton<StoryController> {
 		story.BindExternalFunction ("Save", SaveLoadManager.Save, false);
 		story.BindExternalFunctionGeneral("StartScene", (args) => {
 			var levelLoadParams = new LevelLoadParams();
-			levelLoadParams.sceneId = ((InkList)TryCoerce<InkList>(args[0])).FirstOrDefault().Key; 
+			levelLoadParams.levelId = ((InkList)TryCoerce<InkList>(args[0])).FirstOrDefault().Key; 
 			levelLoadParams.titleText = (string)TryCoerce<string>(args[1]); 
 			levelLoadParams.dateText = (string)TryCoerce<string>(args[2]); 
 			levelLoadParams.slotCount = (int)TryCoerce<int>(args[3]);
 			levelLoadParams.startingItems = (InkList) TryCoerce<InkList>(args[4]);
 	
-			GameController.Instance.sceneController.StartScene(levelLoadParams);
+			GameController.Instance.levelsManager.LoadAndStartNewLevel(levelLoadParams);
 			return null;
 		}, false);
 		// story.BindExternalFunction("StartScene", (InkListItem sceneId, string titleText, string dataText, int slotCount, InkList startingItems) => {

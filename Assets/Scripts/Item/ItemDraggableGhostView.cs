@@ -10,7 +10,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     public const float maxWidth = 340;
     public static readonly Vector2 margin = new Vector2(16,8);
     
-    public LevelController levelController => GetComponentInParent<LevelController>(true);
+    public Level Level => GetComponentInParent<Level>(true);
     // public ItemView itemView;
     public SLayout layout => GetComponent<SLayout>();
     public SLayout background;
@@ -37,8 +37,8 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     public ISlot containerSlot { get; private set; }
 
     public IEnumerable<ISlot> GetEnterableSlots() {
-        var itemSlots = GameController.Instance.sceneController.currentLevelController.itemViews.Where(targetItemView => targetItemView.itemModel.state == ItemModel.State.Showing && !targetItemView.itemModel.Equals(itemModel)).Select(x => x.boxView);
-        return itemSlots.Concat(GameController.Instance.sceneController.currentLevelController.slotGroup.slots.Cast<ISlot>());
+        var itemSlots = GameController.Instance.levelsManager.currentLevel.itemViews.Where(targetItemView => targetItemView.itemModel.state == ItemModel.State.Showing && !targetItemView.itemModel.Equals(itemModel)).Select(x => x.boxView);
+        return itemSlots.Concat(GameController.Instance.levelsManager.currentLevel.slotGroup.slots.Cast<ISlot>());
     }
 
     public Vector2 draggableScreenPoint => draggable.lastPointerEventData.position;
@@ -137,7 +137,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
         containerSlot = slot;
         containerSlot.OnSlottableSlottedStart(this);
         if (containerSlot is LevelRequiredItemsSlot levelSlot) {
-            levelController.OnSlotItem(this);
+            Level.OnSlotItem(this);
         } else if (containerSlot is ItemDraggableGhostView slottedItem) {
             if (!GameController.Instance.CombineItems(itemModel.inkListItem, slottedItem.itemModel.inkListItem)) {
                 // ExitSlot();
@@ -159,7 +159,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     void OnDragged(Draggable draggable, PointerEventData e) {
-        draggable.dragTargetPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(draggable.rectTransform, draggable.dragTargetPosition, levelController.itemContainer.GetScreenRect(), layout.rootCanvas.worldCamera);
+        draggable.dragTargetPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(draggable.rectTransform, draggable.dragTargetPosition, Level.itemContainer.GetScreenRect(), layout.rootCanvas.worldCamera);
         if (hoveredSlot != null) {
             draggable.dragTargetPosition = GetDraggableTargetPositionInSlot(hoveredSlot);
         }
@@ -173,7 +173,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if (levelController.draggingItemDraggableGhost != this) return;
+        if (Level.draggingItemDraggableGhost != this) return;
         transform.SetAsLastSibling();
         hovered = true;
         UpdateSelectionState();

@@ -6,7 +6,7 @@ namespace UnityEngine.UI {
 	// Also sets the size of this recttransform
 	[ExecuteAlways]
 	[RequireComponent(typeof(GridLayout))]
-	public class GridLayoutApplier : MonoBehaviour {
+	public class RectTransformGridLayoutApplier : MonoBehaviour {
 		public RectTransform rectTransform => (RectTransform) transform;
 		public GridLayout gridLayout => GetComponent<GridLayout>();
 
