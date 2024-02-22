@@ -53,11 +53,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2d3bbb76de4c45b7d11ba104cebbd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemView: {fileID: 0}
   background: {fileID: 4044401506347270453}
+  itemModel:
+    _inkListItemName: 
+    _inkListItemFullName: 
+    _labelText: 
+    _tooltipText: 
+    _state: 0
   labelLayout: {fileID: 7390963658065451950}
   selectionState: 0
-  itemSpawnLocation: {fileID: 0}
 --- !u!114 &-6866404115651592618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,8 +123,8 @@ MonoBehaviour:
   dragVelocitySmoothTime: 0.1
   maxDragVelocity: Infinity
   dragRotateAxis: {x: 1, y: 1, z: 1}
-  dragVelocityRotationMagnitude: 0.01
-  maxDragVelocityRotation: 30
+  dragVelocityRotationMagnitude: 0
+  maxDragVelocityRotation: 0
   m_PointerStartLocalCursor: {x: 0, y: 0}
   dragTargetPosition: {x: 0, y: 0}
   _dragVelocity: {x: 0, y: 0}

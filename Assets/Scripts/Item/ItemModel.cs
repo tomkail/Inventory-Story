@@ -65,7 +65,7 @@ public class ItemModel {
     public ItemModel(InkListItem inkListItem) {
         this.inkListItem = inkListItem;
         inkListItemName = inkListItem.itemName;
-        inkListItemFullName = inkListItem.itemName;
+        inkListItemFullName = inkListItem.fullName;
         state = State.Searchable;
         RefreshInkVariables();
     }

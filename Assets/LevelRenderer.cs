@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,15 +5,17 @@ using UnityEngine.UI;
 public class LevelRenderer : MonoBehaviour {
     public Level level;
     public RawImage rawImage;
-    public RenderTexture renderTexture;
-    public RenderTextureFormat renderTextureFormat = RenderTextureFormat.DefaultHDR;
+    [Disable] public RenderTexture renderTexture;
+    RenderTextureFormat renderTextureFormat = RenderTextureFormat.DefaultHDR;
     
     [Space]
     public bool postProcessing;
 
     void Update() {
-        rawImage.enabled = Application.isPlaying;
-        if(level == null || rawImage == null) return;
+        if (rawImage == null) return;
+        rawImage.enabled = Application.isPlaying && UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject) == null;
+        if(!rawImage.enabled) return;
+        if(level == null) return;
         UIImposterRenderer.Render(level.layout.rectTransform, new UIImposterOutputParams() {
             containerScalingMode = UIImposterOutputParams.ScalingMode.AspectFill,
             sizeMode = UIImposterOutputParams.SizeMode.OriginalCanvasSize,

@@ -13,8 +13,8 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     ItemDraggableGhostView draggableGhostItemView;
     
     bool hovered;
-    public SelectionState selectionState;
-    public enum SelectionState {
+    public VisualState visualState;
+    public enum VisualState {
         Normal,
         Hovered
     }
@@ -22,7 +22,7 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void Init(ItemView itemView) {
         this.itemView = itemView;
         labelView.textMeshPro.text = itemView.itemModel.labelText;
-        tooltip.tooltipText = itemView.itemModel.tooltipText;
+        tooltip.SetTooltipText(itemView.itemModel.tooltipText);
     }
 
     void Update() {
@@ -30,10 +30,12 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
     
     public void OnPointerEnter(PointerEventData eventData) {
+        hovered = true;
         UpdateSelectionState();
     }
 
     public void OnPointerExit(PointerEventData eventData) {
+        hovered = false;
         UpdateSelectionState();
     }
 
@@ -50,19 +52,19 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     
     // This is fired after OnPointerDown, after the eventData has been set up sufficiently that the drag (and other events like clicks) can be re-directed
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        // draggableGhostItemView = levelController.CreateDraggableGhostItemView(itemView.itemModel);
+        draggableGhostItemView = Level.CreateDraggableGhostItemView(itemView.itemModel);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)draggableGhostItemView.draggable.rectTransform.parent, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
+        draggableGhostItemView.draggable.SetPositionImmediate(localPoint + draggableGhostItemView.draggable.rectTransform.GetLocalToAnchoredPositionOffset() + new Vector2(-draggableGhostItemView.draggable.rectTransform.rect.width * 0.5f, draggableGhostItemView.draggable.rectTransform.rect.height * 0.5f));
+        
+        EventSystemX.RedirectPotentialDrag(eventData, draggableGhostItemView.gameObject);
+    }
+    
+    public void OnBeginDrag(PointerEventData eventData) {
+        // draggableGhostItemView = Level.CreateDraggableGhostItemView(itemView.itemModel);
         // RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)draggableGhostItemView.draggable.rectTransform.parent, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
         // draggableGhostItemView.draggable.SetPositionImmediate(localPoint + draggableGhostItemView.draggable.rectTransform.GetLocalToAnchoredPositionOffset() + new Vector2(-draggableGhostItemView.draggable.rectTransform.rect.width * 0.5f, draggableGhostItemView.draggable.rectTransform.rect.height * 0.5f));
         //
         // EventSystemX.RedirectPotentialDrag(eventData, draggableGhostItemView.gameObject);
-    }
-    
-    public void OnBeginDrag(PointerEventData eventData) {
-        draggableGhostItemView = Level.CreateDraggableGhostItemView(itemView.itemModel);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)draggableGhostItemView.draggable.rectTransform.parent, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
-        draggableGhostItemView.draggable.SetPositionImmediate(localPoint + draggableGhostItemView.draggable.rectTransform.GetLocalToAnchoredPositionOffset() + new Vector2(-draggableGhostItemView.draggable.rectTransform.rect.width * 0.5f, draggableGhostItemView.draggable.rectTransform.rect.height * 0.5f));
-
-        EventSystemX.RedirectPotentialDrag(eventData, draggableGhostItemView.gameObject);
         
         UpdateSelectionState();
     }
@@ -80,15 +82,15 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
     
     void UpdateSelectionState() {
-        if(hovered) selectionState = SelectionState.Hovered;
-        else selectionState = SelectionState.Normal;
+        if(hovered) visualState = VisualState.Hovered;
+        else visualState = VisualState.Normal;
         background.Animate(Styling.FastAnimationTime, Layout);
         void Layout() {
-            if(selectionState == SelectionState.Hovered) {
+            if(visualState == VisualState.Hovered) {
                 background.fillColor = Color.white.WithAlpha(0.15f);
                 background.outlineColor = Color.white;
             }
-            if(selectionState == SelectionState.Normal) {
+            if(visualState == VisualState.Normal) {
                 background.fillColor = Color.white.WithAlpha(0.05f);
                 background.outlineColor = Color.white;
             }

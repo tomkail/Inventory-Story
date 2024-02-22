@@ -34,6 +34,8 @@ public struct UIImposterOutputParams {
 
 // Renders a UI element/hierarchy to a rendertexture. This is handy for when you want to render the same element multiple times without the overhead of duplicating the object.
 // Works by moving the target into a new canvas, setting up the camera to frame the target, and rendering it.
+// Current Issues:
+// Can cause issues when used on the root object in a PrefabStage. 
 public class UIImposterRenderer {
     static Camera camera;
     static Canvas canvas;

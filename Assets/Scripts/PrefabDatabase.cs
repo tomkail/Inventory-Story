@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Ink.Runtime;
 using UnityEngine;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
@@ -7,7 +8,7 @@ using UnityEditor;
 #endif   
 
 public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
-    public Level levelPrefab;
+    public Level fallbackLevelPrefab;
     public ItemView itemViewPrefab;
     public ItemDraggableGhostView itemDraggableGhostViewPrefab;
 
@@ -17,6 +18,14 @@ public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
     [InitializeOnLoadMethod]
     static void Init() {
         Instance.AutoPopulate();
+    }
+
+    public Level TryFindLevel(InkListItem levelId) {
+        if(!levels.TryGetValue(levelId.fullName, out var level) && !levels.TryGetValue(levelId.itemName, out level)) {
+            Debug.LogWarning($"Level with id \"{levelId.fullName}\" not found in database. Returning fallback.");
+            level = fallbackLevelPrefab;
+        }
+        return level;
     }
 
     [ContextMenu("Populate")]

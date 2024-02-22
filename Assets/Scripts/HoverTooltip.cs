@@ -6,7 +6,7 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
     [Disable] public TooltipView tooltip;
     public new Camera camera => GetComponentInParent<Canvas>().rootCanvas.worldCamera;
     public RectTransform rectTransform => (RectTransform)transform;
-    public string tooltipText;
+    public string tooltipText { get; private set; }
     
     public void OnPointerEnter(PointerEventData eventData) {
         TryCreateTooltipIfNotShowing();
@@ -26,6 +26,14 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
             var tooltipPositionParams = TooltipViewManager.Instance.GetPositionParamsFromScreenRect(rectTransform.GetScreenRect(), TooltipViewManager.GetPreferredArrowDirection(rectTransform.GetScreenRect()));
             tooltip.tooltipParams.positionParams = tooltipPositionParams;
             tooltip.RefreshPosition();
+        }
+    }
+
+    public void SetTooltipText(string tooltipText, bool refreshCurrentTooltip = true) {
+        this.tooltipText = tooltipText;
+        if(refreshCurrentTooltip && tooltip != null) {
+            HideTooltip();
+            TryCreateTooltipIfNotShowing();
         }
     }
 

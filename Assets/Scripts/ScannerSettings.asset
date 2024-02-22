@@ -103,9 +103,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   scoreNoiseModifier:
-    strength: 0.4
+    strength: 0
     scoreNoiseSampler:
-      position: {x: 0, y: 0, z: 1035.8597}
+      position: {x: 83, y: 9.496109, z: 0}
       properties:
         frequency: 0.1
         octaves: 1

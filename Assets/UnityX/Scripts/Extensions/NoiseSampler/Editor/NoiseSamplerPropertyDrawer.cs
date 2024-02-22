@@ -13,14 +13,13 @@ public class NoiseSamplerPropertyDrawer : PropertyDrawer {
 
 //		base.OnGUI (position, property, label);
 		var simpleSampler = property.GetBaseProperty<NoiseSampler>();
-
+		position = EditorGUI.IndentedRect(position);
 		EditorGUI.BeginProperty (position, label, property);
 
 		Rect currentRect = position.CopyWithHeight(EditorGUIUtility.singleLineHeight);
 		currentRect.y = EditorGUIX.DrawSerializedProperty(position, property) + EditorGUIUtility.standardVerticalSpacing;
 
 		if(property.isExpanded) {
-//			currentRect = EditorGUI.IndentedRect(currentRect);
 
 //			var realVal = simpleSampler.Sample().value;
 //			realVal = Mathf.InverseLerp(-0.5f, 0.5f, realVal);
@@ -69,7 +68,6 @@ public class NoiseSamplerPropertyDrawer : PropertyDrawer {
 			AnimationCurve curve = new AnimationCurve(keys);
 			EditorGUI.CurveField(currentRect, GUIContent.none, curve, Color.white, new Rect(0f, -0.5f, numKeys, 1));
 
-			currentRect = EditorGUI.IndentedRect(currentRect);
 			var style = _editorSkin.GetStyle("Grad Up Swatch");
 			var tex = style.normal.background;
 			GUI.DrawTexture(RectX.CreateFromCenter(currentRect.center.x, currentRect.yMax + tex.height * 0.5f, tex.width, tex.height), tex);

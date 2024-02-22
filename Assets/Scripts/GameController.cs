@@ -11,8 +11,10 @@ public class GameController : MonoSingleton<GameController> {
     public Story story => StoryController.Instance.story;
 
     public LevelsManager levelsManager;
-    public CameraToRawImage projectorPostProcessor;
+    public ProjectorScreenPostProcessor projectorPostProcessor;
     // public Button confirmButton;
+
+    public GameSettings gameSettings;
 
     protected override void Awake() {
         base.Awake();

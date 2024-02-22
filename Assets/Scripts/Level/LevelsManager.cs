@@ -76,7 +76,7 @@ public class LevelsManager : MonoBehaviour {
 
     public void LoadSavedLevels(List<LevelState> savedLevelStates) {
         foreach (var savedLevelState in savedLevelStates) {
-            var newLevelController = Instantiate(PrefabDatabase.Instance.levelPrefab, levelsContainer.transform);
+            var newLevelController = Instantiate(PrefabDatabase.Instance.fallbackLevelPrefab, levelsContainer.transform);
             newLevelController.Init(savedLevelState);
             
             levels.Add(newLevelController);
@@ -89,7 +89,7 @@ public class LevelsManager : MonoBehaviour {
     }
     
     public void LoadAndStartNewLevel(LevelLoadParams levelLoadParams) {
-        var newLevelController = Instantiate(PrefabDatabase.Instance.levelPrefab, levelsContainer.transform);
+        var newLevelController = Instantiate(PrefabDatabase.Instance.TryFindLevel(levelLoadParams.levelId), levelsContainer.transform);
         newLevelController.Init(levelLoadParams);
         
         levels.Add(newLevelController);

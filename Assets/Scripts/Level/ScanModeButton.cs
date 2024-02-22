@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class ScanModeButton : MonoBehaviour {
+public class ScanModeButton : MonoBehaviour, IPointerClickHandler {
     public enum ScanModeButtonState {
         Hidden,
         Disabled,
@@ -11,9 +11,9 @@ public class ScanModeButton : MonoBehaviour {
         Toggled,
     }
     public SLayout layout => GetComponent<SLayout>();
+    public HoverTooltip hoverTooltip => GetComponent<HoverTooltip>();
     public SLayout fill;
     public SLayout icon;
-    public Button button => GetComponent<Button>();
     public ScanModeButtonState scanModeButtonState;
 
     [SerializeField] ScanModeButtonVisualState hiddenState;
@@ -26,11 +26,12 @@ public class ScanModeButton : MonoBehaviour {
         public Color color;
         public Color backgroundColor;
     }
-    void Awake() {
-        button.onClick.AddListener(OnClick);
-    }
     
     void Update () {
+        if(scanModeButtonState == ScanModeButtonState.Highlighted) hoverTooltip.SetTooltipText("Activate [Space] the scanner");
+        else if(scanModeButtonState == ScanModeButtonState.Toggled) hoverTooltip.SetTooltipText("Deactivate [Space] the scanner");
+        else hoverTooltip.SetTooltipText("");
+        
         var newScanModeState = RefreshButtonState();
         if (scanModeButtonState != newScanModeState) {
             scanModeButtonState = newScanModeState;
@@ -68,10 +69,9 @@ public class ScanModeButton : MonoBehaviour {
         } else {
             return ScanModeButtonState.Disabled;
         }
-        return ScanModeButtonState.Hidden;
     }
 
-    void OnClick() {
+    public void OnPointerClick(PointerEventData eventData) {
         GameController.Instance.levelsManager.currentLevel.OnClickScanModeButton();
     }
 }

@@ -146,11 +146,13 @@ public class Level : MonoBehaviour {
 
     void Update() {
         overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.levelsManager.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
-
+        
         scanModeFlags = ValidateScanModeFlags(scanModeFlags);
+        if (scanModeFlags.HasFlag(ScanModeStateFlags.Usable) && Input.GetKeyDown(KeyCode.Space)) OnClickScanModeButton();
         
         scannerOverlay.gameObject.SetActive(scanModeFlags.HasFlag(ScanModeStateFlags.Active));
         scanner.gameObject.SetActive(scanModeFlags.HasFlag(ScanModeStateFlags.Active));
+        
     }
 
 
@@ -166,7 +168,7 @@ public class Level : MonoBehaviour {
     public ItemSpawnLocation GetSpawnPointLocationForItem(ItemModel item) {
         var spawnLocation = itemSpawnLocationManager.FindForItem(item);
         if (spawnLocation == null) {
-            Debug.LogWarning($"No spawn point in level {levelState.sceneId} for item {item.inkListItemFullName}. Creating temporary.");
+            Debug.LogWarning($"No spawn point in level \"{gameObject.name}\" ({levelState.sceneId}) for item \"{item.inkListItemFullName}\". Creating temporary.");
             spawnLocation = itemSpawnLocationManager.CreateSpawnLocation(item.inkListItemFullName);    
             //
             // spawnLocation.rectTransform.anchoredPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(spawnLocation.rectTransform, spawnLocation.rectTransform.anchoredPosition, spawnLocationsRectTransform.GetScreenRect(), layout.rootCanvas.worldCamera);
@@ -205,6 +207,7 @@ public class Level : MonoBehaviour {
 
     void AddItemToLevel(InkListItem inkListItem) {
         var item = TryGetOrCreateItemModel(inkListItem);
+        if (GameController.Instance.gameSettings.immediatelyScanAllItems) item.state = ItemModel.State.Showing;
         CreateItemView(item);
     }
 
