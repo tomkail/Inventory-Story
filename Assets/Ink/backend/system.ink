@@ -192,7 +192,10 @@ VAR inside = (SceneTop)
     } 
     ->-> 
   
-    
+=== function isZoomable(item) 
+    ~ temp toGenerate = itemGeneratesItems(item)
+    ~ temp childItems = whatIs(item, ItemHoldsItem)
+    ~ return BOOL(toGenerate || childItems)
     
 === play
     {previousSceneID && currentSceneID > previousSceneID: 
