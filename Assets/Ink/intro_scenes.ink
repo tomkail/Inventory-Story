@@ -5,7 +5,7 @@ VAR ReplayableScenes = (OpeningSequence, Pinboard)
 === opening_sequence
     LIST OpeningItems = Agent, Briefcase, KeyOnWristChain
     { stopping: 
-    -   -> scene(Device, () , "Nevada, 1958. The Hopburg-Steiner was constructed in a military research facility using a technology of unknown origin.") 
+    -   -> scene(Device, () , "Nevada, 1958. The Hopburg-Steiner device was constructed in a military research facility using a technology of unknown origin.") 
     -   -> scene(SealedMetalCylinder, SealedMetalCylinder , "Despite being only palm-sized, be assured this is a device of extreme consequence. Mildly radioactive, it is stored inside a beryllium container.") 
     -   -> scene(Agent, (Agent, Briefcase, SealedMetalCylinder) , "In April 1962, an unknown foreign agent exited the lab in Area 51 with the device in a briefcase.")
     
