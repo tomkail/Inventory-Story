@@ -187,7 +187,6 @@ public class StoryController : MonoSingleton<StoryController> {
 		return null;
 	}
 	
-	
 
 	// void MakeChoice(Choice choice) {
 	// 	story.ChooseChoiceIndex(choice.index);

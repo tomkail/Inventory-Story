@@ -8,12 +8,12 @@ public class ItemViewEditor : BaseEditor<ItemDraggableGhostView> {
 
 		EditorGUI.BeginDisabledGroup(true);
 		EditorGUILayout.Space();
-		EditorGUILayout.ObjectField("Hovered slottable", data.hoveredSlottable as Object, typeof(ItemDraggableGhostView));
+		EditorGUILayout.ObjectField("Hovered slottable", data.hoveredSlottable as Object, typeof(ItemDraggableGhostView), true);
 		
 		EditorGUILayout.Space();
 		
-		EditorGUILayout.ObjectField("Hovered slot", data.hoveredSlot as Object, typeof(ItemDraggableGhostView));
-		EditorGUILayout.ObjectField("Container slot", data.containerSlot as Object, typeof(ItemDraggableGhostView));
+		EditorGUILayout.ObjectField("Hovered slot", data.hoveredSlot as Object, typeof(ItemDraggableGhostView), true);
+		EditorGUILayout.ObjectField("Container slot", data.containerSlot as Object, typeof(ItemDraggableGhostView), true);
 		EditorGUI.EndDisabledGroup();
 
 		if (GUILayout.Button("Layout")) {
