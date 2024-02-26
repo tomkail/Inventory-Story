@@ -3,18 +3,19 @@ using UnityEngine;
 
 [RequireComponent(typeof(SLayout))]
 public class ItemView : MonoBehaviour {
-    public Level Level => GetComponentInParent<Level>();
+    public Level level => GetComponentInParent<Level>();
     public SLayout layout => GetComponent<SLayout>();
     
-    public ItemModel itemModel;
-    public ItemSpawnLocation itemSpawnLocation;
-    public ItemHintView hintView;
-    public ItemBoxView boxView;
+    [SerializeReference] public ItemModel itemModel;
+    [SerializeField, Disable] ItemSpawnLocation itemSpawnLocation;
+    [SerializeField, Disable] LevelSubPanel itemSubPanel;
+    public ItemBoxView boxView => GetComponentInChildren<ItemBoxView>(true);
     
-    public void Init(ItemModel itemModel, ItemSpawnLocation itemSpawnLocation) {
+    public void Init(ItemModel itemModel, ItemSpawnLocation itemSpawnLocation, LevelSubPanel levelSubPanel) {
         this.itemModel = itemModel;
         SubscribeToItem();
         this.itemSpawnLocation = itemSpawnLocation;
+        this.itemSubPanel = levelSubPanel;
         
         boxView.Init(this);
         
@@ -55,16 +56,22 @@ public class ItemView : MonoBehaviour {
     void Layout() {
         if (itemModel.state == ItemModel.State.Hidden) {
             boxView.gameObject.SetActive(false);
-            hintView.gameObject.SetActive(false);
         } else if (itemModel.state == ItemModel.State.Searchable) {
             boxView.gameObject.SetActive(false);
-            // hintView.gameObject.SetActive(true);
         } else if (itemModel.state == ItemModel.State.Showing) {
             boxView.gameObject.SetActive(true);
-            hintView.gameObject.SetActive(false);
         }
     }
     public void SetState(ItemModel.State state) {
         Layout();
+    }
+
+    public void StartZoomingOnContainer() {
+        level.panelManager.ShowPanel(itemSubPanel);
+    }
+    public void EndZoomingOnContainer() {
+        if (itemSubPanel.showProgress < 0.9f && level.panelManager.currentPanel == itemSubPanel) {
+            level.panelManager.HidePanel(itemSubPanel);
+        }
     }
 }

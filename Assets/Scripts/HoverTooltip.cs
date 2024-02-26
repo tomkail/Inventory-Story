@@ -29,9 +29,10 @@ public class HoverTooltip : UIBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
     }
 
-    public void SetTooltipText(string tooltipText, bool refreshCurrentTooltip = true) {
+    public void SetTooltipText(string tooltipText, bool refreshCurrentTooltipIfChanged = true) {
+        if (this.tooltipText == tooltipText) return;
         this.tooltipText = tooltipText;
-        if(refreshCurrentTooltip && tooltip != null) {
+        if(refreshCurrentTooltipIfChanged && tooltip != null) {
             HideTooltip();
             TryCreateTooltipIfNotShowing();
         }

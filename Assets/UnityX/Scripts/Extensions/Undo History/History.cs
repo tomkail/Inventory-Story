@@ -5,10 +5,10 @@ using System.Collections.Generic;
 /// History collection typically used as an undo stack. Uses an index pointer to track the current item, and removes items after that point when a new item is added.
 /// </summary>
 [System.Serializable]
-public class History<T> where T : class {
+public class History<T> {
 	public T currentItem {
 		get {
-			if(history == null || history.Count == 0 || historyIndex < 0 || historyIndex >= history.Count) return null;
+			if(history == null || history.Count == 0 || historyIndex < 0 || historyIndex >= history.Count) return default;
 			return history[historyIndex];
 		}
 	}
@@ -54,10 +54,7 @@ public class History<T> where T : class {
 	/// </summary>
 	/// <param name="state">State.</param>
 	public virtual void AddToHistory (T state) {
-		if(history.Count > 0 && history.Count - (historyIndex + 1) > 0) {
-			history.RemoveRange(historyIndex + 1, history.Count - (historyIndex + 1));
-		}
-		
+		ClearHistoryAfterHistoryIndex();
 		if(history.Count >= maxHistoryItems) {
 			history.RemoveAt (0);
 			_historyIndex--;
@@ -66,6 +63,15 @@ public class History<T> where T : class {
 		history.Add (state);
 		_historyIndex++;
 		if(OnChangeHistory != null) OnChangeHistory();
+	}
+
+	/// <summary>
+	/// Clears all redoable history; that is, all history after the current index.
+	/// </summary>
+	void ClearHistoryAfterHistoryIndex() {
+		if(history.Count > 0 && history.Count - (historyIndex + 1) > 0) {
+			history.RemoveRange(historyIndex + 1, history.Count - (historyIndex + 1));
+		}
 	}
 
 	/// <summary>
@@ -104,7 +110,7 @@ public class History<T> where T : class {
 	public virtual int GetMostRecentIndexOfState (T state) {
 		if(!canStepBack) return -1;
 		for(int i = historyIndex; i >= 0; i--) {
-			if(history[i] == state) {
+			if(history[i].Equals(state)) {
 				return i;
 			}
 		}

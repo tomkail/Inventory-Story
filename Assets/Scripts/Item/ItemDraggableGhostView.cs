@@ -10,7 +10,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     public const float maxWidth = 340;
     public static readonly Vector2 margin = new Vector2(16,8);
     
-    public Level Level => GetComponentInParent<Level>(true);
+    public Level level => GetComponentInParent<Level>(true);
     // public ItemView itemView;
     public SLayout layout => GetComponent<SLayout>();
     public SLayout background;
@@ -137,7 +137,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
         containerSlot = slot;
         containerSlot.OnSlottableSlottedStart(this);
         if (containerSlot is LevelRequiredItemsSlot levelSlot) {
-            Level.OnSlotItem(this);
+            level.OnSlotItem(this);
         } else if (containerSlot is ItemDraggableGhostView slottedItem) {
             if (!GameController.Instance.CombineItems(itemModel.inkListItem, slottedItem.itemModel.inkListItem)) {
                 // ExitSlot();
@@ -159,7 +159,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     void OnDragged(Draggable draggable, PointerEventData e) {
-        draggable.dragTargetPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(draggable.rectTransform, draggable.dragTargetPosition, Level.itemContainer.GetScreenRect(), layout.rootCanvas.worldCamera);
+        draggable.dragTargetPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(draggable.rectTransform, draggable.dragTargetPosition, level.layout.GetScreenRect(), layout.rootCanvas.worldCamera);
         if (hoveredSlot != null) {
             draggable.dragTargetPosition = GetDraggableTargetPositionInSlot(hoveredSlot);
         }
@@ -173,7 +173,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
-        if (Level.draggingItemDraggableGhost != this) return;
+        if (level.draggingItemDraggableGhost != this) return;
         transform.SetAsLastSibling();
         hovered = true;
         UpdateSelectionState();

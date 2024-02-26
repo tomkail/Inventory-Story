@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Ink.Runtime;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 [Flags]
 public enum ScanModeStateFlags {
@@ -23,8 +18,9 @@ public class Level : MonoBehaviour {
     public Story story => GameController.Instance.story;
     public GraphicRaycaster graphicRaycaster => GetComponent<GraphicRaycaster>();
     public SLayout layout => GetComponent<SLayout>();
-    public LevelViewport viewport => GetComponentInChildren<LevelViewport>(true);
-    public RectTransform itemContainer => transform.Find("Item Container") as RectTransform;
+    
+    public LevelPanelManager panelManager => GetComponentInChildren<LevelPanelManager>();
+    
     public SLayout overlay => transform.Find("Overlay").GetComponent<SLayout>();
     public SLayout scannerOverlay => transform.Find("Scanner Overlay").GetComponent<SLayout>();
     public Scanner scanner => GetComponentInChildren<Scanner>(true);
@@ -33,8 +29,6 @@ public class Level : MonoBehaviour {
     public ItemDraggableGhostView draggingItemDraggableGhost => ItemDraggableGhostView.currentlyDraggingItem;
     
     public LevelRequiredItemsSlotGroup slotGroup;
-    
-    public ItemSpawnLocationManager itemSpawnLocationManager => GetComponentInChildren<ItemSpawnLocationManager>();
     
     public InkListChangeHandler levelItemsObserver;
     
@@ -61,6 +55,23 @@ public class Level : MonoBehaviour {
     public bool isCurrentLevel => GameController.Instance.levelsManager.currentLevel == this;
     public bool isVisibleLevel => GameController.Instance.levelsManager.visibleLevel == this;
 
+    string prefabName;
+    void Awake() {
+        prefabName = gameObject.name.BeforeLast("(Clone)");
+    }
+
+    void OnValidate() {
+        var itemInfo = panelManager.panels.SelectMany(x => x.itemSpawnLocationManager.itemSpawnLocations)
+            .GroupBy(x => x.name)
+            .Where(group => group.Count() > 1)
+            .SelectMany(group => group.Select(item => new { item.name, HierarchyPath = item.transform.HierarchyPath() }))
+            .ToList();
+        // Finding and logging unique GameObject names for items that appear more than once.
+        foreach (var info in itemInfo.GroupBy(x => x.name)) {
+            Debug.Log($"The item '{info.Key}' is used more than once in GameObjects:\n{string.Join("\n", info.Select(x => x.HierarchyPath).Distinct())}.");
+        }
+    }
+
     public void OnClickScanModeButton() {
         var newScanModeFlags = scanModeFlags ^= ScanModeStateFlags.Active;
         scanModeFlags = ValidateScanModeFlags(newScanModeFlags);
@@ -84,15 +95,13 @@ public class Level : MonoBehaviour {
     
     // Creates a new level from level load params (probably passed from ink)
     public void Init(LevelLoadParams levelLoadParams) {
-        Init();
-        
-        levelState = new LevelState() {
+        var newLevelState = new LevelState() {
             uuid = Guid.NewGuid().ToString(),
-            sceneId = levelLoadParams.levelId.fullName,
+            sceneId = levelLoadParams.levelId.itemName,
             titleText = levelLoadParams.titleText,
             dateText = levelLoadParams.dateText
         };
-        OnInit?.Invoke();
+        Init(newLevelState);
     }
 
     // Creates a new level from level state (probably passed from save)
@@ -100,9 +109,11 @@ public class Level : MonoBehaviour {
         Init();
         
         this.levelState = levelState;
+        gameObject.name = $"Level: {levelState.sceneId} ({prefabName})";
         foreach (var itemModel in levelState.itemStates) {
             CreateItemView(itemModel);
         }
+        panelManager.Init();
         OnInit?.Invoke();
     }
 
@@ -146,6 +157,11 @@ public class Level : MonoBehaviour {
 
     void Update() {
         overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.levelsManager.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            foreach (var itemView in itemViews.Where(itemView => itemView.itemModel.state == ItemModel.State.Searchable)) 
+                itemView.itemModel.state = ItemModel.State.Showing;
+        }
         
         scanModeFlags = ValidateScanModeFlags(scanModeFlags);
         if (scanModeFlags.HasFlag(ScanModeStateFlags.Usable) && Input.GetKeyDown(KeyCode.Space)) OnClickScanModeButton();
@@ -166,15 +182,26 @@ public class Level : MonoBehaviour {
     
 
     public ItemSpawnLocation GetSpawnPointLocationForItem(ItemModel item) {
-        var spawnLocation = itemSpawnLocationManager.FindForItem(item);
+        var itemSpawnLocationManagers = panelManager.panels.Select(x => x.itemSpawnLocationManager);
+        ItemSpawnLocation spawnLocation = null;
+        foreach (var manager in itemSpawnLocationManagers) {
+            spawnLocation = manager.FindForItem(item);
+            if (spawnLocation != null) break;
+        }
         if (spawnLocation == null) {
-            Debug.LogWarning($"No spawn point in level \"{gameObject.name}\" ({levelState.sceneId}) for item \"{item.inkListItemFullName}\". Creating temporary.");
-            spawnLocation = itemSpawnLocationManager.CreateSpawnLocation(item.inkListItemFullName);    
-            //
-            // spawnLocation.rectTransform.anchoredPosition = RectTransformX.GetClampedAnchoredPositionInsideScreenRect(spawnLocation.rectTransform, spawnLocation.rectTransform.anchoredPosition, spawnLocationsRectTransform.GetScreenRect(), layout.rootCanvas.worldCamera);
+            Debug.LogWarning($"No spawn point in level \"{gameObject.name}\" ({levelState.sceneId}) for item \"{item.inkListItemFullName}\". Creating temporary in top level panel.");
+            spawnLocation = panelManager.rootPanel.itemSpawnLocationManager.CreateSpawnLocation(item.inkListItemFullName);
         }
 
         return spawnLocation;
+    }
+    public LevelSubPanel GetSubPanelOwnedByItem(ItemModel item) {
+        var panel = panelManager.FindSubPanelForItem(item);
+        if (panel == null) {
+            Debug.LogWarning($"No panel in level \"{gameObject.name}\" ({levelState.sceneId}) for item \"{item.inkListItemFullName}\". Creating temporary.");
+            panel = panelManager.CreateSubPanel(item.inkListItemFullName);
+        }
+        return panel;
     }
 
     public void OnChangeLevelItems(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
@@ -218,10 +245,10 @@ public class Level : MonoBehaviour {
     }
 
     void CreateItemView(ItemModel itemModel) {
-        var itemView = Instantiate(PrefabDatabase.Instance.itemViewPrefab, itemContainer);
+        var itemView = Instantiate(PrefabDatabase.Instance.itemViewPrefab, panelManager.currentPanel.itemContainer);
         itemViews.Add(itemView);
         var itemSpawnLocation = GetSpawnPointLocationForItem(itemModel);
-        itemView.Init(itemModel, itemSpawnLocation);
+        itemView.Init(itemModel, itemSpawnLocation, GetSubPanelOwnedByItem(itemModel));
     }
 
     void DestroyItemView(ItemModel itemModel) {
@@ -231,8 +258,12 @@ public class Level : MonoBehaviour {
         });
     }
     
+    public ItemView FindItemWithModel(ItemModel itemModel) {
+        return itemViews.FirstOrDefault(x => x.itemModel == itemModel);
+    }
+    
     public ItemDraggableGhostView CreateDraggableGhostItemView(ItemModel itemModel) {
-        var item = Instantiate(PrefabDatabase.Instance.itemDraggableGhostViewPrefab, itemContainer);
+        var item = Instantiate(PrefabDatabase.Instance.itemDraggableGhostViewPrefab, transform);
         item.Init(itemModel);
         return item;
     }
@@ -274,6 +305,10 @@ public class Level : MonoBehaviour {
                     
                     Destroy(slottedGhostItemView.gameObject);
                 }
+
+                var newInkList = (InkList) story.variablesState["currentItems"];
+                newInkList.Clear();
+                story.variablesState["currentItems"] = newInkList;
             }
         }
     }
@@ -284,16 +319,6 @@ public class Level : MonoBehaviour {
         Debug.Log(backgroundInstruction.assetPath);
         // background.sprite = Resources.Load<Sprite>(backgroundInstruction.assetPath);
     }
-    
-    // void CreateItemContainer() {
-    //     itemContainer = new GameObject("Items").AddComponent<RectTransform>();
-    //     itemContainer.gameObject.AddComponent<SLayout>();
-    //     itemContainer.SetParent(transform, false);
-    //     itemContainer.SetAsLastSibling();
-    //     itemContainer.anchorMin = new Vector2(0, 0);
-    //     itemContainer.anchorMax = new Vector2(1,1);
-    //     itemContainer.sizeDelta = new Vector2(0,0);
-    // }
     
     public void Clear() {
         foreach(var itemView in itemViews) Destroy(itemView.gameObject);

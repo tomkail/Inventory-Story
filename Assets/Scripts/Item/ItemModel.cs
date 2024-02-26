@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Ink.Runtime;
 using UnityEngine;
 
@@ -46,6 +47,17 @@ public class ItemModel {
     }
     public Action<string> onChangeTooltipText;
     
+    [SerializeField, Disable] bool _isZoomable;
+    public bool isZoomable {
+        get => _isZoomable;
+        set {
+            if(_isZoomable == value) return;
+            _isZoomable = value;
+            onChangeIsZoomable?.Invoke(value);
+        }
+    }
+    public Action<bool> onChangeIsZoomable;
+    
     [SerializeField, Disable] State _state;
     public State state {
         get => _state;
@@ -71,7 +83,36 @@ public class ItemModel {
     }
     
     public void RefreshInkVariables() {
-        labelText = GameController.Instance.GetItemName(inkListItem);
-        tooltipText = GameController.Instance.GetItemTooltip(inkListItem);
+        labelText = GetItemName(GameController.Instance.story, inkListItem);
+        tooltipText = GetItemTooltip(GameController.Instance.story, inkListItem);
+        isZoomable = GetItemIsZoomable(GameController.Instance.story, inkListItem);
+    }
+
+    static string GetItemName(Story story, InkListItem inkListItem) {
+        var str = story.RunInkFunction<string>("getItemName", InkList.FromString(inkListItem.fullName, story));
+        if (str.ToLower() != str) {
+            // No item name exists for this item
+            // Debug.LogWarning("getItemName didn't return improved name for " + inkListItem.itemName);
+            StringBuilder sb = new StringBuilder();
+            sb.Append(char.ToUpper(str[0])); // Ensure the first character is uppercase.
+            for (int i = 1; i < str.Length; i++) {
+                if (char.IsUpper(str[i])) {
+                    sb.Append(' ');
+                    sb.Append(char.ToLower(str[i]));
+                } else {
+                    sb.Append(str[i]);
+                }
+            }
+            return sb.ToString();
+        }
+        return InkStylingUtility.ProcessText(str);
+    }
+    static string GetItemTooltip(Story story, InkListItem inkListItem) {
+        var str = story.RunInkFunction<string>("getItemTooltip", InkList.FromString(inkListItem.fullName, story));
+        return InkStylingUtility.ProcessText(str);
+    }
+
+    static bool GetItemIsZoomable(Story story, InkListItem inkListItem) {
+        return story.RunInkFunction<bool>("isZoomable", InkList.FromString(inkListItem.fullName, story));
     }
 }

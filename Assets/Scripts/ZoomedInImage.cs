@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,12 +6,21 @@ using UnityEngine.UI;
 public class ZoomedInImage : MonoBehaviour {
     RawImage rawImage => GetComponent<RawImage>();
     public Graphic target;
+    // Optional
+    [SerializeField, Disable] RectTransform _targetRect;
+    public RectTransform targetRect {
+        get {
+            if (_targetRect == null) return rawImage.rectTransform;
+            return _targetRect;
+        }
+        set => _targetRect = value;
+    }
     public float zoom = 1;
     
     void LateUpdate() {
         if(target == null) return;
         rawImage.texture = target.mainTexture;
-        var rect = TransformRectToWithoutRotation(rawImage.rectTransform, rawImage.rectTransform.rect, target.rectTransform);
+        var rect = TransformRectToWithoutRotation(targetRect, targetRect.rect, target.rectTransform);
         rect = RectX.MinMaxRect(target.rectTransform.rect.GetNormalizedPositionInsideRect(rect.min), target.rectTransform.rect.GetNormalizedPositionInsideRect(rect.max));
         rect = RectX.CreateFromCenter(rect.center, rect.size * 1f/zoom);
         rawImage.uvRect = rect;

@@ -140,32 +140,4 @@ public class GameController : MonoSingleton<GameController> {
         }
         return false;
     }
-
-    public string GetItemName(InkListItem inkListItem) {
-        var str = story.RunInkFunction<string>("getItemName", InkListItemToInkList(inkListItem));
-        if (str.ToLower() != str) {
-            // No item name exists for this item
-            // Debug.LogWarning("getItemName didn't return improved name for " + inkListItem.itemName);
-            StringBuilder sb = new StringBuilder();
-            sb.Append(char.ToUpper(str[0])); // Ensure the first character is uppercase.
-            for (int i = 1; i < str.Length; i++) {
-                if (char.IsUpper(str[i])) {
-                    sb.Append(' ');
-                    sb.Append(char.ToLower(str[i]));
-                } else {
-                    sb.Append(str[i]);
-                }
-            }
-            return sb.ToString();
-        }
-        return InkStylingUtility.ProcessText(str);
-    }
-    public string GetItemTooltip(InkListItem inkListItem) {
-        var str = story.RunInkFunction<string>("getItemTooltip", InkListItemToInkList(inkListItem));
-        return InkStylingUtility.ProcessText(str);
-    }
-    
-    public InkList InkListItemToInkList(InkListItem inkListItem) {
-        return InkList.FromString(inkListItem.fullName, story);
-    }
 }

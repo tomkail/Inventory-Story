@@ -31,7 +31,8 @@ public class Scanner : MonoBehaviour {
     }
 
     void Update() {
-        zoomedInImage.target = level.viewport.background;
+        if(level.panelManager.currentPanel != null)
+            zoomedInImage.target = level.panelManager.currentPanel.background;
         
         if(!scanning) {
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)rectTransform.parent, level.layout.GetScreenRect().ClosestPoint(Input.mousePosition), rectTransform.GetCanvasEventCamera(), out Vector2 localPoint);
