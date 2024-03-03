@@ -43,13 +43,13 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         UpdateSelectionState();
         tooltip.HideTooltip();
 
-        if (eventData.button == PointerEventData.InputButton.Right && itemView.itemModel.isZoomable) {
+        if (eventData.button == PointerEventData.InputButton.Left && itemView.itemModel.isZoomable) {
             itemView.StartZoomingOnContainer();
         }
     }
 
     public void OnPointerUp(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Right && itemView.itemModel.isZoomable) {
+        if (eventData.button == PointerEventData.InputButton.Left && itemView.itemModel.isZoomable) {
             itemView.EndZoomingOnContainer();
         }
     }
@@ -62,7 +62,7 @@ public class ItemBoxView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     
     // This is fired after OnPointerDown, after the eventData has been set up sufficiently that the drag (and other events like clicks) can be re-directed
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        if(eventData.button == PointerEventData.InputButton.Left) {
+        if(eventData.button == PointerEventData.InputButton.Left && !itemView.itemModel.isZoomable) {
             draggableGhostItemView = level.CreateDraggableGhostItemView(itemView.itemModel);
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)draggableGhostItemView.draggable.rectTransform.parent, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
             draggableGhostItemView.draggable.SetPositionImmediate(localPoint + draggableGhostItemView.draggable.rectTransform.GetLocalToAnchoredPositionOffset() + new Vector2(-draggableGhostItemView.draggable.rectTransform.rect.width * 0.5f, draggableGhostItemView.draggable.rectTransform.rect.height * 0.5f));

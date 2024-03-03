@@ -5,17 +5,17 @@ using UnityEngine;
 public class ItemView : MonoBehaviour {
     public Level level => GetComponentInParent<Level>();
     public SLayout layout => GetComponent<SLayout>();
+    public RectTransform rectTransform => GetComponent<RectTransform>();
     
     [SerializeReference] public ItemModel itemModel;
     [SerializeField, Disable] ItemSpawnLocation itemSpawnLocation;
     [SerializeField, Disable] LevelSubPanel itemSubPanel;
     public ItemBoxView boxView => GetComponentInChildren<ItemBoxView>(true);
     
-    public void Init(ItemModel itemModel, ItemSpawnLocation itemSpawnLocation, LevelSubPanel levelSubPanel) {
+    public void Init(ItemModel itemModel, ItemSpawnLocation itemSpawnLocation) {
         this.itemModel = itemModel;
         SubscribeToItem();
         this.itemSpawnLocation = itemSpawnLocation;
-        this.itemSubPanel = levelSubPanel;
         
         boxView.Init(this);
         
@@ -29,6 +29,13 @@ public class ItemView : MonoBehaviour {
 
         SetState(itemModel.state);
         Layout();
+        
+        if(itemModel.isZoomable)
+            SetSubPanel(level.GetSubPanelOwnedByItem(itemModel, itemSpawnLocation));
+    }
+
+    public void SetSubPanel(LevelSubPanel levelSubPanel) {
+        this.itemSubPanel = levelSubPanel;
     }
 
     void OnDestroy() {
@@ -37,10 +44,22 @@ public class ItemView : MonoBehaviour {
 
     void SubscribeToItem() {
         itemModel.onChangeState += SetState;
+        itemModel.onChangeIsZoomable += OnChangeIsZoomable;
+    }
+
+    void OnChangeIsZoomable(bool isZoomable) {
+        if (itemModel.isZoomable) {
+            SetSubPanel(level.GetSubPanelOwnedByItem(itemModel, itemSpawnLocation));
+        } else {
+            Debug.LogWarning("ItemView: OnChangeIsZoomable: Hiding sub panel. This hasn't been tested.");
+            SetSubPanel(null);
+        }
     }
 
     void UnsubscribeFromItem() {
+        if (itemModel == null) return;
         itemModel.onChangeState -= SetState;
+        itemModel.onChangeIsZoomable -= OnChangeIsZoomable;
     }
 
 

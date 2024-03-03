@@ -37,7 +37,7 @@ public class ItemDraggableGhostView : MonoBehaviour, IPointerEnterHandler, IPoin
     public ISlot containerSlot { get; private set; }
 
     public IEnumerable<ISlot> GetEnterableSlots() {
-        var itemSlots = GameController.Instance.levelsManager.currentLevel.itemViews.Where(targetItemView => targetItemView.itemModel.state == ItemModel.State.Showing && !targetItemView.itemModel.Equals(itemModel)).Select(x => x.boxView);
+        var itemSlots = GameController.Instance.levelsManager.currentLevel.itemViews.Where(targetItemView => targetItemView.itemModel.state == ItemModel.State.Showing && !targetItemView.itemModel.Equals(itemModel) && !targetItemView.itemModel.isZoomable).Select(x => x.boxView);
         return itemSlots.Concat(GameController.Instance.levelsManager.currentLevel.slotGroup.slots.Cast<ISlot>());
     }
 

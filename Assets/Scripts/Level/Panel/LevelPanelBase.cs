@@ -7,7 +7,7 @@ public abstract class LevelPanelBase : MonoBehaviour {
     public RectTransform rectTransform => GetComponent<RectTransform>();
     public Level level => GetComponentInParent<Level>();
     
-    public ItemSpawnLocationManager itemSpawnLocationManager => GetComponentInChildren<ItemSpawnLocationManager>();
+    public ItemSpawnLocationManager itemSpawnLocationManager => GetComponentInChildren<ItemSpawnLocationManager>(true);
     
     public Image background;
 
