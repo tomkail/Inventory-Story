@@ -197,6 +197,11 @@ VAR inside = (SceneTop)
     ~ temp childItems = whatIs(item, ItemHoldsItem)
     ~ return BOOL(toGenerate || childItems)
     
+=== function itemContains(item) 
+    ~ temp childItems = whatIs(item, ItemHoldsItem)
+    ~ return childItems
+    
+    
 === play
     {previousSceneID && currentSceneID > previousSceneID: 
         // && LoopCount > 1:
