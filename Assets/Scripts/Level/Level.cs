@@ -87,7 +87,7 @@ public class Level : MonoBehaviour {
 
     // This is called for new levels regardless of how they're created (this could probably just be run on Awake)
     void Init() {
-        levelItemsObserver = new InkListChangeHandler("levelItems");
+        levelItemsObserver = new InkListChangeHandler("levelInteractables");
         levelItemsObserver.OnChange += OnChangeLevelItems;
         
         graphicRaycaster.enabled = false;
@@ -151,16 +151,32 @@ public class Level : MonoBehaviour {
     public void UnsetAsVisibleLevel() {
         OnUnsetVisibleLevel?.Invoke();
     }
-    
-    
-    
 
+
+
+    LevelSubPanel lastHoveredSubPanel;
     void Update() {
         overlay.groupAlpha = Mathf.Lerp(0.0f, 0.6f, Mathf.InverseLerp(0, layout.rectTransform.rect.size.y, Mathf.Abs(GameController.Instance.levelsManager.swipeView.GetPageVectorToViewportPivot(layout.rectTransform).y)));
 
         if (Input.GetKeyDown(KeyCode.R)) {
             foreach (var itemView in itemViews.Where(itemView => itemView.itemModel.state == ItemModel.State.Searchable)) 
                 itemView.itemModel.state = ItemModel.State.Showing;
+        }
+        
+        if(draggingItemDraggableGhost != null) {
+            var hoveredSubPanel = panelManager.GetFirstExpandableSubPanelAtScreenPosition(Input.mousePosition);
+            if (hoveredSubPanel != lastHoveredSubPanel) {
+                if (lastHoveredSubPanel != null) {
+                    panelManager.HidePanel(lastHoveredSubPanel);
+                }
+                if (hoveredSubPanel != null) {
+                    panelManager.ShowPanel(hoveredSubPanel);
+                }
+
+                lastHoveredSubPanel = hoveredSubPanel;
+            }
+        } else {
+            lastHoveredSubPanel = null;
         }
         
         scanModeFlags = ValidateScanModeFlags(scanModeFlags);
@@ -182,7 +198,7 @@ public class Level : MonoBehaviour {
     
 
     public ItemSpawnLocation GetSpawnPointLocationForItem(ItemModel item) {
-        var itemSpawnLocationManagers = panelManager.panels.Select(x => x.itemSpawnLocationManager);
+        var itemSpawnLocationManagers = panelManager.panels.Select(x => x.itemSpawnLocationManager).Where(itemSpawnLocationManager => itemSpawnLocationManager != null);
         ItemSpawnLocation spawnLocation = null;
         foreach (var manager in itemSpawnLocationManagers) {
             spawnLocation = manager.FindForItem(item);
@@ -195,14 +211,15 @@ public class Level : MonoBehaviour {
 
         return spawnLocation;
     }
-    public LevelSubPanel GetSubPanelOwnedByItem(ItemModel item) {
+    public LevelSubPanel GetSubPanelOwnedByItem(ItemModel item, ItemSpawnLocation itemSpawnLocation) {
         var panel = panelManager.FindSubPanelForItem(item);
         if (panel == null) {
             Debug.LogWarning($"No panel in level \"{gameObject.name}\" ({levelState.sceneId}) for item \"{item.inkListItemFullName}\". Creating temporary.");
-            panel = panelManager.CreateSubPanel(item.inkListItemFullName);
+            panel = panelManager.CreateTemporarySubPanel(item.inkListItemFullName, itemSpawnLocation);
         }
         return panel;
     }
+    
 
     public void OnChangeLevelItems(IReadOnlyList<InkListItem> currentlistitems, IReadOnlyList<InkListItem> itemsadded, IReadOnlyList<InkListItem> itemsremoved) {
         foreach(var item in itemsremoved) {
@@ -248,7 +265,7 @@ public class Level : MonoBehaviour {
         var itemView = Instantiate(PrefabDatabase.Instance.itemViewPrefab, panelManager.currentPanel.itemContainer);
         itemViews.Add(itemView);
         var itemSpawnLocation = GetSpawnPointLocationForItem(itemModel);
-        itemView.Init(itemModel, itemSpawnLocation, GetSubPanelOwnedByItem(itemModel));
+        itemView.Init(itemModel, itemSpawnLocation);
     }
 
     void DestroyItemView(ItemModel itemModel) {

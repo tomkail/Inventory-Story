@@ -1171,7 +1171,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 764.0001, y: -38.592224}
+  m_AnchoredPosition: {x: 764.0001, y: -38.52246}
   m_SizeDelta: {x: 392, y: 230}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &622550494
@@ -1690,8 +1690,11 @@ MonoBehaviour:
   fallbackLevelPrefab: {fileID: 1898717753558037997, guid: e10e137c6512243709ffc841eee502de, type: 3}
   itemViewPrefab: {fileID: 4156104198230702190, guid: c520682bad6e04ce6a40f91621f51b03, type: 3}
   itemDraggableGhostViewPrefab: {fileID: 9046512949398434011, guid: ccfbc364370a84e4ea48165eced53c40, type: 3}
+  levelSubPanel: {fileID: 9158900777572934716, guid: 446babcd5681349e9ad5c5458e121dcb, type: 3}
   levels:
     m_Data:
+    - key: ContainerOpeningBeatScene
+      value: {fileID: 7974946117224240363, guid: 0c148cb6c9ce94a6c93784d939a5cbee, type: 3}
     - key: OpeningSequence
       value: {fileID: 7974946117224240363, guid: deb9eb1d8eec145029e269c26a82d339, type: 3}
   musicTracks:
@@ -1932,7 +1935,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip: {fileID: 0}
-  tooltipText: 
 --- !u!1 &794302565
 GameObject:
   m_ObjectHideFlags: 0

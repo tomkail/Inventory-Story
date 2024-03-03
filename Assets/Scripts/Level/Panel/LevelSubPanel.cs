@@ -12,13 +12,23 @@ public class LevelSubPanel : LevelPanelBase {
     
     ItemModel itemModel => level.levelState.itemStates.FirstOrDefault(x => x.inkListItemFullName == gameObject.name || x.inkListItemName == gameObject.name);
     ItemView targetItem => itemModel == null ? null : level.FindItemWithModel(itemModel);
-    public float showProgress { get; set; }
+    public float showProgress { get; private set; }
+    public bool shownOrShowing => showHideState == ShowHideState.Shown || showHideState == ShowHideState.Showing;
+    public bool hiddenOrHiding => showHideState == ShowHideState.Hidden || showHideState == ShowHideState.Hiding;
 
+    public ShowHideState showHideState;
+    public enum ShowHideState {
+        Hidden,
+        Showing,
+        Shown,
+        Hiding
+    }
     Rect expandedRect;
 
     public override void OnLoadLevel() {
         base.OnLoadLevel();
         expandedRect = layout.rect;
+        HideImmediate();
         // if (!isTopLevelPanel) {
         //     itemModel = 
         //     if(itemModel == null) Debug.LogWarning($"No item model found for level panel: {gameObject.name}", this);
@@ -29,16 +39,21 @@ public class LevelSubPanel : LevelPanelBase {
 
     [EasyButtons.Button]
     public void Show() {
+        // zoomedInImage.target = parentPanel.background;
+        // zoomedInImage.targetRect = targetItem.rectTransform;
         if (parentPanel != null && zoomedInImage != null) {
             zoomedInImage.targetRect = targetItem == null ? null : targetItem.layout.rectTransform;
             zoomedInImage.target = parentPanel.background;
         }
             
         gameObject.SetActive(true);
+        showHideState = ShowHideState.Showing;
         layout.CancelAnimations();
         layout.AnimateCustom(0.5f, (progress) => {
             showProgress = progress;
             
+        }).Then(() => {
+            showHideState = ShowHideState.Shown;
         });
         layout.Animate(0.5f, EasingFunction.Ease.EaseInOutQuad, LayoutShow);
     }
@@ -46,8 +61,10 @@ public class LevelSubPanel : LevelPanelBase {
     [EasyButtons.Button]
     public void Hide() {
         layout.CancelAnimations();
+        showHideState = ShowHideState.Hiding;
         layout.Animate(0.25f, EasingFunction.Ease.EaseInOutQuad, LayoutHide).Then(() => {
             gameObject.SetActive(false);
+            showHideState = ShowHideState.Hidden;
         });
     }
 
@@ -63,10 +80,12 @@ public class LevelSubPanel : LevelPanelBase {
 
     public void ShowImmediate() {
         gameObject.SetActive(true);
+        showHideState = ShowHideState.Shown;
         LayoutShow();
     }
     public void HideImmediate() {
         gameObject.SetActive(false);
+        showHideState = ShowHideState.Hidden;
         LayoutHide();
     }
 

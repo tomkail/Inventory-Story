@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 3886311502589206132}
   - component: {fileID: 6651090099487670161}
   m_Layer: 5
-  m_Name: Zoom
+  m_Name: Zoom Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -297,6 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   _targetRect: {fileID: 0}
+  scalingMode: 3
   zoom: 2
 --- !u!1001 &5556076081230951588
 PrefabInstance:
@@ -309,6 +310,22 @@ PrefabInstance:
     - target: {fileID: 7493279484509903, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
       propertyPath: m_Name
       value: Sub Panel
+      objectReference: {fileID: 0}
+    - target: {fileID: 74421081704717631, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 169.16669
       objectReference: {fileID: 0}
     - target: {fileID: 5208613901593248470, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
       propertyPath: m_Pivot.x
@@ -394,11 +411,11 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5208613901593248470, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2476182530713628911}
+      insertIndex: 1
+      addedObject: {fileID: 3663487865249171087}
     - targetCorrespondingSourceObject: {fileID: 5208613901593248470, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3663487865249171087}
+      addedObject: {fileID: 2476182530713628911}
     - targetCorrespondingSourceObject: {fileID: 5208613901593248470, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6668976669180978365}
@@ -429,9 +446,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c3e07641b5b415e8b09e1b9a22149c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  background: {fileID: 0}
-  itemContainer: {fileID: 0}
+  background: {fileID: 8632724728951725713}
   parentPanel: {fileID: 0}
   zoomedInImage: {fileID: 6651090099487670161}
   lineRenderer: {fileID: 8403482943576956034}
   numRects: 4
+--- !u!114 &8632724728951725713 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4239783516309908021, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+  m_PrefabInstance: {fileID: 5556076081230951588}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

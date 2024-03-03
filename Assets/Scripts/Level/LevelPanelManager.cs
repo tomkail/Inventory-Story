@@ -29,7 +29,6 @@ public class LevelPanelManager : MonoBehaviour {
             // levelState.itemStates
             // panel.gameObject.name
         }
-        foreach (var subPanel in subPanels) subPanel.HideImmediate();
         currentPanelHierarchy = new List<LevelPanelBase>();
         currentPanelHierarchy.Add(rootPanel);
 
@@ -37,6 +36,7 @@ public class LevelPanelManager : MonoBehaviour {
     }
 
     public void ShowPanel(LevelSubPanel itemSubPanel) {
+        if(itemSubPanel.shownOrShowing) return;
         itemSubPanel.parentPanel = currentPanel;
         
         currentPanelHierarchy.Add(itemSubPanel);
@@ -48,6 +48,7 @@ public class LevelPanelManager : MonoBehaviour {
     }
 
     public void HidePanel(LevelSubPanel itemSubPanel) {
+        if(itemSubPanel.hiddenOrHiding) return;
         var index = currentPanelHierarchy.IndexOf(itemSubPanel);
         while (currentPanelHierarchy.Count >= index && currentPanelHierarchy.Count > 1) {
             var removedItem = (LevelSubPanel)currentPanelHierarchy[^1];
@@ -66,25 +67,50 @@ public class LevelPanelManager : MonoBehaviour {
     }
     
     [Button]
+    // This creates a new sub panel for the item and returns it
     public LevelSubPanel CreateSubPanel(string itemFullName) {
-        var spawnLocation = new GameObject($"{itemFullName}").AddComponent<LevelSubPanel>();
-        spawnLocation.transform.SetParent(transform, false);
+        var levelSubPanel = Instantiate(PrefabDatabase.Instance.levelSubPanel, transform, false);
+        levelSubPanel.name = $"{itemFullName}";
         
         var rectSize = new Vector2(Random.Range(320,460),Random.Range(320,460));
-        spawnLocation.rectTransform.SetSizeWithCurrentAnchors(rectSize);
+        levelSubPanel.rectTransform.SetSizeWithCurrentAnchors(rectSize);
         
-        var pivotOffset = rectSize * (spawnLocation.rectTransform.pivot);
-        var localContainerRect = ((RectTransform)spawnLocation.transform.parent).rect;
-        localContainerRect = new Rect(localContainerRect.x+pivotOffset.x, localContainerRect.y+pivotOffset.y, localContainerRect.width-rectSize.x, localContainerRect.height-rectSize.y);
+        var pivotOffset = levelSubPanel.rectTransform.rect.size * (levelSubPanel.rectTransform.pivot);
+        var localContainerRect = ((RectTransform)levelSubPanel.transform.parent).rect;
+        localContainerRect = new Rect(localContainerRect.x+pivotOffset.x, localContainerRect.y+pivotOffset.y, localContainerRect.width-levelSubPanel.rectTransform.rect.size.x, localContainerRect.height-levelSubPanel.rectTransform.rect.size.y);
         
         var randomLocalPos = new Vector2(Random.Range(localContainerRect.xMin, localContainerRect.xMax), Random.Range(localContainerRect.yMin, localContainerRect.yMax));
-        spawnLocation.rectTransform.localPosition = randomLocalPos;
-        return spawnLocation;
+        levelSubPanel.rectTransform.localPosition = randomLocalPos;
+        
+        return levelSubPanel;
+    }
+
+    public LevelSubPanel CreateTemporarySubPanel(string itemInkListItemFullName, ItemSpawnLocation itemSpawnLocation) {
+        var levelSubPanel = CreateSubPanel(itemInkListItemFullName);
+        
+        // Sets the panel to the position of the item (clamped to the parent rect)
+        var pivotOffset = levelSubPanel.rectTransform.rect.size * (levelSubPanel.rectTransform.pivot);
+        var localContainerRect = ((RectTransform)levelSubPanel.transform.parent).rect;
+        localContainerRect = new Rect(localContainerRect.x+pivotOffset.x, localContainerRect.y+pivotOffset.y, localContainerRect.width-levelSubPanel.rectTransform.rect.size.x, localContainerRect.height-levelSubPanel.rectTransform.rect.size.y);
+
+        var worldSpawnPoint = itemSpawnLocation.rectTransform.TransformPoint(itemSpawnLocation.rectTransform.rect.center);
+        var localSpawnPoint = levelSubPanel.transform.parent.InverseTransformPoint(worldSpawnPoint);
+        var randomLocalPos = localContainerRect.ClosestPoint(localSpawnPoint);
+        levelSubPanel.rectTransform.localPosition = randomLocalPos;
+        
+        levelSubPanel.OnLoadLevel();
+        return levelSubPanel;
     }
 
     public LevelSubPanel FindSubPanelForItem(ItemModel item) {
         var spawnLocation = subPanels.FirstOrDefault(x => string.Equals(x.gameObject.name, item.inkListItemFullName, StringComparison.OrdinalIgnoreCase));
         if(spawnLocation == null) spawnLocation = subPanels.FirstOrDefault(x => string.Equals(x.gameObject.name, item.inkListItemName, StringComparison.OrdinalIgnoreCase));
         return spawnLocation;
+    }
+    
+    
+
+    public LevelSubPanel GetFirstExpandableSubPanelAtScreenPosition(Vector2 screenPoint) {
+        return subPanels.FirstOrDefault(x => RectTransformUtility.RectangleContainsScreenPoint(x.layout.rectTransform, screenPoint, x.layout.canvas.rootCanvas.worldCamera));
     }
 }

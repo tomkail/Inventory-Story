@@ -463,6 +463,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Level Panel
       objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255764645385959004, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5208613901593248470, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -576,4 +588,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b80740e31a541f595f7b212e1b0d082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  background: {fileID: 0}
+  background: {fileID: 7703861413046678748}
+--- !u!114 &7703861413046678748 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4239783516309908021, guid: af69417e576f045c1bfc61353cf4ffe3, type: 3}
+  m_PrefabInstance: {fileID: 5782377307675631337}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

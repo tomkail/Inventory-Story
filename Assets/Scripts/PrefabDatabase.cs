@@ -11,6 +11,7 @@ public class PrefabDatabase : MonoSingleton<PrefabDatabase> {
     public Level fallbackLevelPrefab;
     public ItemView itemViewPrefab;
     public ItemDraggableGhostView itemDraggableGhostViewPrefab;
+    public LevelSubPanel levelSubPanel;
 
     public AssetDictionary<Level> levels;
     public AssetDictionary<AudioClip> musicTracks;

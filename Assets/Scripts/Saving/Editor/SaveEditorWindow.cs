@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.CodeDom;
 using System.Linq;
 using System.IO;
 
@@ -41,6 +42,7 @@ public class SaveEditorWindow : EditorWindow {
             this.directoryPath = directoryPath;
             directoryInfo = new DirectoryInfo(directoryPath);
             RefreshFiles();
+            // On OSX this causes an exception on exiting play mode.
             watcher = new FileSystemWatcher(directoryPath);
             watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             watcher.Filter = searchPattern;
@@ -67,6 +69,7 @@ public class SaveEditorWindow : EditorWindow {
         }
 
         public void Dispose() {
+            if (watcher == null) return;
             watcher.Changed -= OnChanged;
             watcher.Created -= OnChanged;
             watcher.Deleted -= OnChanged;
@@ -111,8 +114,22 @@ public class SaveEditorWindow : EditorWindow {
             manualDev.OnChange += Repaint;
         }    
     }
-    private object _lock = new object();
     void OnDisable () {
+        Deconstruct();
+    }
+    
+    void OnDestroy () {
+        Deconstruct();
+    }
+
+    void OnFocus() {
+        gameSave?.RefreshFiles();
+        autoDev?.RefreshFiles();
+        manualDev?.RefreshFiles();
+    }
+
+    object _lock = new object();
+    void Deconstruct() {
         lock (_lock) {
             if (gameSave != null) {
                 gameSave.OnChange -= Repaint;
@@ -133,6 +150,7 @@ public class SaveEditorWindow : EditorWindow {
             }
         }
     }
+
     static DateTime dateTimeNow;
             
 	void OnGUI () {
