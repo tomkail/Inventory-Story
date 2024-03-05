@@ -1,7 +1,7 @@
 
 LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard
 
-LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name
+LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name, Title, Date, Function
 
 // for items who have properties shared between scenes, we can put them here. 
 // we don't have a way to do this right now for children items, I suggest we copy/paste those

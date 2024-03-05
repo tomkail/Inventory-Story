@@ -49,10 +49,12 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount)
 
 === function getItemTooltip(item) 
     ~ temp specific = "{levelDataFunction(Tooltip, item)}"
-    { specific != "": 
-        ~ return specific 
+    { specific == "": 
+        ~ specific = "{defaultItemTooltip(item)}"
     }
-    ~ return defaultItemTooltip(item)
+    { specific != "": 
+        VO: {specific }
+    }
     
     
 === function getItemsIn(item) 

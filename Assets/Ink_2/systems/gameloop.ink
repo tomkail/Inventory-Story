@@ -9,19 +9,20 @@
     
     >>> SAVE
     
-    ~ temp title = "{sceneData(currentSceneID, Title)}"
-    ~ temp date = "{sceneData(currentSceneID, Date)}"
+    ~ temp title = "{levelDataFunction(Title, ())}"
+    ~ temp date = "{levelDataFunction(Date, ())}"
     ~ temp solnCount = levelDataFunction(SolutionSize, ()) 
     
     ~ StartScene (currentSceneID, title, date, solnCount )
 
     // do VO line. Note the speaker is included with the line.     
-    {sceneData(currentSceneID, VOIntro)}
+    
 
     VAR unlocked = ()
     
 - (opts) 
     ~ currentlyVisibleItems = getItemsIn(currentContainer) 
+    {getItemTooltip(currentContainer)}
     [ Container: {currentContainer} ]
     [ Items: {currentlyVisibleItems} ]
     ~ Unlockables = filterByFunction(currentlyVisibleItems, -> requiresKey)
@@ -65,10 +66,7 @@
     { picked :
         +   {not carrying} [ PICKUP {picked} {niceName(picked)} ] 
             ~ carrying = picked
-            ~ temp VOText = "{getItemTooltip(picked)}"
-            {VOText != "":
-                VO: {getItemTooltip(picked)}
-            }
+            {getItemTooltip(picked)}
             [ {picked} now held ]
             -> opts 
     }   
