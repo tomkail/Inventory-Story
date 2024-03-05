@@ -15,6 +15,17 @@ VAR DEBUG = false
 -> proceedTo(MortuaryScene)
 
 /*
+    For testing: 
+    Mortuary scene 
+    - slot TornMapOfParisMetro and QsBusinessCard 
+    
+    Metro scene: 
+    - use pocket knife to cut knotted piano wire 
+    - use piano wire to open wallet (this makes no sense!) 
+    
+*/
+
+/*
 
     Initiailisation:
     - ensure DEBUG ink var. is forced to FALSE 
