@@ -373,6 +373,7 @@ LIST MetroPlatformItems =  Jacket, WhiteFabricScrap, Scarf, PianoWire, (FaceDown
     - Generation: {item: 
         - FaceDownBody: ~ return (Jacket, Scarf, WhiteFabricScrap)
         - Scarf:    ~ return PianoWire
+        - Wallet: ~ return (BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro)
         }
     }
     ~ return () 

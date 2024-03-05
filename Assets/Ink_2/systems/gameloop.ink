@@ -22,25 +22,26 @@
     
 - (opts) 
     ~ currentlyVisibleItems = getItemsIn(currentContainer) 
-    [ {currentContainer} > {currentlyVisibleItems} ]
+    [ Container: {currentContainer} ]
+    [ Items: {currentlyVisibleItems} ]
     ~ Unlockables = filterByFunction(currentlyVisibleItems, -> requiresKey)
     ~ Zoomables = filterByFunction(currentlyVisibleItems - Unlockables, -> children)
-    ~ Pickupables = currentlyVisibleItems - Unlockables - Zoomables
+    ~ Pickupables = currentlyVisibleItems - Zoomables
     [ Zoomables: {Zoomables} ]
+    [ Unlockables: {Unlockables} ]
     [ Pickables: {Pickupables} ]
-    { not DEBUG:   // skip pickup in non debug
-        <- slotunslot
-    }
+    <- slotunslot
     <- drop 
     <- pickup(Pickupables)
     <- using(Unlockables)
     <- zooming(Zoomables)
     
 - (finishup) 
+    ~ temp solutionFound = levelDataFunction(Sequence, currentItems)
     +   {currentContainer} [ ZOOM OUT ] 
         ->->
-    +  {not currentContainer} [ SOLVED ] 
-        -> proceedTo(levelDataFunction(Sequence, currentItems))   
+    +  {solutionFound} {not currentContainer} [ SOLVED ] 
+        -> proceedTo(solutionFound)   
 = slotunslot 
     +   { carrying } {not currentContainer} 
         [ SLOT {carrying} ] 
@@ -54,7 +55,7 @@
         -> opts 
     
 = drop    
-    +   [ DROP {carrying} ]
+    +   {carrying} [ DROP {carrying} ]
         ~ carrying = () 
         -> opts 
 

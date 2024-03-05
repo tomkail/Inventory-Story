@@ -12,9 +12,7 @@ VAR previousSceneID = ()
 VAR DEBUG = false
 
 
-
-
--> proceedTo(MetroPlatformScene)
+-> proceedTo(MortuaryScene)
 
 /*
 
@@ -37,23 +35,14 @@ VAR DEBUG = false
         - Zoomables 
         - Unlockables
         - Pickupables
-        
     
+    All items are Pickupable or Zoomable, never both, so we don't need to disambiguate between "zoom into me" and "pick me up".
+    
+    Unlockables can be Pickaupable; mostly because we pick things up to "look" at them. (e.g. Pickup the box to get "It's got a cominbation lock", then "drop the code" on it, to open the box. It'll then become a zoomable, and is no longer pickupable.) 
     
     ACTIONS
     =======
     
-    PICKUP 
-    When the player begins to drag an item, take the ink choice:
-        PICKUP {item} 
-        
-    This will allow ink to inject a VO line, and track the carried item via the 'carrying' variables. (You might want to track it gameside, of course.)
-    
-    DROP 
-    When an item is dropped, call 
-        DROP {item} 
-    
-    SLOT/UNSLOT are NOT provided to the game. This should just "happen".
     
     ZOOM INTO
     When the player zooms into an item, there should always be a matching ink choice:
@@ -66,7 +55,34 @@ VAR DEBUG = false
     It'll also update the currentContainer
     
     
+    PICKUP 
+    When the player begins to drag an item, take the ink choice:
+        PICKUP {item} 
+        
+    This will allow ink to inject a VO line, and track the carried item via the 'carrying' variables. (You might want to track it gameside, of course.)
+    
+    
+    DROP 
+    When an item is dropped, call 
+        DROP {item} 
+        
+    
+    SLOT / UNSLOT {item} 
+    Called when an item is passed to the solution slot or removed from it. 
+    Ink will keep the "currentItems" variable up to date.
+    Slotting / Unslotting can ONLY HAPPEN when the player is in the top level container. (We can change this if we hate it).
+    
+    
     SOLVED 
+    This option only appears when a valid solution has been slotted. 
+    Thus if it's present, you can choose it directly. 
+    We also provide "checkForSolution()" in case that's useful, but it's probably redundant. 
+    Note that this choice only appears in the top level container.
+    
+    
+    USE {item} - {carriedItem}
+    Called when drag/dropping a carried item onto an item. 
+    Note ink will surface this choice even if the player isn't carrying the correct item, so please check that!
     
     
     
@@ -75,9 +91,10 @@ VAR DEBUG = false
     
     [...] - any text in square brackets is a comment / debug info from ink, and should be skipped by the game.
     
-    Voice-over:     VO lines are fired by the ink, and prefaced by a speaker. eg. 
+    Voice-over lines:     VO lines are fired by the ink, and prefaced by a speaker. eg. 
         VO:     It's a silver device.
     Since I expect multiple actors/voices, we need to look for "NAME: text". Hope that's not too annoying. 
+    - Can change this format if you have a different format you prefer.
     
     
     

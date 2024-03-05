@@ -1,5 +1,5 @@
 
-LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform, BusinessCard, QsBusinessCard, OtherOtherBusinessCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire
+LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard
 
 LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name
 
@@ -16,13 +16,14 @@ LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, N
 
 === function  defaultItemTooltip(item)
     {item: 
-
+    -   PlayingCard:        A King of Diamonds. 
+    -   TornMapOfParisMetro: "...mp de Mars. Mi.."
     -   MapOfParisMetro:    "(X) Champ de Mars. Midnight. Q."
-
+    -   WeddingRing:        "Annie and Ernie -- 3 Oct 1962"
     -   BusinessCard:       "Ernst Richards, office clerk, UN."
     -   KingDiamondsCard:   "KING OF DIAMONDS: cards / slots / roulette / girls"
     -   QsBusinessCard:  "Quentin Roch, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
-    -   OtherOtherBusinessCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
+    -   GamblersAnonymousCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
   
 
     
