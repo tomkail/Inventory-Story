@@ -5,7 +5,7 @@
     -> tunnelOut(-> next ) 
     
 = next 
-    ~ levelDataFunction = sceneData(currentSceneID, Function)
+    ~ levelDataFunction = sceneData(currentSceneID)
     
     >>> SAVE
     
@@ -14,51 +14,48 @@
     ~ temp solnCount = levelDataFunction(SolutionSize, ()) 
     
     ~ StartScene (currentSceneID, title, date, solnCount )
+    ~ currentItems = () 
 
     // do VO line. Note the speaker is included with the line.     
     
-
+    
     VAR unlocked = ()
     
-- (opts) 
+- (enter) 
     ~ currentlyVisibleItems = getItemsIn(currentContainer) 
-    {getItemTooltip(currentContainer)}
+    { not carrying: 
+        {getItemTooltip(currentContainer)}
+    }
+- (act)
     [ Container: {currentContainer} ]
     [ Items: {currentlyVisibleItems} ]
     ~ Unlockables = filterByFunction(currentlyVisibleItems, -> requiresKey)
     ~ Zoomables = filterByFunction(currentlyVisibleItems - Unlockables, -> children)
     ~ Pickupables = currentlyVisibleItems - Zoomables
+    { not currentContainer: 
+        ~ Pickupables += currentItems
+    }
     [ Zoomables: {Zoomables} ]
     [ Unlockables: {Unlockables} ]
     [ Pickables: {Pickupables} ]
-    <- slotunslot
+    <- slot
     <- drop 
     <- pickup(Pickupables)
     <- using(Unlockables)
     <- zooming(Zoomables)
-    
-- (finishup) 
-    ~ temp solutionFound = levelDataFunction(Sequence, currentItems)
-    +   {currentContainer} [ ZOOM OUT ] 
-        ->->
-    +  {solutionFound} {not currentContainer} [ SOLVED ] 
-        -> proceedTo(solutionFound)   
-= slotunslot 
+    -> finishup
+
+= slot
     +   { carrying } {not currentContainer} 
         [ SLOT {carrying} ] 
         ~ currentItems += carrying
         ~ carrying = () 
-        -> opts 
-        
-    +   { currentItems && not carrying && not currentContainer }
-        [ UNSLOT {currentItems} ] 
-        ~ currentItems = () 
-        -> opts 
+        -> act 
     
 = drop    
     +   {carrying} [ DROP {carrying} ]
         ~ carrying = () 
-        -> opts 
+        -> act 
 
 = pickup(pickupables)
 - (pickupopts) 
@@ -66,9 +63,10 @@
     { picked :
         +   {not carrying} [ PICKUP {picked} {niceName(picked)} ] 
             ~ carrying = picked
+            ~ currentItems -= picked 
             {getItemTooltip(picked)}
             [ {picked} now held ]
-            -> opts 
+            -> act 
     }   
     { pickupables: -> pickupopts } 
     -> DONE 
@@ -83,7 +81,7 @@
             ~ unlocked += user
             ~ carrying = ()
             [ {user} Unlocked ]
-            -> opts 
+            -> act 
     }
     { unlockables: -> useopts } 
     -> DONE 
@@ -95,15 +93,21 @@
         +   [ ZOOM INTO {zoomer} {niceName(zoomer)} ]
             ~ temp oldparent = currentContainer
             ~ currentContainer = zoomer
-            -> opts -> // boom (!)
+            -> enter -> // boom (!)
             ~ currentContainer = oldparent 
-            -> opts 
+            -> enter 
     } 
     { zoomables: 
         -> zoomopts 
     } 
     -> DONE 
-    
+
+= finishup
+    ~ temp solutionFound = levelDataFunction(Sequence, currentItems)
+    +   {currentContainer} [ ZOOM OUT ] 
+        ->->
+    +  {solutionFound} {not currentContainer} [ SOLVED ] 
+        -> proceedTo(solutionFound)      
   
         
 

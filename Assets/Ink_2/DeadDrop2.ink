@@ -1,18 +1,22 @@
 INCLUDE systems/gameloop.ink
-INCLUDE content/ernst.ink
+
 INCLUDE scenes.ink
 INCLUDE data/items.ink
 INCLUDE systems/helpers.ink
 INCLUDE systems/gamefuncs.ink
+INCLUDE data/template.ink
+INCLUDE content/opening.ink
+INCLUDE content/ernst.ink
 
 
+VAR FirstLevel = OpeningCaseScene
 
 VAR previousSceneID = ()
 
 VAR DEBUG = false
 
 
--> proceedTo(MortuaryScene)
+-> proceedTo(FirstLevel)
 
 /*
     For testing: 
@@ -71,6 +75,7 @@ VAR DEBUG = false
         PICKUP {item} 
         
     This will allow ink to inject a VO line, and track the carried item via the 'carrying' variables. (You might want to track it gameside, of course.)
+    This includes dragging an item *out* of a solution slot. 
     
     
     DROP 
@@ -78,10 +83,14 @@ VAR DEBUG = false
         DROP {item} 
         
     
-    SLOT / UNSLOT {item} 
+    SLOT {item} 
     Called when an item is passed to the solution slot or removed from it. 
     Ink will keep the "currentItems" variable up to date.
-    Slotting / Unslotting can ONLY HAPPEN when the player is in the top level container. (We can change this if we hate it).
+    Slotting can ONLY HAPPEN when the player is in the top level container. (We can change this if we hate it).
+    
+    Note that UNSLOTting is not an action, this is just a PICKUP choice. The PICKUP choice will only be available when the player is at the top level container. 
+    
+    Note that if the game wants to "autounslot" an incorrect solution, it will need to zero the currentItems variable itself. 
     
     
     SOLVED 
@@ -102,10 +111,12 @@ VAR DEBUG = false
     
     [...] - any text in square brackets is a comment / debug info from ink, and should be skipped by the game.
     
-    Voice-over lines:     VO lines are fired by the ink, and prefaced by a speaker. eg. 
-        VO:     It's a silver device.
-    Since I expect multiple actors/voices, we need to look for "NAME: text". Hope that's not too annoying. 
-    - Can change this format if you have a different format you prefer.
+    Raw content (no markup) - these are lines for the subtitle field. They are either text content (the default) - used for "descriptions" - or they are #tagged with a character name
+    
+    eg. 
+    
+    "Meet me at the Station" // text content, the player is "reading" the item 
+    We found a few personal effects. #agent // the "agent" character speaks the line 
     
     
     

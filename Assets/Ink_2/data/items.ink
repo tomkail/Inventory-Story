@@ -1,5 +1,5 @@
 
-LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard
+LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard, (Gravestone), BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers, (Veil), EyesBrimmingWithTears, Device, Agent, DarkGlasses, Briefcase, KeyOnWristChain
 
 LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name, Title, Date, Function
 
@@ -9,13 +9,16 @@ LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, N
 
 === function defaultItemName(item)
     {item: 
-   
+    -   KeyOnWristChain:    key on wrist chain
+    -   Device:     Hopburg-Steiner device
     -   SealedMetalCylinder:  metal cylinder
+    -   DarkGlasses:    dark glasses
     -   else:         {item} 
     }
 
 === function  defaultItemTooltip(item)
     {item: 
+    -   SealedMetalCylinder:    \*WARNING\*
     -   PlayingCard:        A King of Diamonds. 
     -   TornMapOfParisMetro: "...mp de Mars. Mi.."
     -   MapOfParisMetro:    "(X) Champ de Mars. Midnight. Q."
@@ -24,7 +27,7 @@ LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, N
     -   KingDiamondsCard:   "KING OF DIAMONDS: cards / slots / roulette / girls"
     -   QsBusinessCard:  "Quentin Roch, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
     -   GamblersAnonymousCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
-  
+    -   Device:  "Property of the US Army. Possession is a crime."
 
     
     
