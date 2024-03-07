@@ -48,22 +48,16 @@ EXTERNAL StartScene  (sceneID, titleText, dateText, slotCount)
     
 
 === function getItemTooltip(item) 
-    ~ temp specific = "{levelDataFunction(Tooltip, item)}"
-    // don't print "specific" directly as it loses the content's tag!
-    { specific == "": 
-        {defaultItemTooltip(item)}
-    - else: 
-        {levelDataFunction(Tooltip, item)}
-    }
+    {levelDataFunction(Tooltip, item)}
     
         
     
-=== function getItemsIn(item) 
-   ~ return TransformByFunction(levelDataFunction(Children, currentContainer) - currentItems, -> _findReplacement)  - currentItems
+=== function refreshVisibleItems()
+    ~ currentlyVisibleItems = TransformByFunction(levelDataFunction(Children, currentContainer) - currentItems, -> _findReplacement)  - currentItems
  
     
  === function _findReplacement(item) 
-    { unlocked ? item: 
+    { not requiresKey(item) || unlocked ? item: 
         ~ temp updated = levelDataFunction(Becomes, item)
         { updated: 
             ~ item = updated 

@@ -15,6 +15,8 @@
     
     ~ StartScene (currentSceneID, title, date, solnCount )
     ~ currentItems = () 
+    
+    ~ levelDataFunction(Init, ())
 
     // do VO line. Note the speaker is included with the line.     
     
@@ -22,11 +24,13 @@
     VAR unlocked = ()
     
 - (enter) 
-    ~ currentlyVisibleItems = getItemsIn(currentContainer) 
+    ~ refreshVisibleItems()
+
     { not carrying: 
         {getItemTooltip(currentContainer)}
     }
 - (act)
+    [{AllKnowledge}]
     [ Container: {currentContainer} ]
     [ Items: {currentlyVisibleItems} ]
     ~ Unlockables = filterByFunction(currentlyVisibleItems, -> requiresKey)
@@ -55,6 +59,7 @@
 = drop    
     +   {carrying} [ DROP {carrying} ]
         ~ carrying = () 
+        ~ refreshVisibleItems()
         -> act 
 
 = pickup(pickupables)

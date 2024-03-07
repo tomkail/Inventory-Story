@@ -7,6 +7,10 @@ INCLUDE systems/gamefuncs.ink
 INCLUDE data/template.ink
 INCLUDE content/opening.ink
 INCLUDE content/ernst.ink
+INCLUDE content/club.ink
+INCLUDE systems/knowledge.ink
+
+
 
 
 VAR FirstLevel = OpeningCaseScene
@@ -16,7 +20,7 @@ VAR previousSceneID = ()
 VAR DEBUG = false
 
 
--> proceedTo(FirstLevel)
+-> proceedTo( FirstLevel)
 
 /*
     For testing: 

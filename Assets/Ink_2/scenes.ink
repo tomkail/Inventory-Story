@@ -23,6 +23,9 @@ VAR levelDataFunction = -> sceneData
 - MortuaryScene:        ~ return    -> MortuaryScene_data   
 - MetroPlatformScene:   ~ return    -> MetroPlatformScene_data
 - GraveyardScene:       ~ return    -> GraveyardScene_data
+
+- BackRoomClubScene:    ~ return    -> BackRoomClubScene_data
+
 - DeviceActivatedScene:     ~ return -> DeviceActivatedScene_data
 }
 ~ return ()

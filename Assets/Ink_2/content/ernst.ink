@@ -60,6 +60,7 @@
                 Only the casing was recovered. We suspect he may have activated the device itself.
         -   PoliceNotes: 
                 Attempted theft. Killer was disturbed and escaped. Narcotics in victim's blood.
+        - else: {defaultItemTooltip(item)}        
         }
     
     }
@@ -97,7 +98,8 @@
     -   KnottedPianoWire: 
             The wire is nasty, tight and twisted together.
     -   PocketKnife:
-            An old, rusty knife; something kept from boyhood, maybe.    
+            An old, rusty knife; something kept from boyhood, maybe. 
+    - else: {defaultItemTooltip(item)}   
     }
     }
     ~ return () 

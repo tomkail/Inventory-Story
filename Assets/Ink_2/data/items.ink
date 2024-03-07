@@ -1,7 +1,7 @@
 
-LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard, (Gravestone), BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers, (Veil), EyesBrimmingWithTears, Device, Agent, DarkGlasses, Briefcase, KeyOnWristChain
+LIST Items = (Jacket), WhiteFabricScrap, (Scarf), PianoWire, (FaceDownBody), BloodstainedPlatform,   GamblersAnonymousCard, KingDiamondsCard, SealedMetalCylinder, MapOfParisMetro, (Wallet), PocketKnife, KnottedPianoWire, (PoliceNotes), BusinessCard, QsBusinessCard, TornMapOfParisMetro, Nothing, WeddingRing, PlayingCard, (Gravestone), BunchOfFlowers, AnotherBunchOfFlowers, MoreFlowers, EvenMoreFlowers, (Veil), EyesBrimmingWithTears, Device, Agent, DarkGlasses, Briefcase, KeyOnWristChain, BackroomTable, (KingKey), (MetalLockBox), PileOfChips, EvenMoreChips, EvenEvenMoreChips, ValetReceipt, TableDrawer, Lamp, LitLamp, AceSpades
 
-LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name, Title, Date, Function
+LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, Name, Title, Date, Function, Init
 
 // for items who have properties shared between scenes, we can put them here. 
 // we don't have a way to do this right now for children items, I suggest we copy/paste those
@@ -28,8 +28,8 @@ LIST Accessors = Sequence, Children, Requires, Becomes, SolutionSize, Tooltip, N
     -   QsBusinessCard:  "Quentin Roch, Private Investigator. Champs de Mars. No matter too small. Divorce a speciality." 
     -   GamblersAnonymousCard:  "Gamblers Anonymous. DON'T GET LUCKY GET HELP."
     -   Device:  "Property of the US Army. Possession is a crime."
-
-    
+    - PileOfChips:      KING OF DIAMONDS nightclub
+    - ValetReceipt: Parking receipt for a Blue Chevy, registered to Ernst Richards
     
     }
     ~ return

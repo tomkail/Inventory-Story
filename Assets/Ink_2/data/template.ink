@@ -20,6 +20,7 @@ TemplateScene,
         }
     -   Tooltip: {item: 
         - ():  // opening line 
+        - else: {defaultItemTooltip(item)}
         } 
     /*
     -   Name: {item:

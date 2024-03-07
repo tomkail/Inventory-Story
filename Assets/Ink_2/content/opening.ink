@@ -13,6 +13,7 @@
     -   Tooltip: {item: 
         - ():  
             Nevada, 1958. The Hopburg-Steiner device was constructed in a military research facility using a technology of unknown origin. #deepthroat 
+        - else: {defaultItemTooltip(item)}
         } 
     }
     ~ return () 
@@ -34,6 +35,7 @@
     -   Tooltip: {item: 
         - ():  The casing is radiation-proof beryllium. 
         - SealedMetalCylinder: The device itself, being palm-sized, is a discovery of extreme consequence. 
+        - else: {defaultItemTooltip(item)}
         } 
     }
     ~ return () 
@@ -62,6 +64,7 @@
                 The identity of the agent remains unknown, except for one thing: he didn't work for us. #deepthroat
         -   Briefcase:  
                 Lead-lined briefcase. They knew what they were taking. #deepthroat
+        - else: {defaultItemTooltip(item)}        
         } 
     -   Requires: {item: 
         -   Briefcase:  ~ return KeyOnWristChain   
@@ -84,6 +87,7 @@
         }
     -   Tooltip: {item: 
         - ():   Our best evidence suggests the device was indeed activated.
+        - else: {defaultItemTooltip(item)}    
         } 
     /*
     -   Name: {item:
